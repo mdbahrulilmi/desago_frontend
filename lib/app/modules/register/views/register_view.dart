@@ -13,87 +13,83 @@ class RegisterView extends GetView<RegisterController> {
     AppResponsive().init(context);
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Container(
+        margin: EdgeInsets.only(left: 12),
+        padding: EdgeInsets.all(1),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: AppColors.primary,
+            width: 1.5,
+          ),
+        ),
+        child: IconButton(
+          onPressed: ()=> Get.back(),
+          icon: Icon(
+            Icons.chevron_left_rounded,
+          size: 24,
+          color: AppColors.primary,
+          )          
+        ),
+      ),
+
+
+      ),
       backgroundColor: AppColors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
             padding: AppResponsive.padding(horizontal: 6, top: 4),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: AppResponsive.h(8)),
                 Center(
-                  child: Image.asset(
-                    'assets/img/logo.png',
-                    width: AppResponsive.w(65),
-                    height: AppResponsive.h(15),
-                    fit: BoxFit.contain,
-                  ),
+                  child: Text("Buat Akun Baru",
+                  style:AppText.h3(color: AppColors.dark)
+                  )
                 ),
                 SizedBox(height: AppResponsive.h(2)),
-                Text(
-                  'Silahkan lengkapi data diri Anda untuk membuat akun baru.',
-                  style: AppText.bodyMedium(color: AppColors.textSecondary),
+                 Center(
+                  child: Text(
+                    'Buat akun sehingga Anda dapat\nmenjelajahi semua layanan yang ada',
+                    style: AppText.bodyLarge(color: AppColors.dark),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
                 SizedBox(height: AppResponsive.h(4)),
-                TextFormField(
-                  style: AppText.bodyMedium(color: AppColors.dark),
-                  controller: controller.namaLengkapController,
-                  decoration: InputDecoration(
-                    hintText: 'Masukkan nama lengkap',
-                    hintStyle:
-                        AppText.bodyMedium(color: AppColors.textSecondary),
-                    prefixIcon:
-                        Icon(Remix.user_line, color: AppColors.textSecondary),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: AppColors.muted),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: AppColors.muted),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: AppColors.primary),
-                    ),
-                  ),
-                ),
-                SizedBox(height: AppResponsive.h(2)),
-                TextFormField(
-                  style: AppText.bodyMedium(color: AppColors.dark),
-                  controller: controller.usernameController,
-                  decoration: InputDecoration(
-                    hintText: 'Masukkan username',
-                    hintStyle:
-                        AppText.bodyMedium(color: AppColors.textSecondary),
-                    prefixIcon:
-                        Icon(Remix.at_line, color: AppColors.textSecondary),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: AppColors.muted),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: AppColors.muted),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: AppColors.primary),
-                    ),
-                  ),
-                  cursorColor: AppColors.dark,
-                ),
+                // TextFormField(
+                //   style: AppText.bodyMedium(color: AppColors.dark),
+                //   controller: controller.namaLengkapController,
+                //   decoration: InputDecoration(
+                //     hintText: 'Masukkan nama lengkap',
+                //     hintStyle:
+                //         AppText.bodyMedium(color: AppColors.textSecondary),
+                //     prefixIcon:
+                //         Icon(Remix.user_line, color: AppColors.textSecondary),
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(8),
+                //       borderSide: BorderSide(color: AppColors.muted),
+                //     ),
+                //     enabledBorder: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(8),
+                //       borderSide: BorderSide(color: AppColors.muted),
+                //     ),
+                //     focusedBorder: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(8),
+                //       borderSide: BorderSide(color: AppColors.primary),
+                //     ),
+                //   ),
+                // ),
                 SizedBox(height: AppResponsive.h(2)),
                 TextFormField(
                   style: AppText.bodyMedium(color: AppColors.dark),
                   controller: controller.emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    hintText: 'Masukkan email',
-                    hintStyle:
-                        AppText.bodyMedium(color: AppColors.textSecondary),
-                    prefixIcon:
-                        Icon(Remix.mail_line, color: AppColors.textSecondary),
+                    label: Text("Email"),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(color: AppColors.muted),
@@ -107,19 +103,14 @@ class RegisterView extends GetView<RegisterController> {
                       borderSide: BorderSide(color: AppColors.primary),
                     ),
                   ),
-                  cursorColor: AppColors.dark,
+                cursorColor: AppColors.dark,
                 ),
                 SizedBox(height: AppResponsive.h(2)),
                 TextFormField(
                   style: AppText.bodyMedium(color: AppColors.dark),
-                  controller: controller.phoneController,
-                  keyboardType: TextInputType.phone,
+                  controller: controller.usernameController,
                   decoration: InputDecoration(
-                    hintText: 'Masukkan nomor HP/WhatsApp',
-                    hintStyle:
-                        AppText.bodyMedium(color: AppColors.textSecondary),
-                    prefixIcon:
-                        Icon(Remix.phone_line, color: AppColors.textSecondary),
+                    label: Text("Username"),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(color: AppColors.muted),
@@ -135,17 +126,39 @@ class RegisterView extends GetView<RegisterController> {
                   ),
                   cursorColor: AppColors.dark,
                 ),
+                // SizedBox(height: AppResponsive.h(2)),
+                // TextFormField(
+                //   style: AppText.bodyMedium(color: AppColors.dark),
+                //   controller: controller.phoneController,
+                //   keyboardType: TextInputType.phone,
+                //   decoration: InputDecoration(
+                //     hintText: 'Masukkan nomor HP/WhatsApp',
+                //     hintStyle:
+                //         AppText.bodyMedium(color: AppColors.textSecondary),
+                //     prefixIcon:
+                //         Icon(Remix.phone_line, color: AppColors.textSecondary),
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(8),
+                //       borderSide: BorderSide(color: AppColors.muted),
+                //     ),
+                //     enabledBorder: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(8),
+                //       borderSide: BorderSide(color: AppColors.muted),
+                //     ),
+                //     focusedBorder: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(8),
+                //       borderSide: BorderSide(color: AppColors.primary),
+                //     ),
+                //   ),
+                //   cursorColor: AppColors.dark,
+                // ),
                 SizedBox(height: AppResponsive.h(2)),
                 Obx(() => TextFormField(
                       style: AppText.bodyMedium(color: AppColors.dark),
                       controller: controller.passwordController,
                       obscureText: controller.isPasswordHidden.value,
                       decoration: InputDecoration(
-                        hintText: 'Masukkan kata sandi',
-                        hintStyle:
-                            AppText.bodyMedium(color: AppColors.textSecondary),
-                        prefixIcon: Icon(Remix.lock_line,
-                            color: AppColors.textSecondary),
+                        label: Text("Password"),
                         suffixIcon: IconButton(
                           onPressed: () =>
                               controller.togglePasswordVisibility(),
@@ -171,42 +184,42 @@ class RegisterView extends GetView<RegisterController> {
                       ),
                       cursorColor: AppColors.dark,
                     )),
-                SizedBox(height: AppResponsive.h(2)),
-                Obx(() => TextFormField(
-                      style: AppText.bodyMedium(color: AppColors.dark),
-                      controller: controller.confirmPasswordController,
-                      obscureText: controller.isConfirmPasswordHidden.value,
-                      decoration: InputDecoration(
-                        hintText: 'Konfirmasi kata sandi',
-                        hintStyle:
-                            AppText.bodyMedium(color: AppColors.textSecondary),
-                        prefixIcon: Icon(Remix.lock_line,
-                            color: AppColors.textSecondary),
-                        suffixIcon: IconButton(
-                          onPressed: () =>
-                              controller.toggleConfirmPasswordVisibility(),
-                          icon: Icon(
-                            controller.isConfirmPasswordHidden.value
-                                ? Remix.eye_off_line
-                                : Remix.eye_line,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: AppColors.muted),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: AppColors.muted),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: AppColors.primary),
-                        ),
-                      ),
-                      cursorColor: AppColors.dark,
-                    )),
+                // SizedBox(height: AppResponsive.h(2)),
+                // Obx(() => TextFormField(
+                //       style: AppText.bodyMedium(color: AppColors.dark),
+                //       controller: controller.confirmPasswordController,
+                //       obscureText: controller.isConfirmPasswordHidden.value,
+                //       decoration: InputDecoration(
+                //         hintText: 'Konfirmasi kata sandi',
+                //         hintStyle:
+                //             AppText.bodyMedium(color: AppColors.textSecondary),
+                //         prefixIcon: Icon(Remix.lock_line,
+                //             color: AppColors.textSecondary),
+                //         suffixIcon: IconButton(
+                //           onPressed: () =>
+                //               controller.toggleConfirmPasswordVisibility(),
+                //           icon: Icon(
+                //             controller.isConfirmPasswordHidden.value
+                //                 ? Remix.eye_off_line
+                //                 : Remix.eye_line,
+                //             color: AppColors.textSecondary,
+                //           ),
+                //         ),
+                //         border: OutlineInputBorder(
+                //           borderRadius: BorderRadius.circular(8),
+                //           borderSide: BorderSide(color: AppColors.muted),
+                //         ),
+                //         enabledBorder: OutlineInputBorder(
+                //           borderRadius: BorderRadius.circular(8),
+                //           borderSide: BorderSide(color: AppColors.muted),
+                //         ),
+                //         focusedBorder: OutlineInputBorder(
+                //           borderRadius: BorderRadius.circular(8),
+                //           borderSide: BorderSide(color: AppColors.primary),
+                //         ),
+                //       ),
+                //       cursorColor: AppColors.dark,
+                //     )),
                 SizedBox(height: AppResponsive.h(3)),
                 Obx(() => SizedBox(
                       width: double.infinity,
@@ -247,19 +260,15 @@ class RegisterView extends GetView<RegisterController> {
                               ),
                       ),
                     )),
-                SizedBox(height: AppResponsive.h(2)),
+                SizedBox(height: AppResponsive.h(1)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      'Sudah punya akun? ',
-                      style: AppText.bodyMedium(color: AppColors.textSecondary),
-                    ),
                     TextButton(
                       onPressed: () => controller.onLogin(),
                       child: Text(
-                        'Masuk',
-                        style: AppText.bodyLarge(color: AppColors.primary),
+                        'Sudah punya akun',
+                        style: AppText.bodyLarge(color: AppColors.dark),
                       ),
                     ),
                   ],

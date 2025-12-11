@@ -13,36 +13,34 @@ class PasswordBaruView extends GetView<PasswordBaruController> {
   @override
   Widget build(BuildContext context) {
     AppResponsive().init(context);
-
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () => Get.back(),
+          icon: Icon(Icons.chevron_left, color: AppColors.primary),
+          iconSize: 32
+        ),
+      ),
       backgroundColor: AppColors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
             padding: AppResponsive.padding(horizontal: 6, top: 4),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                SizedBox(height: AppResponsive.h(8)),
                 Center(
-                  child: Image.asset(
-                    'assets/img/logo.png',
-                    width: AppResponsive.w(65),
-                    height: AppResponsive.h(15),
-                    fit: BoxFit.contain,
-                  ),
+                  child: Text("Buat Kata Sandi Baru",
+                  style:AppText.h3(color: AppColors.dark)
+                  )
                 ),
-
                 SizedBox(height: AppResponsive.h(2)),
 
                 Text(
-                  'Buat Kata Sandi Baru',
-                  style: AppText.h4(color: AppColors.primary),
-                ),
-
-                SizedBox(height: AppResponsive.h(2)),
-
-                Text(
-                  'Buat kata sandi baru yang kuat dengan minimal 8 karakter.',
+                  'Gunakan kata sandi yang kuat',
                   style: AppText.bodyMedium(color: AppColors.textSecondary),
                 ),
 
@@ -53,12 +51,9 @@ class PasswordBaruView extends GetView<PasswordBaruController> {
                       controller: controller.passwordController,
                       style: AppText.bodyMedium(color: AppColors.dark),
                       obscureText: controller.isPasswordHidden.value,
+                      onChanged: controller.checkPasswordStrength,
                       decoration: InputDecoration(
-                        hintText: 'Masukkan kata sandi baru',
-                        hintStyle:
-                            AppText.bodyMedium(color: AppColors.textSecondary),
-                        prefixIcon: Icon(Remix.lock_line,
-                            color: AppColors.textSecondary),
+                        label: Text("Kata Sandi"),
                         suffixIcon: IconButton(
                           onPressed: () =>
                               controller.togglePasswordVisibility(),
@@ -84,7 +79,7 @@ class PasswordBaruView extends GetView<PasswordBaruController> {
                       ),
                     )),
 
-                SizedBox(height: AppResponsive.h(2)),
+                SizedBox(height: AppResponsive.h(3)),
 
                 // Confirm Password Field
                 Obx(() => TextFormField(
@@ -92,11 +87,7 @@ class PasswordBaruView extends GetView<PasswordBaruController> {
                       style: AppText.bodyMedium(color: AppColors.dark),
                       obscureText: controller.isConfirmPasswordHidden.value,
                       decoration: InputDecoration(
-                        hintText: 'Konfirmasi kata sandi baru',
-                        hintStyle:
-                            AppText.bodyMedium(color: AppColors.textSecondary),
-                        prefixIcon: Icon(Remix.lock_line,
-                            color: AppColors.textSecondary),
+                        label: Text("Konfirmasi Kata Sandi"),
                         suffixIcon: IconButton(
                           onPressed: () =>
                               controller.toggleConfirmPasswordVisibility(),
@@ -122,7 +113,7 @@ class PasswordBaruView extends GetView<PasswordBaruController> {
                       ),
                     )),
 
-                SizedBox(height: AppResponsive.h(2)),
+                SizedBox(height: AppResponsive.h(4)),
 
                 // Password Strength Indicator
                 Obx(() => Column(
@@ -163,7 +154,7 @@ class PasswordBaruView extends GetView<PasswordBaruController> {
                       ),
                     ),
                     child: Text(
-                      'Perbarui Kata Sandi',
+                      'Buat Kata Sandi',
                       style: AppText.button(color: AppColors.white),
                     ),
                   ),

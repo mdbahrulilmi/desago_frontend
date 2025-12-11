@@ -33,27 +33,12 @@ class HomeView extends GetView<HomeController> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      CircleAvatar(
-                        backgroundColor: AppColors.primary,
-                      ),
                       SizedBox(width: AppResponsive.w(3)),
                       Expanded(
                           child: Image.asset(
                         'assets/img/logo.png',
                         height: AppResponsive.h(6),
                       )),
-                      InkWell(
-                        onTap: () {},
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppColors.muted,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(Remix.settings_3_line,
-                              color: AppColors.primary),
-                        ),
-                      )
                     ],
                   ),
                   SizedBox(height: AppResponsive.h(2)),
@@ -170,7 +155,6 @@ class HomeView extends GetView<HomeController> {
           ),
         ),
       )),
-      bottomNavigationBar: CustomBottomNavigationBar(),
     );
   }
 

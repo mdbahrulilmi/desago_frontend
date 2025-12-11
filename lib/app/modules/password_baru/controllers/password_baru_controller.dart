@@ -88,6 +88,7 @@ class PasswordBaruController extends GetxController {
     }
 
     // Implement update password logic
+    
   }
 
   @override

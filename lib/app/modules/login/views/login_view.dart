@@ -19,31 +19,26 @@ class LoginView extends GetView<LoginController> {
           child: Padding(
             padding: AppResponsive.padding(horizontal: 6, top: 4),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: AppResponsive.h(8)),
                 Center(
-                  child: Image.asset(
-                    'assets/img/logo.png',
-                    width: AppResponsive.w(65),
-                    height: AppResponsive.h(15),
-                    fit: BoxFit.contain,
-                  ),
+                  child: Text("Masuk",
+                  style:AppText.h3(color: AppColors.dark)
+                  )
                 ),
                 SizedBox(height: AppResponsive.h(2)),
-                Text(
-                  'Masuk untuk mengakses riwayat layanan dan dapatkan pembaruan status pengajuan layanan Anda.',
-                  style: AppText.bodyMedium(color: AppColors.textSecondary),
+                Center(
+                  child: Text(
+                    'Selamat datang di DesaGo.id',
+                    style: AppText.bodyLarge(color: AppColors.dark),
+                  ),
                 ),
                 SizedBox(height: AppResponsive.h(4)),
                 TextFormField(
                   style: AppText.bodyMedium(color: AppColors.dark),
-                  controller: controller.usernameController,
+                  controller: controller.emailController,
                   decoration: InputDecoration(
-                    hintText: 'Masukkan Username ',
-                    hintStyle:
-                        AppText.bodyMedium(color: AppColors.textSecondary),
-                    prefixIcon:
-                        Icon(Remix.user_line, color: AppColors.textSecondary),
+                    label: Text("Email"),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(color: AppColors.muted),
@@ -65,11 +60,7 @@ class LoginView extends GetView<LoginController> {
                       controller: controller.passwordController,
                       obscureText: controller.isPasswordHidden.value,
                       decoration: InputDecoration(
-                        hintText: 'Masukkan kata sandi',
-                        hintStyle:
-                            AppText.bodyMedium(color: AppColors.textSecondary),
-                        prefixIcon: Icon(Remix.lock_line,
-                            color: AppColors.textSecondary),
+                        label: Text("Kata Sandi"),
                         suffixIcon: IconButton(
                           onPressed: () =>
                               controller.togglePasswordVisibility(),
@@ -116,8 +107,8 @@ class LoginView extends GetView<LoginController> {
                     TextButton(
                       onPressed: () => controller.onForgotPassword(),
                       child: Text(
-                        'Lupa kata sandi',
-                        style: AppText.caption(color: AppColors.primary),
+                        'Lupa Kata Sandi',
+                        style: AppText.caption(color: AppColors.dark),
                       ),
                     ),
                   ],
@@ -129,7 +120,7 @@ class LoginView extends GetView<LoginController> {
                       child: ElevatedButton(
                         onPressed: controller.isLoading.value
                             ? null
-                            : () => controller.toHome(),
+                            : () => controller.onLogin(),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           shape: RoundedRectangleBorder(
@@ -199,10 +190,7 @@ class LoginView extends GetView<LoginController> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      'Belum punya akun? ',
-                      style: AppText.bodyMedium(color: AppColors.textSecondary),
-                    ),
+                    Text("Belum punya akun?"),
                     TextButton(
                       onPressed: () => controller.onCreateAccount(),
                       style: TextButton.styleFrom(
@@ -212,8 +200,8 @@ class LoginView extends GetView<LoginController> {
                             Size(AppResponsive.w(20), AppResponsive.h(4)),
                       ),
                       child: Text(
-                        'Buat akun',
-                        style: AppText.bodyLarge(color: AppColors.primary),
+                        'Buat Akun Baru',
+                        style: AppText.bodyMedium(color: AppColors.primary),
                       ),
                     ),
                   ],

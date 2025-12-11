@@ -45,10 +45,8 @@ import '../modules/loker_desa_detail/bindings/loker_desa_detail_binding.dart';
 import '../modules/loker_desa_detail/views/loker_desa_detail_view.dart';
 import '../modules/lupa_password/bindings/lupa_password_binding.dart';
 import '../modules/lupa_password/views/lupa_password_view.dart';
-import '../modules/lupa_password_wa/bindings/lupa_password_wa_binding.dart';
-import '../modules/lupa_password_wa/views/lupa_password_wa_view.dart';
-import '../modules/method_reset_password/bindings/method_reset_password_binding.dart';
-import '../modules/method_reset_password/views/method_reset_password_view.dart';
+import '../modules/main/bindings/main_binding.dart';
+import '../modules/main/views/main_view.dart';
 import '../modules/nomor_penting/bindings/nomor_penting_binding.dart';
 import '../modules/nomor_penting/views/nomor_penting_view.dart';
 import '../modules/otp_verifikasi/bindings/otp_verifikasi_binding.dart';
@@ -97,7 +95,7 @@ class AppPages {
       final box = GetStorage();
       final token = box.read<String>('token');
       if (token != null) {
-        return Routes.HOME;
+        return Routes.MAIN;
       }
     } catch (e) {
       print('Error saat memeriksa token: $e');
@@ -135,16 +133,6 @@ class AppPages {
       name: _Paths.SUKSES_RESET_PASSWORD,
       page: () => const SuksesResetPasswordView(),
       binding: SuksesResetPasswordBinding(),
-    ),
-    GetPage(
-      name: _Paths.METHOD_RESET_PASSWORD,
-      page: () => const MethodResetPasswordView(),
-      binding: MethodResetPasswordBinding(),
-    ),
-    GetPage(
-      name: _Paths.LUPA_PASSWORD_WA,
-      page: () => const LupaPasswordWaView(),
-      binding: LupaPasswordWaBinding(),
     ),
     GetPage(
       name: _Paths.OTP_VERIFIKASI,
@@ -315,6 +303,11 @@ class AppPages {
       name: _Paths.AKUN_BIODATA,
       page: () => const AkunBiodataView(),
       binding: AkunBiodataBinding(),
+    ),
+    GetPage(
+      name: _Paths.MAIN,
+      page: () => const MainView(),
+      binding: MainBinding(),
     ),
   ];
 }

@@ -12,7 +12,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginController extends GetxController {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-  final usernameController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   final isLoading = false.obs;
@@ -34,7 +34,7 @@ class LoginController extends GetxController {
       final response = await DioService.instance.post(
         ApiConstant.login,
         data: {
-          'username': usernameController.text,
+          'email': emailController.text,
           'password': passwordController.text,
         },
       );
@@ -43,7 +43,8 @@ class LoginController extends GetxController {
 
         if (response.statusCode == 200 && responseData['success'] == true) {
           final user = UserModel.fromJson(responseData['user']);
-          final token = responseData['token'] as String;
+          print(responseData);
+          final token = responseData['remember_token']?.toString() ?? '';
           await StorageService.saveUserData(user, token);
 
           Get.snackbar(
@@ -53,7 +54,7 @@ class LoginController extends GetxController {
             colorText: Colors.white,
           );
 
-          Get.offAllNamed(Routes.HOME);
+          Get.offAllNamed(Routes.MAIN);
         } else {
           Get.snackbar(
             'Error',
@@ -140,7 +141,7 @@ class LoginController extends GetxController {
 
     print("Step 3: Getting auth details");
     print("Email: ${googleUser.email}");
-    print("Name: ${googleUser.displayName}");
+    // print("Name: ${googleUser.displayName}");
     print("ID: ${googleUser.id}");
 
     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -171,7 +172,7 @@ class LoginController extends GetxController {
       ),
     );
     if (response.statusCode == 200) {
-      final token = response.data['token'];
+      final token = response.data['remember_token'];
       final user = UserModel.fromJson(response.data['user']);
 
       await StorageService.saveToken(token);
@@ -205,7 +206,7 @@ class LoginController extends GetxController {
 }
 
   void onForgotPassword() {
-    Get.toNamed(Routes.METHOD_RESET_PASSWORD);
+    Get.toNamed(Routes.LUPA_PASSWORD);
   }
 
   void onCreateAccount() {
@@ -213,11 +214,11 @@ class LoginController extends GetxController {
   }
 
   void toHome(){
-    Get.toNamed(Routes.HOME);
+    Get.toNamed(Routes.MAIN);
   }
   @override
   void onClose() {
-    usernameController.dispose();
+    emailController.dispose();
     passwordController.dispose();
     super.onClose();
   }

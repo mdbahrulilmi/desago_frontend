@@ -37,32 +37,42 @@ class RegisterController extends GetxController {
       final response = await DioService.instance.post(
         ApiConstant.register,
         data: {
-          'name': namaLengkapController.text,
+          // 'name': namaLengkapController.text,
           'username': usernameController.text,
           'email': emailController.text,
-          'phone': phoneController.text,
+          // 'phone': phoneController.text,
           'password': passwordController.text,
-          'password_confirmation': confirmPasswordController.text,
+          // 'password_confirmation': confirmPassRRwordController.text,
         },
       );
 
       final responseData = response.data as Map<String, dynamic>;
-
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        try {
-          final user = UserModel.fromJson(responseData['data']['user']);
-          final token = responseData['data']['token'] as String;
-          await StorageService.saveUserData(user, token);
+  
+      if (response.statusCode == 200 || response.data['success'] == true) {
+        // try {
+        //   final user = UserModel.fromJson(responseData['data']['user']);
+        //   final token = responseData['data']['token'] as String;
+        //   await StorageService.saveUserData(user, token);
+        //   Get.snackbar(
+        //     'Verifikasi Email Terkirim',
+        //     'Silakan cek email Anda untuk memverifikasi akun.',
+        //     backgroundColor: AppColors.success,
+        //     colorText: AppColors.white,
+        //   );
+        //   Get.offAllNamed(Routes.SUKSES_VERIFIKASI_EMAIL);
+        // } catch (e) {
+        //   throw 'Gagal memproses data user';
+        // }
           Get.snackbar(
-            'Verifikasi Email Terkirim',
-            'Silakan cek email Anda untuk memverifikasi akun.',
-            backgroundColor: AppColors.success,
-            colorText: AppColors.white,
+              'Registrasi Berhasil',
+              responseData['message'] ?? 'Selamat datang! Silakan login.',
+              backgroundColor: AppColors.success,
+              colorText: AppColors.white,
           );
-          Get.offAllNamed(Routes.SUKSES_VERIFIKASI_EMAIL);
-        } catch (e) {
-          throw 'Gagal memproses data user';
-        }
+          Future.delayed(const Duration(seconds: 1), () {
+            Get.offAllNamed(Routes.LOGIN);
+          });
+
       } else {
         throw response.data['message'] ?? 'Gagal melakukan registrasi';
       }

@@ -19,7 +19,7 @@ class BottomNavigationController extends GetxController {
   final List<String> pageNames = [
     'Beranda',
     'Surat',
-    'Berita',
+    'Aktivitas',
     'Akun'
   ];
 
@@ -33,16 +33,11 @@ class BottomNavigationController extends GetxController {
     }
   }
 
-  void changePage(int index, {bool useOffAll = true}) {
-    if (index >= 0 && index < indexToRoute.length) {
-      selectedIndex.value = index;
-      if (useOffAll) {
-        Get.offAllNamed(indexToRoute[index]);
-      } else {
-        Get.toNamed(indexToRoute[index]);
-      }
-    }
+  void changePage(int index) {
+    selectedIndex.value = index;
   }
+
+
 
 
   void navigateToLapor() {

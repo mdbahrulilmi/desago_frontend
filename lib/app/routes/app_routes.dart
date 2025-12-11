@@ -10,8 +10,6 @@ abstract class Routes {
   static const OTP_VERIFIKASI = _Paths.OTP_VERIFIKASI;
   static const PASSWORD_BARU = _Paths.PASSWORD_BARU;
   static const SUKSES_RESET_PASSWORD = _Paths.SUKSES_RESET_PASSWORD;
-  static const METHOD_RESET_PASSWORD = _Paths.METHOD_RESET_PASSWORD;
-  static const LUPA_PASSWORD_WA = _Paths.LUPA_PASSWORD_WA;
   static const SUKSES_VERIFIKASI_EMAIL = _Paths.SUKSES_VERIFIKASI_EMAIL;
   static const AKUN = _Paths.AKUN;
   static const LAYANAN = _Paths.LAYANAN;
@@ -47,6 +45,7 @@ abstract class Routes {
   static const LAPOR_RIWAYAT = _Paths.LAPOR_RIWAYAT;
   static const AKUN_UBAH_PASSWORD = _Paths.AKUN_UBAH_PASSWORD;
   static const AKUN_BIODATA = _Paths.AKUN_BIODATA;
+  static const MAIN = _Paths.MAIN;
 }
 
 abstract class _Paths {
@@ -95,4 +94,5 @@ abstract class _Paths {
   static const LAPOR_RIWAYAT = '/lapor-riwayat';
   static const AKUN_UBAH_PASSWORD = '/akun-ubah-password';
   static const AKUN_BIODATA = '/akun-biodata';
+  static const MAIN = '/main';
 }

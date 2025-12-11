@@ -15,6 +15,15 @@ class LupaPasswordView extends GetView<LupaPasswordController> {
     AppResponsive().init(context);
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () => Get.back(),
+          icon: Icon(Icons.chevron_left, color: AppColors.primary),
+          iconSize: 32
+        ),
+      ),
       backgroundColor: AppColors.white,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -23,43 +32,28 @@ class LupaPasswordView extends GetView<LupaPasswordController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Logo
+                SizedBox(height: AppResponsive.h(8)),
                 Center(
-                  child: Image.asset(
-                    'assets/img/logo.png',
-                    width: AppResponsive.w(65),
-                    height: AppResponsive.h(15),
-                    fit: BoxFit.contain,
+                  child: Text("Lupa Kata Sandi",
+                  style: AppText.h3(color: AppColors.dark),)
+                ),
+
+                SizedBox(height: AppResponsive.h(1)),
+                 Center(
+                  child: Text(
+                    'Masukkan email yang pernah dibuat!',
+                    style: AppText.bodyLarge(color: AppColors.dark),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-
-                SizedBox(height: AppResponsive.h(2)),
-
-                Text(
-                  'Reset Kata Sandi',
-                  style: AppText.h4(color: AppColors.primary),
-                ),
-
-                SizedBox(height: AppResponsive.h(2)),
-
-                Text(
-                  'Masukkan username dan nomor HP/WhatsApp yang terdaftar untuk melanjutkan proses reset kata sandi.',
-                  style: AppText.bodyMedium(color: AppColors.textSecondary),
-                ),
-
                 SizedBox(height: AppResponsive.h(4)),
-
                 // Form Fields
                 TextFormField(
                   controller: controller.emailController,
                   style: AppText.bodyMedium(color: AppColors.dark),
                   decoration: InputDecoration(
-                    hintText: 'Masukkan Email Anda',
-                    hintStyle:
-                        AppText.bodyMedium(color: AppColors.textSecondary),
-                    prefixIcon:
-                        Icon(Remix.at_line, color: AppColors.textSecondary),
-                    border: OutlineInputBorder(
+                    label: Text("Email"),
+                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(color: AppColors.muted),
                     ),
@@ -74,7 +68,7 @@ class LupaPasswordView extends GetView<LupaPasswordController> {
                   ),
                 ),
                 SizedBox(
-                  height: AppResponsive.h(2),
+                  height: AppResponsive.h(4),
                 ),
                 SizedBox(
                   width: double.infinity,
@@ -82,7 +76,8 @@ class LupaPasswordView extends GetView<LupaPasswordController> {
                   child: Obx(() => ElevatedButton(
                         onPressed: controller.isLoading.value
                             ? null
-                            : () => controller.onVerifyIdentity(),
+                            : () => controller.skipTest(),
+                            // : () => controller.onVerifyIdentity(),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           shape: RoundedRectangleBorder(
@@ -116,25 +111,26 @@ class LupaPasswordView extends GetView<LupaPasswordController> {
                               ),
                       )),
                 ),
-                SizedBox(height: AppResponsive.h(2)),
+                SizedBox(height: AppResponsive.h(1)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      'Kembali ke ',
-                      style: AppText.bodyMedium(color: AppColors.textSecondary),
-                    ),
                     TextButton(
                       onPressed: () => Get.back(),
-                      style: TextButton.styleFrom(
-                        padding:
-                            AppResponsive.padding(horizontal: 2, vertical: 1),
-                        minimumSize:
-                            Size(AppResponsive.w(20), AppResponsive.h(4)),
-                      ),
-                      child: Text(
-                        'Halaman Login',
-                        style: AppText.bodyMedium(color: AppColors.primary),
+                      style: TextButton.styleFrom(),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Kirim Ulang',
+                            style: AppText.bodyMedium(color: AppColors.dark),
+                          ),
+                          SizedBox(width: AppResponsive.w(1)),
+                          Transform(
+                            alignment: Alignment.center,
+                            transform: Matrix4.rotationY(3.14159),
+                            child: Icon(Icons.refresh, color: AppColors.dark)
+                          )
+                        ],
                       ),
                     ),
                   ],

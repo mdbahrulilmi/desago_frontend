@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:desago/app/components/custom_bottom_navigation_widget.dart';
 import 'package:desago/app/routes/app_pages.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_text.dart';
@@ -265,7 +264,6 @@ class AkunView extends GetView<AkunController> {
           ),
         ),
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(),
     );
   }
 

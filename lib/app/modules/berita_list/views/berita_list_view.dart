@@ -1,4 +1,3 @@
-import 'package:desago/app/components/custom_bottom_navigation_widget.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
@@ -53,7 +52,6 @@ class BeritaListView extends GetView<BeritaListController> {
           ),
         ],
       ),
-      bottomNavigationBar: const CustomBottomNavigationBar(),
     );
   }
 

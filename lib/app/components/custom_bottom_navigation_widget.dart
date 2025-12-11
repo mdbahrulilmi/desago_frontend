@@ -6,24 +6,29 @@ import 'package:desago/app/utils/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:remixicon/remixicon.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
 
 class CustomBottomNavigationBar extends GetView<BottomNavigationController> {
   const CustomBottomNavigationBar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        ClipRRect(
+            borderRadius: BorderRadius.only(
+    topLeft: Radius.circular(24),
+    topRight: Radius.circular(24),
+        ),
+          child: Container(
             width: double.infinity,
             height: 70,
             decoration: BoxDecoration(
               color: AppColors.primary,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.muted.withOpacity(0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 5),
                 ),
@@ -68,59 +73,47 @@ class CustomBottomNavigationBar extends GetView<BottomNavigationController> {
               ],
             ),
           ),
-          Positioned(
-            top: -30,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Material(
-                elevation: 8,
-                shadowColor: Colors.black.withOpacity(0.3),
-                shape: CircleBorder(
-                  side: BorderSide(
-                    color: Colors.white,
-                    width: 2,
-                  ),
+        ),
+        Positioned(
+          top: -30,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: Material(
+              elevation: 8,
+              shadowColor: Colors.black.withOpacity(0.3),
+              shape: CircleBorder(
+                side: BorderSide(
+                  color: Colors.white,
+                  width: 2,
                 ),
-                child: InkWell(
-                  onTap: () {
-                    Get.toNamed(Routes.LAPOR);
-                  },
-                  customBorder: CircleBorder(),
-                  child: Container(
-                    width: 70,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          AppColors.danger,
-                          AppColors.purple,
-                        ],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.danger.withOpacity(0.3),
-                          blurRadius: 8,
-                          spreadRadius: 2,
-                          offset: const Offset(0, 3),
-                        ),
+              ),
+              child: InkWell(
+                onTap: () {
+                  Get.toNamed(Routes.LAPOR);
+                },
+                customBorder: CircleBorder(),
+                child: Container(
+                  width: 70,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.white,
+                        AppColors.white,
                       ],
                     ),
-                    child: const Icon(
-                      Remix.alarm_warning_fill,
-                      color: AppColors.white,
-                      size: 30,
-                    ),
                   ),
+                  child: SvgPicture.asset('assets/icons/navigation/report.svg')
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -130,20 +123,50 @@ class CustomBottomNavigationBar extends GetView<BottomNavigationController> {
     required String route,
     required String label,
   }) {
-    IconData getRemixIcon(String route, bool isActive) {
-      switch (route) {
+
+    Widget ImageIcon(String route, bool isActive){
+       switch (route) {
         case Routes.HOME:
-          return isActive ? Remix.home_3_fill : Remix.home_3_line;
+          return SvgPicture.asset(
+    isActive
+        ? 'assets/icons/navigation/home_active.svg'
+        : 'assets/icons/navigation/home.svg',
+    width: 24,
+    height: 24,
+  );
         case Routes.SURAT_PETUNJUK:
-          return isActive ? Remix.mail_ai_fill : Remix.mail_ai_line;
+          return SvgPicture.asset(
+    isActive
+        ? 'assets/icons/navigation/letter_active.svg'
+        : 'assets/icons/navigation/letter.svg',
+    width: 24,
+    height: 24,
+  );
         case Routes.BERITA_LIST:
-          return isActive ? Remix.newspaper_fill : Remix.newspaper_line;
+          return SvgPicture.asset(
+    isActive
+        ? 'assets/icons/navigation/activity_active.svg'
+        : 'assets/icons/navigation/activity.svg',
+    width: 24,
+    height: 24,
+  );
         case Routes.AKUN:
-          return isActive ? Remix.user_2_fill : Remix.user_2_line;
+          return SvgPicture.asset(
+    isActive
+        ? 'assets/icons/navigation/account_active.svg'
+        : 'assets/icons/navigation/account.svg',
+    width: 24,
+    height: 24,
+  );
         default:
-          return isActive ? Remix.file_fill : Remix.file_line;
-      }
-    }
+        return SvgPicture.asset(
+    isActive
+        ? 'assets/icons/navigation/home.svg'
+        : 'assets/icons/navigation/home.svg',
+    width: 24,
+    height: 24,
+  );
+    }}
 
     return Obx(() {
       final isSelected = controller.selectedIndex.value == index;
@@ -156,17 +179,13 @@ class CustomBottomNavigationBar extends GetView<BottomNavigationController> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(
-                getRemixIcon(route, isSelected),
-                size: 24,
-                color: Colors.white,
-              ),
+              ImageIcon(route, isSelected),
               SizedBox(height: 4),
               Text(
                 label,
                 style: isSelected
                     ? AppText.smallBold(color: Colors.white)
-                    : AppText.small(color: Colors.white),
+                    : AppText.small(color: Colors.black),
                 textAlign: TextAlign.center,
               ),
             ],

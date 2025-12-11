@@ -58,7 +58,7 @@ class LaporView extends GetView<LaporController> {
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Lottie.asset(
-                          'assets/lottie/lapor.json',
+                          'assets/lottie/camera.json',
                           fit: BoxFit.contain,
                         ),
                       ),
