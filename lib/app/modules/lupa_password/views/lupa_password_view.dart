@@ -76,7 +76,7 @@ class LupaPasswordView extends GetView<LupaPasswordController> {
                   child: Obx(() => ElevatedButton(
                         onPressed: controller.isLoading.value
                             ? null
-                            : () => controller.skipTest(),
+                            : () => controller.onVerifyIdentity(),
                             // : () => controller.onVerifyIdentity(),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,

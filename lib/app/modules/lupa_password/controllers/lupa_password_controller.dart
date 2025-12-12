@@ -10,10 +10,6 @@ class LupaPasswordController extends GetxController {
   final emailController = TextEditingController();
   final isLoading = false.obs;
 
-  void skipTest() {
-    Get.toNamed('/password-baru');
-  }
-
   void onVerifyIdentity() async {
     if (emailController.text.isEmpty) {
       Get.snackbar(
