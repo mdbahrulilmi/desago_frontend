@@ -1,3 +1,5 @@
+import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/services/dio_services.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -5,12 +7,18 @@ import 'package:get/get.dart';
 class PasswordBaruController extends GetxController {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+
+  late final String token;
+  late final String email;
   
   final isPasswordHidden = true.obs;
   final isConfirmPasswordHidden = true.obs;
+
   final passwordStrength = 0.0.obs;
   final passwordStrengthText = ''.obs;
   final passwordStrengthColor = AppColors.danger.obs;
+
+  final isLoading = false.obs;
 
   void togglePasswordVisibility() {
     isPasswordHidden.value = !isPasswordHidden.value;
@@ -55,7 +63,9 @@ class PasswordBaruController extends GetxController {
     }
   }
 
-  void onUpdatePassword() {
+  void onUpdatePassword() async {
+    if (isLoading.value) return;
+
     // Validasi password
     if (passwordController.text.isEmpty || confirmPasswordController.text.isEmpty) {
       Get.snackbar(
@@ -87,9 +97,73 @@ class PasswordBaruController extends GetxController {
       return;
     }
 
-    // Implement update password logic
+    try{
+      isLoading.value = true;
+      
+      await Future.delayed(const Duration(seconds: 2));
+
+      if (token == 'expired') {
+        throw 'TOKEN_EXPIRED';
+      }
+
+      final response = await DioService.instance.post(
+        ApiConstant.newPassword, 
+        data: {
+          'token': token,
+          'email': email,
+          'password': passwordController.text,
+        },
+      );
+
+      print(response);
+
+      Get.snackbar(
+        'Berhasil',
+        'Kata sandi berhasil diperbarui',
+        backgroundColor: AppColors.success,
+        colorText: AppColors.white,
+      );
+
+      Get.offAllNamed('/login');
+
+    } catch (e) {
+    if (e == 'TOKEN_EXPIRED') {
+      Get.snackbar(
+        'Error',
+        'Link reset sudah kadaluarsa',
+        backgroundColor: AppColors.danger,
+        colorText: AppColors.white,
+      );
+    } else {
+      Get.snackbar(
+        'Error',
+        'Terjadi kesalahan, coba lagi',
+        backgroundColor: AppColors.danger,
+        colorText: AppColors.white,
+      );
+    }
+  }
+
     
   }
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    token = Get.parameters['token'] ?? '';
+    email = Get.parameters['email'] ?? '';
+
+    if (token.isEmpty) {
+      Get.offAllNamed('/invalid-link');
+      return;
+    }
+
+    passwordController.addListener(() {
+      checkPasswordStrength(passwordController.text);
+    });
+  }
+
 
   @override
   void onClose() {

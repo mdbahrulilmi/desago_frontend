@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
 
     <application
         android:enableOnBackInvokedCallback="true"
@@ -30,7 +31,7 @@
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme"/>
 
-            <!-- Deep Link -->
+            <!-- App Link -->
            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -43,8 +44,6 @@
                     android:host="londa-proinsurance-nonsalubriously.ngrok-free.dev"
                     android:pathPrefix="/reset-password" />
             </intent-filter>
-
-
 
             <!-- Launcher Activity (WAJIB) -->
             <intent-filter>

@@ -18,46 +18,77 @@ void main() async {
   await GetStorage.init();
   Get.put(BottomNavigationController());
 
-  // ============================
-  // 🔥 APP LINKS START
-  // ============================
   final appLinks = AppLinks();
+  final Uri? initialUri = await appLinks.getInitialLink();
+  print('🔥 INITIAL URI: $initialUri');
 
-  // Listen saat app sudah running
-  appLinks.uriLinkStream.listen((uri) {
-    if (uri != null && uri.path == '/reset-password') {
-      final token = uri.queryParameters['token'] ?? '';
-      final email = uri.queryParameters['email'] ?? '';
-      Get.toNamed('/password-baru', arguments: {'token': token, 'email': email});
-    }
+  String initialRoute = AppPages.getInitialRoute();
+  Map<String, String>? initialParams;
+
+  if (initialUri != null && initialUri.path == '/reset-password') {
+    initialRoute = '/password-baru';
+    initialParams = {
+      'token': initialUri.queryParameters['token'] ?? '',
+      'email': initialUri.queryParameters['email'] ?? '',
+    };
+  }
+
+  runApp(MyApp(
+    initialRoute: initialRoute,
+    initialParams: initialParams,
+    appLinks: appLinks,
+  ));
+}
+
+// =================================================
+// 🔥 SINGLE APP
+// =================================================
+class MyApp extends StatefulWidget {
+  final String initialRoute;
+  final Map<String, String>? initialParams;
+  final AppLinks appLinks;
+
+  const MyApp({
+    super.key,
+    required this.initialRoute,
+    required this.appLinks,
+    this.initialParams,
   });
 
-  // Tangkap initial link saat cold start
-  final initialUri = await appLinks.getInitialLink();
-  if (initialUri != null && initialUri.path == '/reset-password') {
-    final token = initialUri.queryParameters['token'] ?? '';
-    final email = initialUri.queryParameters['email'] ?? '';
-    Future.microtask(() {
-      Get.toNamed('/password-baru', arguments: {'token': token, 'email': email});
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+
+    /// 🔥 DEEP LINK SAAT APP RUNNING / BACKGROUND
+    widget.appLinks.uriLinkStream.listen((uri) {
+      if (uri.path == '/reset-password') {
+        Get.offAllNamed(
+          '/password-baru',
+          parameters: {
+            'token': uri.queryParameters['token'] ?? '',
+            'email': uri.queryParameters['email'] ?? '',
+          },
+        );
+      }
     });
   }
 
-
-  // ============================
-  // 🔥 APP LINKS END
-  // ============================
-
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final initialRoute = AppPages.getInitialRoute();
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Application",
-      initialRoute: initialRoute,
+      title: 'Application',
+      initialRoute: widget.initialRoute,
+      initialBinding: BindingsBuilder(() {
+        if (widget.initialParams != null) {
+          Get.parameters.addAll(widget.initialParams!);
+        }
+      }),
       getPages: AppPages.routes,
     );
   }
