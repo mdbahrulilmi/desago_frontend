@@ -50,6 +50,8 @@ class DioService {
           final noAuthPaths = [
             '/login',
             '/register',
+            '/forgot-password',
+            '/new-password',
           ];
 
           final String path = options.path.toLowerCase();

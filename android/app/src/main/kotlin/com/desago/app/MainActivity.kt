@@ -1,4 +1,4 @@
-package com.example.desago
+package com.desago.app
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,50 +1,49 @@
 {
   "project_info": {
-    "project_number": "939143936748",
-    "project_id": "desago-7fd7e",
-    "storage_bucket": "desago-7fd7e.firebasestorage.app"
+    "project_number": "405687163858",
+    "project_id": "desago-app",
+    "storage_bucket": "desago-app.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:939143936748:android:ec7db8836c05d6161683c9",
+        "mobilesdk_app_id": "1:405687163858:android:ce3d74b9ec3612c1aa860b",
         "android_client_info": {
-          "package_name": "com.example.desago"
+          "package_name": "com.desago.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "939143936748-h6had53tfbdmkjs6eb5agm8luo8k6luq.apps.googleusercontent.com",
+          "client_id": "405687163858-1h8g36b9bes297m8mc61rp84j3rn59i0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.desago",
-            "certificate_hash": "9b7cb24fce86660b838b96484b5976cf685a777c"
+            "package_name": "com.desago.app",
+            "certificate_hash": "4a83495448fc3b79b47340df638ad473a3c78abd"
           }
         },
         {
-          "client_id": "939143936748-ql738egnq9mugfo1a3uqiqvdh45fgcek.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.desago",
-            "certificate_hash": "9b599bdf3a6d59ad78d229c614a0b93d80314a97"
-          }
-        },
-        {
-          "client_id": "939143936748-db9rl6patvhsdp22fbbvlqqjjfpojqv0.apps.googleusercontent.com",
+          "client_id": "405687163858-i3l3f7oj7lo3c1n4kkd59bvrkmpl1l8d.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyARXWZdsjRoOvPYOONfoo6Tbs3HzdKrXjU"
+          "current_key": "AIzaSyDstEiw2g_X5vfDoL_58h8RuzcG3DlwiVQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "939143936748-db9rl6patvhsdp22fbbvlqqjjfpojqv0.apps.googleusercontent.com",
+              "client_id": "405687163858-i3l3f7oj7lo3c1n4kkd59bvrkmpl1l8d.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "405687163858-n28iskt2h867b8m1b1gh2hk02mmb5c8m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.desago.app"
+              }
             }
           ]
         }

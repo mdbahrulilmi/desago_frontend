@@ -17,29 +17,17 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -52,12 +40,50 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDIIW1qWXoF320J9p2t_j7jZMqXpKZcgHM',
+    appId: '1:405687163858:web:576632d8455c99b8aa860b',
+    messagingSenderId: '405687163858',
+    projectId: 'desago-app',
+    authDomain: 'desago-app.firebaseapp.com',
+    storageBucket: 'desago-app.firebasestorage.app',
+    measurementId: 'G-7P4T7NFGXV',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyARXWZdsjRoOvPYOONfoo6Tbs3HzdKrXjU',
-    appId: '1:939143936748:android:ec7db8836c05d6161683c9',
-    messagingSenderId: '939143936748',
-    projectId: 'desago-7fd7e',
-    storageBucket: 'desago-7fd7e.firebasestorage.app',
+    apiKey: 'AIzaSyDstEiw2g_X5vfDoL_58h8RuzcG3DlwiVQ',
+    appId: '1:405687163858:android:ce3d74b9ec3612c1aa860b',
+    messagingSenderId: '405687163858',
+    projectId: 'desago-app',
+    storageBucket: 'desago-app.firebasestorage.app',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyCmwIehumT-XnE5rb9dir8vk__S93Ua56E',
+    appId: '1:405687163858:ios:c66d574413dfe8e8aa860b',
+    messagingSenderId: '405687163858',
+    projectId: 'desago-app',
+    storageBucket: 'desago-app.firebasestorage.app',
+    iosBundleId: 'com.desago.app',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyCmwIehumT-XnE5rb9dir8vk__S93Ua56E',
+    appId: '1:405687163858:ios:c66d574413dfe8e8aa860b',
+    messagingSenderId: '405687163858',
+    projectId: 'desago-app',
+    storageBucket: 'desago-app.firebasestorage.app',
+    iosBundleId: 'com.desago.app',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyDIIW1qWXoF320J9p2t_j7jZMqXpKZcgHM',
+    appId: '1:405687163858:web:57dea4de5112f02caa860b',
+    messagingSenderId: '405687163858',
+    projectId: 'desago-app',
+    authDomain: 'desago-app.firebaseapp.com',
+    storageBucket: 'desago-app.firebasestorage.app',
+    measurementId: 'G-2SWRD3Z1MM',
   );
 
 }

@@ -1,7 +1,12 @@
+import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/services/dio_services.dart';
 import 'package:desago/app/components/alert.dart';
 import 'package:desago/app/utils/app_colors.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:desago/app/services/storage_services.dart';
+
 
 class AkunUbahPasswordController extends GetxController {
   final formKey = GlobalKey<FormState>();
@@ -37,6 +42,17 @@ class AkunUbahPasswordController extends GetxController {
   
   Future<void> changePassword() async {
     if (!formKey.currentState!.validate()) return;
+
+    final token = StorageService.getToken();
+
+    if (token == null) {
+      AppDialog.error(
+        title: 'Error',
+        message: 'Session habis, silakan login ulang',
+        buttonText: 'OK',
+      );
+      return;
+    }
     
     // Validasi password baru dan konfirmasi harus sama
     if (newPasswordController.text != confirmPasswordController.text) {
@@ -53,8 +69,18 @@ class AkunUbahPasswordController extends GetxController {
     try {
       isLoading.value = true;
       
-      // Simulasi proses API
-      await Future.delayed(const Duration(seconds: 2));
+      final response = await DioService.instance.post(
+        ApiConstant.changePassword, 
+        data: {
+          'password': oldPasswordController.text,
+          'new_password': newPasswordController.text,
+        },
+        options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+      );
       
       // Simulasi sukses
       await AppDialog.success(

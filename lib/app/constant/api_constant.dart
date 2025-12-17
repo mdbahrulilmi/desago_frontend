@@ -9,6 +9,7 @@ class ApiConstant {
   static const String profile = '/user';
   static const String sendLinkPassword = '/forgot-password';
   static const String newPassword = '/new-password';
+  static const String changePassword = '/change-password';
   static const String googleLogin = '/loginGoogle';
   static const String sendLinkWa = '/sendSMS';
 

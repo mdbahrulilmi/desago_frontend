@@ -172,13 +172,13 @@ class LoginController extends GetxController {
       ),
     );
     if (response.statusCode == 200) {
-      final token = response.data['remember_token'];
+      final token = response.data['token'];
       final user = UserModel.fromJson(response.data['user']);
 
       await StorageService.saveToken(token);
       await StorageService.saveUser(user);
 
-      Get.offAllNamed(Routes.HOME);
+      Get.offAllNamed(Routes.MAIN);
       Get.snackbar(
         'Berhasil',
         'Login dengan Google berhasil',
