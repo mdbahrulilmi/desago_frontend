@@ -59,11 +59,11 @@ class AkunController extends GetxController {
     if (confirmed != true) return;
 
     try {
-      final response = await DioService.instance.get(
-        ApiConstant.logout,
-      );
+      // final response = await DioService.instance.get(
+      //   ApiConstant.logout,
+      // );
 
-      if (response.statusCode == 200) {
+      // if (response.statusCode == 200) {
         await StorageService.clearStorage();
         await AppDialog.success(
           title: 'Logout Berhasil',
@@ -73,13 +73,13 @@ class AkunController extends GetxController {
             Get.offAllNamed(Routes.LOGIN);
           },
         );
-      } else {
-        AppDialog.error(
-          title: 'Gagal Logout',
-          message: 'Gagal logout, silakan coba lagi.',
-          buttonText: 'Tutup',
-        );
-      }
+      // } else {
+        // AppDialog.error(
+        //   title: 'Gagal Logout',
+        //   message: 'Gagal logout, silakan coba lagi.',
+        //   buttonText: 'Tutup',
+        // );
+      // }
     } catch (e) {
       AppDialog.error(
         title: 'Terjadi Kesalahan',

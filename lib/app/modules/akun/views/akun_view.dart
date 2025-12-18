@@ -222,8 +222,8 @@ class AkunView extends GetView<AkunController> {
                 ),
                 InkWell(
                   onTap: () {
-                    // controller.logout();
-                    controller.onLogin();
+                    controller.logout();
+                    // controller.onLogin();
                   },
                   child: Container(
                     height: AppResponsive.h(8),
