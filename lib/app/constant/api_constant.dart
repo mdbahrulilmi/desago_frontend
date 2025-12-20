@@ -12,6 +12,7 @@ class ApiConstant {
   static const String changePassword = '/change-password';
   static const String googleLogin = '/loginGoogle';
   static const String sendLinkWa = '/sendSMS';
+  static const String tokenExpired= '/token-expired';
 
   static const String getAllDesa = '/desa';
   static const String tautkanAkunKeDesa = '/tautkan-akun';

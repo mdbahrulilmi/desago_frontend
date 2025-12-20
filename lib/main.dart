@@ -1,4 +1,6 @@
 import 'package:desago/app/components/custom_bottom_navigation_controller.dart';
+import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/services/dio_services.dart';
 import 'package:desago/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +22,6 @@ void main() async {
 
   final appLinks = AppLinks();
   final Uri? initialUri = await appLinks.getInitialLink();
-  print('🔥 INITIAL URI: $initialUri');
 
   String initialRoute = AppPages.getInitialRoute();
   Map<String, String>? initialParams;
@@ -29,7 +30,6 @@ void main() async {
     initialRoute = '/password-baru';
     initialParams = {
       'token': initialUri.queryParameters['token'] ?? '',
-      'email': initialUri.queryParameters['email'] ?? '',
     };
   }
 
@@ -40,9 +40,6 @@ void main() async {
   ));
 }
 
-// =================================================
-// 🔥 SINGLE APP
-// =================================================
 class MyApp extends StatefulWidget {
   final String initialRoute;
   final Map<String, String>? initialParams;
@@ -60,29 +57,55 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool _handledInitialLink = false;
+
   @override
   void initState() {
     super.initState();
+    widget.appLinks.uriLinkStream.listen(_handleIncomingLink);
+  }
 
-    /// 🔥 DEEP LINK SAAT APP RUNNING / BACKGROUND
-    widget.appLinks.uriLinkStream.listen((uri) {
-      if (uri.path == '/reset-password') {
-        Get.offAllNamed(
-          '/password-baru',
-          parameters: {
-            'token': uri.queryParameters['token'] ?? '',
-            'email': uri.queryParameters['email'] ?? '',
-          },
-        );
+  Future<void> _handleIncomingLink(Uri uri) async {
+    if (uri.path != '/reset-password') return;
+    if (_handledInitialLink) return;
+
+    _handledInitialLink = true;
+
+    final token = uri.queryParameters['email'];
+
+    if (token == null || token.isEmpty) {
+      Get.offAllNamed('/login');
+      return;
+    }
+
+    try {
+      final res = await DioService.instance.post(
+        ApiConstant.tokenExpired,
+        data: {'email': token},
+      );
+
+      final bool success = res.data['success'] == true;
+
+      if (!success) {
+        Get.offAllNamed('/login');
+        return;
       }
-    });
+
+      Get.offAllNamed(
+        '/password-baru',
+        parameters: {
+          'token': token,
+        },
+      );
+    } catch (e) {
+      Get.offAllNamed('/login');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Application',
       initialRoute: widget.initialRoute,
       initialBinding: BindingsBuilder(() {
         if (widget.initialParams != null) {

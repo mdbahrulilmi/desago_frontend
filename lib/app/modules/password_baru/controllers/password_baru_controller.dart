@@ -10,7 +10,7 @@ class PasswordBaruController extends GetxController {
 
   late final String token;
   late final String email;
-  
+
   final isPasswordHidden = true.obs;
   final isConfirmPasswordHidden = true.obs;
 
@@ -20,6 +20,45 @@ class PasswordBaruController extends GetxController {
 
   final isLoading = false.obs;
 
+  // ===============================
+  // LIFECYCLE
+  // ===============================
+  @override
+  void onInit() {
+    super.onInit();
+
+    token = Get.parameters['token'] ?? '';
+    email = Get.parameters['email'] ?? '';
+
+    passwordController.addListener(() {
+      checkPasswordStrength(passwordController.text);
+    });
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+
+    // 🔥 AMAN: navigator sudah siap
+    if (token.isEmpty) {
+      Get.offAllNamed('/login');
+      return;
+    }
+
+    // OPTIONAL (kalau mau validasi ke backend)
+    // _validateToken();
+  }
+
+  @override
+  void onClose() {
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.onClose();
+  }
+
+  // ===============================
+  // UI LOGIC
+  // ===============================
   void togglePasswordVisibility() {
     isPasswordHidden.value = !isPasswordHidden.value;
   }
@@ -36,11 +75,12 @@ class PasswordBaruController extends GetxController {
       return;
     }
 
-    bool hasMinLength = value.length >= 8;
-    bool hasUppercase = value.contains(RegExp(r'[A-Z]'));
-    bool hasDigits = value.contains(RegExp(r'[0-9]'));
-    bool hasLowercase = value.contains(RegExp(r'[a-z]'));
-    bool hasSpecialCharacters = value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+    final hasMinLength = value.length >= 8;
+    final hasUppercase = value.contains(RegExp(r'[A-Z]'));
+    final hasDigits = value.contains(RegExp(r'[0-9]'));
+    final hasLowercase = value.contains(RegExp(r'[a-z]'));
+    final hasSpecialCharacters =
+        value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
 
     int strength = 0;
     if (hasMinLength) strength++;
@@ -63,59 +103,39 @@ class PasswordBaruController extends GetxController {
     }
   }
 
-  void onUpdatePassword() async {
+  // ===============================
+  // SUBMIT
+  // ===============================
+  Future<void> onUpdatePassword() async {
     if (isLoading.value) return;
 
-    // Validasi password
-    if (passwordController.text.isEmpty || confirmPasswordController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Mohon lengkapi semua field',
-        backgroundColor: AppColors.danger,
-        colorText: AppColors.white,
-      );
+    if (passwordController.text.isEmpty ||
+        confirmPasswordController.text.isEmpty) {
+      _error('Mohon lengkapi semua field');
       return;
     }
 
     if (passwordController.text != confirmPasswordController.text) {
-      Get.snackbar(
-        'Error',
-        'Konfirmasi kata sandi tidak cocok',
-        backgroundColor: AppColors.danger,
-        colorText: AppColors.white,
-      );
+      _error('Konfirmasi kata sandi tidak cocok');
       return;
     }
 
     if (passwordStrength.value < 0.6) {
-      Get.snackbar(
-        'Error',
-        'Kata sandi terlalu lemah',
-        backgroundColor: AppColors.danger,
-        colorText: AppColors.white,
-      );
+      _error('Kata sandi terlalu lemah');
       return;
     }
 
-    try{
+    try {
       isLoading.value = true;
-      
-      await Future.delayed(const Duration(seconds: 2));
-
-      if (token == 'expired') {
-        throw 'TOKEN_EXPIRED';
-      }
 
       final response = await DioService.instance.post(
-        ApiConstant.newPassword, 
+        ApiConstant.newPassword,
         data: {
           'token': token,
           'email': email,
           'password': passwordController.text,
         },
       );
-
-      print(response);
 
       Get.snackbar(
         'Berhasil',
@@ -125,50 +145,19 @@ class PasswordBaruController extends GetxController {
       );
 
       Get.offAllNamed('/login');
-
-    } catch (e) {
-    if (e == 'TOKEN_EXPIRED') {
-      Get.snackbar(
-        'Error',
-        'Link reset sudah kadaluarsa',
-        backgroundColor: AppColors.danger,
-        colorText: AppColors.white,
-      );
-    } else {
-      Get.snackbar(
-        'Error',
-        'Terjadi kesalahan, coba lagi',
-        backgroundColor: AppColors.danger,
-        colorText: AppColors.white,
-      );
+    } catch (_) {
+      _error('Link reset sudah tidak berlaku');
+    } finally {
+      isLoading.value = false;
     }
   }
 
-    
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
-
-    token = Get.parameters['token'] ?? '';
-    email = Get.parameters['email'] ?? '';
-
-    if (token.isEmpty) {
-      Get.offAllNamed('/invalid-link');
-      return;
-    }
-
-    passwordController.addListener(() {
-      checkPasswordStrength(passwordController.text);
-    });
-  }
-
-
-  @override
-  void onClose() {
-    passwordController.dispose();
-    confirmPasswordController.dispose();
-    super.onClose();
+  void _error(String msg) {
+    Get.snackbar(
+      'Error',
+      msg,
+      backgroundColor: AppColors.danger,
+      colorText: AppColors.white,
+    );
   }
 }

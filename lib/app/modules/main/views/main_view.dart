@@ -17,19 +17,30 @@ class MainView extends GetView<BottomNavigationController> {
   Widget build(BuildContext context) {
     return Obx(() {
       return Scaffold(
-        extendBody: true,
-        body: IndexedStack(
-          index: controller.selectedIndex.value,
-          children: const [
-            HomeView(),
-            SuratPetunjukView(),
-            BeritaListView(),
-            AkunView(),
+        body: Stack(
+          children: [
+            IndexedStack(
+              index: controller.selectedIndex.value,
+              children: const [
+                HomeView(),
+                SuratPetunjukView(),
+                BeritaListView(),
+                AkunView(),
+              ],
+            ),
+
+            // ⬇️ BOTTOM NAV OVERLAY
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: CustomBottomNavigationBar(),
+            ),
           ],
         ),
-        bottomNavigationBar: const CustomBottomNavigationBar(),
       );
     });
   }
 }
+
 
