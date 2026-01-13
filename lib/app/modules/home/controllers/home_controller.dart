@@ -61,7 +61,7 @@ class HomeController extends GetxController {
   // Data produk
   final List<Map<String, dynamic>> products = [
     {
-      'name': 'Gula Jawa',
+      'name': 'Kripik Ikan Meggalodon Khas Jepara',
       'image': 'assets/img/produk_1.jpg',
       'price': 'Rp 25.000',
     },

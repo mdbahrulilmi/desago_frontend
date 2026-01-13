@@ -117,6 +117,13 @@ class AppText {
         fontWeight: FontWeight.w400,
         color: color,
       );
+  
+  static TextStyle bodyMediumBold({Color? color}) => GoogleFonts.rubik(
+        fontSize: 14,
+        letterSpacing: 0.25,
+        fontWeight: FontWeight.w600,
+        color: color,
+      );
 
   static TextStyle bodySmall({Color? color}) => GoogleFonts.rubik(
         fontSize: 12,

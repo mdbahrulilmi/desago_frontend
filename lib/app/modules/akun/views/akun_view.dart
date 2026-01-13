@@ -48,14 +48,16 @@ class AkunView extends GetView<AkunController> {
                             return CircleAvatar(
                               radius: AppResponsive.w(9),
                               backgroundColor: Colors.grey[200],
-                              backgroundImage: avatarUrl != null
-                                  ? avatarUrl.startsWith('http')
-                                      ? NetworkImage(
-                                          'http://192.168.1.34:8000$avatarUrl')
-                                      : FileImage(
-                                          File(avatarUrl)) 
-                                  : AssetImage(
-                                          'assets/images/default_avatar.png')
+                              backgroundImage: 
+                              // avatarUrl != null
+                                  // ? avatarUrl.startsWith('https')
+                                      // ?  NetworkImage(
+                                      //      'https://sgdiyrucfgwacuycrhvz.supabase.co/storage/v1/object/public/desago_bucket/$avatarUrl')
+                                  //     : FileImage(
+                                  //         File(avatarUrl)) 
+                                  // : 
+                                  AssetImage(
+                                          'assets/img/kepala_desa.jpg')
                                       as ImageProvider,
                               child: avatarUrl == null
                                   ? Icon(Remix.user_3_line,
@@ -151,8 +153,6 @@ class AkunView extends GetView<AkunController> {
                   ),
                 ),
                 SizedBox(height: AppResponsive.h(3)),
-                _buildSection(
-                  [
                     _buildListTile(
                       Remix.id_card_line,
                       'Biodata',
@@ -160,100 +160,80 @@ class AkunView extends GetView<AkunController> {
                         Get.toNamed(Routes.AKUN_BIODATA);
                       }
                     ),
-                    _buildListTile(Remix.mail_line, 'Layanan Surat', (){
-                      Get.toNamed(Routes.SURAT_PETUNJUK);
-                    }),
-                  ],
-                ),
-                SizedBox(height: AppResponsive.h(3)),
-                Text(
-                  'Preferensi',
-                  style: AppText.h6(color: AppColors.dark),
-                ),
-                SizedBox(height: AppResponsive.h(2)),
-                _buildSection(
-                  [
-                    _buildListTile(
-                      Remix.user_settings_line,
-                      'Pengaturan Akun',
-                      (){
-                        Get.toNamed(Routes.AKUN_PENGATURAN);
-                      }
-                    ),
+                    Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: AppColors.divider,
+                      ),
                     _buildListTile(Remix.lock_password_line, 'Ubah Password', (){
                       Get.toNamed(Routes.AKUN_UBAH_PASSWORD);
                     }),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(12),
+                    Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: AppColors.divider,
                       ),
-                      child: Obx(
-                        () => SwitchListTile(
-                          title: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Icon(Remix.notification_2_line,
-                                  color: AppColors.primary),
-                              SizedBox(
-                                width: AppResponsive.w(4),
-                              ),
-                              Text(
-                                'Notifikasi',
-                                style: AppText.bodyLarge(color: AppColors.dark),
-                              ),
-                            ],
-                          ),
-                          value: controller.isNotificationActive.value,
-                          onChanged: (value) {
-                            controller.toggleNotification(value);
-                          },
-                          activeColor: AppColors.primary,
-                          inactiveThumbColor: AppColors.textSecondary,
-                          inactiveTrackColor:
-                              AppColors.textSecondary.withOpacity(0.5),
+                    Obx(
+                      () => SwitchListTile(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 9),
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(Remix.notification_2_line,
+                                color: AppColors.primary),
+                            SizedBox(
+                              width: AppResponsive.w(4),
+                            ),
+                            Text(
+                              'Notifikasi',
+                              style: AppText.bodyLarge(color: AppColors.dark),
+                            ),
+                          ],
                         ),
+                        value: controller.isNotificationActive.value,
+                        onChanged: (value) {
+                          controller.toggleNotification(value);
+                        },
+                        activeColor: AppColors.primary,
+                        inactiveThumbColor: AppColors.secondary,
+                        inactiveTrackColor:
+                            AppColors.textSecondary.withOpacity(0.5),
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                    Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: AppColors.divider,
+                      ),
                 SizedBox(
                   height: AppResponsive.h(3),
                 ),
                 InkWell(
                   onTap: () {
                     controller.logout();
-                    // controller.onLogin();
                   },
-                  child: Container(
-                    height: AppResponsive.h(8),
-                    width: double.infinity,
-                    padding: AppResponsive.padding(vertical: 1),
+                  child: Center(
                     child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        gradient: LinearGradient(
-                          colors: [
-                            AppColors.primary,
-                            AppColors.secondary.withOpacity(0.8),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          tileMode: TileMode.repeated,
+                      height: AppResponsive.h(8),
+                      width: AppResponsive.w(80),
+                      padding: AppResponsive.padding(vertical: 1),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: AppColors.botton,
                         ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Keluar',
-                              style: AppText.button(color: AppColors.white),
-                            ),
-                            SizedBox(width: AppResponsive.w(2)),
-                            Icon(Remix.logout_box_line, color: AppColors.white),
-                          ],
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Keluar',
+                                style: AppText.button(color: AppColors.white),
+                              ),
+                              SizedBox(width: AppResponsive.w(2)),
+                            ],
+                          ),
                         ),
                       ),
                     ),

@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
@@ -18,19 +19,13 @@ class BeritaListView extends GetView<BeritaListController> {
       appBar: AppBar(
         title: Text(
           'Berita Desa',
-          style: AppText.h5(color: AppColors.dark),
+          style: AppText.h5(color: AppColors.secondary),
         ),
         centerTitle: true,
-        backgroundColor: AppColors.white,
+        backgroundColor: AppColors.primary,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(Remix.filter_line, color: AppColors.dark),
-            onPressed: _showFilterBottomSheet,
-          ),
-        ],
          leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: AppColors.dark),
+                icon: Icon(Icons.arrow_back_ios, color: AppColors.secondary),
                 onPressed: () => Get.back(),
               ),
       ),
@@ -39,8 +34,6 @@ class BeritaListView extends GetView<BeritaListController> {
           // Pencarian Berita
           _buildSearchBar(),
 
-          // Kategori Filter
-          _buildCategoryFilter(),
           Expanded(
             child: Obx(() {
               if (controller.filteredBeritas.isEmpty) {
@@ -68,7 +61,7 @@ class BeritaListView extends GetView<BeritaListController> {
         decoration: InputDecoration(
           hintText: 'Cari Berita',
           hintStyle: AppText.bodyMedium(color: AppColors.textSecondary),
-          prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
+          prefixIcon: Icon(Remix.search_line, color: AppColors.iconGrey),
           fillColor: AppColors.grey.withOpacity(0.1),
           filled: true,
           border: OutlineInputBorder(
@@ -80,51 +73,17 @@ class BeritaListView extends GetView<BeritaListController> {
     );
   }
 
-  Widget _buildCategoryFilter() {
-    return SizedBox(
-      height: 40,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        children: controller.categories.map((category) {
-          return Obx(() {
-            final isSelected = controller.selectedCategory.value == category;
-            return GestureDetector(
-              onTap: () => controller.setSelectedCategory(category),
-              child: Container(
-                margin: const EdgeInsets.only(right: 10),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isSelected ? AppColors.primary : AppColors.muted,
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    category,
-                    style: isSelected
-                        ? AppText.smallBold(color: Colors.white)
-                        : AppText.small(color: AppColors.textSecondary),
-                  ),
-                ),
-              ),
-            );
-          });
-        }).toList(),
-      ),
-    );
-  }
-
   // Daftar Berita
   Widget _buildBeritaList() {
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       itemCount: controller.filteredBeritas.length,
       itemBuilder: (context, index) {
         final berita = controller.filteredBeritas[index];
-        return _buildBeritaCard(berita);
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 14.0),
+          child: _buildBeritaCard(berita),
+        );
       },
     );
   }
@@ -133,155 +92,101 @@ class BeritaListView extends GetView<BeritaListController> {
 Widget _buildBeritaCard(Map<String, dynamic> berita) {
   return GestureDetector(
     onTap: () => controller.bacaBeritaLengkap(berita),
-    child: Card(
-      color: AppColors.white,
-      elevation: 2,
-      margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-            child: Stack(
-              children: [
-                Image.asset(
-                  berita['image'],
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-                Positioned(
-                  top: 10,
-                  left: 10,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.primary.withOpacity(0.8),
-                          AppColors.purple.withOpacity(0.8)
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 5,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Remix.user_3_line, 
-                          size: 14, 
-                          color: Colors.white
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          berita['author'],
-                          style: AppText.small(color: Colors.white),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                
-                // Badge Tanggal di kanan atas
-                Positioned(
-                  top: 10,
-                  right: 10,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.danger.withOpacity(0.8),
-                          AppColors.warning.withOpacity(0.8)
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 5,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Remix.calendar_line, 
-                          size: 14, 
-                          color: Colors.white
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          berita['date'],
-                          style: AppText.small(color: Colors.white),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Gambar Berita
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                spreadRadius: 2,
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              width: AppResponsive.w(35),
+              height: AppResponsive.h(16),
+              child: Image.asset(
+                berita['image'],
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-          
-          // Konten Berita
-          Padding(
-            padding: const EdgeInsets.all(16),
+        ),
+
+        // Konten Berita
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 2.0,
+              horizontal: 14.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Kategori
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _getCategoryColor(berita['category']).withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    berita['category'],
-                    style: AppText.small(
-                      color: _getCategoryColor(berita['category']),
-                    ),
+                Text(
+                  berita['category'] ?? '-',
+                  style: AppText.smallBold(
+                    color: AppColors.primary,
                   ),
                 ),
-                
-                const SizedBox(height: 10),
-                
+
+                SizedBox(height: AppResponsive.h(0.8)),
+
                 // Judul
+                AutoSizeText(
+                  berita['title']?.toString() ?? '-',
+                  style: AppText.pSmallBold(color: AppColors.dark),
+                  maxLines: 2,
+                  minFontSize: 9,
+                  maxFontSize: 14,
+                  overflow: TextOverflow.ellipsis,
+                ),
+
+                SizedBox(height: AppResponsive.h(0.6)),
+
+                // Excerpt
                 Text(
-                  berita['title'],
-                  style: AppText.h6(color: AppColors.dark),
+                  berita['excerpt'] ?? '',
+                  style:
+                      AppText.bodySmall(color: AppColors.textSecondary),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  berita['excerpt'],
-                  style: AppText.bodyMedium(color: AppColors.textSecondary),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+
+                SizedBox(height: AppResponsive.h(0.8)),
+
+                Row(
+                  children: [
+                    Icon(
+                      Remix.calendar_line,
+                      size: 14,
+                      color: AppColors.grey,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      berita['date'] ?? '-',
+                      style: AppText.bodySmall(color: AppColors.grey),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     ),
   );
-}
+  }
 
   // State Kosong saat Tidak Ada Berita
   Widget _buildEmptyState() {

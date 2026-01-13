@@ -29,7 +29,7 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                 icon: Icon(Icons.arrow_back_ios, color: AppColors.white),
                 onPressed: () => Get.back(),
               ),
-              expandedHeight: 350.0,
+              expandedHeight: 250.0,
               floating: false,
               pinned: true,
               flexibleSpace: FlexibleSpaceBar(
@@ -42,7 +42,6 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                       fit: BoxFit.cover,
                     ),
 
-                    // Gradient Overlay
                     DecoratedBox(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -60,21 +59,14 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
 
                     // Badge Kategori
                     Positioned(
-                      top: 90,
+                      top: 240,
                       left: 20,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.primary.withOpacity(0.8),
-                              AppColors.purple.withOpacity(0.8)
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(20),
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           berita['category'],
@@ -85,7 +77,7 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
 
                     // Tombol Aksi
                     Positioned(
-                      top: 60,
+                      top: 35,
                       right: 16,
                       child: Row(
                         children: [
@@ -98,27 +90,11 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                             ),
                           ),
                           const SizedBox(width: 10),
-                          CircleAvatar(
-                            backgroundColor: Colors.white.withOpacity(0.2),
-                            child: IconButton(
-                              icon: const Icon(Remix.heart_line,
-                                  color: Colors.white),
-                              onPressed: controller.toggleFavorite,
-                            ),
-                          ),
                         ],
                       ),
                     ),
                   ],
-                ),
-                title: Text(
-                  berita['title'],
-                  style: AppText.h6(color: Colors.white),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                titlePadding:
-                    const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                ),                
               ),
               actions: const [],
             ),
@@ -130,7 +106,13 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Informasi Penulis dan Waktu
+                    Text(
+                        berita['title'],
+                        style: AppText.h5(color: AppColors.text),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 10),
                     Row(
                       children: [
                         CircleAvatar(
@@ -141,36 +123,18 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                             color: AppColors.primary,
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              berita['author'],
-                              style: AppText.bodyMedium(color: AppColors.dark),
-                            ),
-                            Text(
-                              berita['date'],
-                              style:
-                                  AppText.small(color: AppColors.textSecondary),
-                            ),
-                          ],
+                        const SizedBox(width: 8.0),
+                        Text(
+                          berita['author'],
+                          style: AppText.bodyMedium(color: AppColors.text),
                         ),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            Icon(
-                              Remix.eye_line,
-                              color: AppColors.textSecondary,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${berita['views']} Views',
-                              style:
-                                  AppText.small(color: AppColors.textSecondary),
-                            ),
-                          ],
+                        SizedBox(width: 20.0),
+                        Icon(Remix.calendar_2_fill),
+                        SizedBox(width: 8.0),
+                        Text(
+                          berita['date'],
+                          style:
+                              AppText.bodyMedium(color: AppColors.text),
                         ),
                       ],
                     ),
@@ -180,7 +144,7 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                     // Konten Utama
                     Text(
                       berita['content'],
-                      style: AppText.bodyMedium(color: AppColors.dark),
+                      style: AppText.bodyMedium(color: AppColors.text),
                       textAlign: TextAlign.justify,
                     ),
                   ],

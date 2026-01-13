@@ -5,6 +5,8 @@ import '../modules/agenda/bindings/agenda_binding.dart';
 import '../modules/agenda/views/agenda_view.dart';
 import '../modules/agenda_detail/bindings/agenda_detail_binding.dart';
 import '../modules/agenda_detail/views/agenda_detail_view.dart';
+import '../modules/aktivitas/bindings/aktivitas_binding.dart';
+import '../modules/aktivitas/views/aktivitas_view.dart';
 import '../modules/akun/bindings/akun_binding.dart';
 import '../modules/akun/views/akun_view.dart';
 import '../modules/akun_biodata/bindings/akun_biodata_binding.dart';
@@ -308,6 +310,11 @@ class AppPages {
       name: _Paths.MAIN,
       page: () => const MainView(),
       binding: MainBinding(),
+    ),
+    GetPage(
+      name: _Paths.AKTIVITAS,
+      page: () => const AktivitasView(),
+      binding: AktivitasBinding(),
     ),
   ];
 }

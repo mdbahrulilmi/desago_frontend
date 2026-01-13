@@ -24,7 +24,7 @@ class CustomBottomNavigationBar extends GetView<BottomNavigationController> {
         ),
           child: Container(
             width: double.infinity,
-            height: 70,
+            height: 80,
             decoration: BoxDecoration(
               color: AppColors.primary,
               boxShadow: [
@@ -53,7 +53,7 @@ class CustomBottomNavigationBar extends GetView<BottomNavigationController> {
                     label: controller.pageNames[1],
                   ),
                 ),
-                SizedBox(width: 60),
+                SizedBox(width: 80),
                 Expanded(
                   child: _buildNavItem(
                     context,
@@ -75,45 +75,61 @@ class CustomBottomNavigationBar extends GetView<BottomNavigationController> {
           ),
         ),
         Positioned(
-          top: -30,
-          left: 0,
-          right: 0,
-          child: Center(
-            child: Material(
-              elevation: 8,
-              shadowColor: Colors.black.withOpacity(0.3),
-              shape: CircleBorder(
-                side: BorderSide(
-                  color: Colors.white,
-                  width: 2,
-                ),
+  top: -30,
+  left: 0,
+  right: 0,
+  child: Center(
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // 🔘 BUTTON CIRCLE
+        Material(
+          elevation: 8,
+          shadowColor: Colors.black.withOpacity(0.3),
+          shape: const CircleBorder(
+            side: BorderSide(
+              color: Colors.white,
+              width: 2,
+            ),
+          ),
+          child: InkWell(
+            onTap: () {
+              Get.toNamed(Routes.LAPOR);
+            },
+            customBorder: const CircleBorder(),
+            child: Container(
+              width: 70,
+              height: 70,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
               ),
-              child: InkWell(
-                onTap: () {
-                  Get.toNamed(Routes.LAPOR);
-                },
-                customBorder: CircleBorder(),
-                child: Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        AppColors.white,
-                        AppColors.white,
-                      ],
-                    ),
-                  ),
-                  child: SvgPicture.asset('assets/icons/navigation/report.svg')
+              child: Center(
+                child: SvgPicture.asset(
+                  'assets/icons/navigation/report.svg',
+                  width: 65,
                 ),
               ),
             ),
           ),
         ),
+
+        const SizedBox(height: 6),
+
+        // 📝 TEXT LAPOR
+        Text(
+          "Lapor",
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: AppColors.text,
+          ),
+        ),
       ],
+    ),
+  ),
+),
+ ],
     );
   }
 
@@ -131,40 +147,40 @@ class CustomBottomNavigationBar extends GetView<BottomNavigationController> {
     isActive
         ? 'assets/icons/navigation/home_active.svg'
         : 'assets/icons/navigation/home.svg',
-    width: 24,
-    height: 24,
+    width: 32,
+    height: 32,
   );
         case Routes.SURAT_PETUNJUK:
           return SvgPicture.asset(
     isActive
         ? 'assets/icons/navigation/letter_active.svg'
         : 'assets/icons/navigation/letter.svg',
-    width: 24,
-    height: 24,
+    width: 32,
+    height: 32,
   );
         case Routes.BERITA_LIST:
           return SvgPicture.asset(
     isActive
         ? 'assets/icons/navigation/activity_active.svg'
         : 'assets/icons/navigation/activity.svg',
-    width: 24,
-    height: 24,
+    width: 32,
+    height: 32,
   );
         case Routes.AKUN:
           return SvgPicture.asset(
     isActive
         ? 'assets/icons/navigation/account_active.svg'
         : 'assets/icons/navigation/account.svg',
-    width: 24,
-    height: 24,
+    width: 32,
+    height: 32,
   );
         default:
         return SvgPicture.asset(
     isActive
         ? 'assets/icons/navigation/home.svg'
         : 'assets/icons/navigation/home.svg',
-    width: 24,
-    height: 24,
+    width: 32,
+    height: 32,
   );
     }}
 

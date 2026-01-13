@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:desago/app/components/bottom_sheet.dart';
 import 'package:desago/app/models/NomorPentingModel.dart';
 import 'package:desago/app/utils/app_colors.dart';
@@ -22,7 +23,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         title: Text(
-          'Tautkan Akun',
+          'No Darurat',
           style: AppText.h5(color: AppColors.white),
         ),
         centerTitle: true,
@@ -76,7 +77,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
                       hintStyle:
                           AppText.bodyMedium(color: AppColors.textSecondary),
                       prefixIcon:
-                          Icon(Remix.search_line, color: AppColors.primary),
+                          Icon(Remix.search_line, color: AppColors.iconGrey),
                       suffixIcon:
                           Obx(() => controller.searchText.value.isNotEmpty
                               ? IconButton(
@@ -131,13 +132,12 @@ class NomorPentingView extends GetView<NomorPentingController> {
                                     color: AppColors.primary.withOpacity(0.1),
                                     shape: BoxShape.circle,
                                   ),
-                                  child: Center(
-                                    child: Text(
-                                      item.nama.substring(0, 1).toUpperCase(),
-                                      style:
-                                          AppText.h4(color: AppColors.primary),
-                                    ),
-                                  ),
+                                  child: CircleAvatar(
+                                  radius: 30,
+                                  backgroundColor: AppColors.muted,
+                                  backgroundImage: AssetImage("assets/img/kepala_desa.jpg"),
+                                  onBackgroundImageError: (exception, stackTrace) {},
+                                ),
                                 ),
                                 SizedBox(width: 12),
                                 Expanded(
@@ -145,7 +145,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      AutoSizeText(
                                         item.nama,
                                         style:
                                             AppText.h6(color: AppColors.dark),
@@ -175,41 +175,9 @@ class NomorPentingView extends GetView<NomorPentingController> {
                                     ],
                                   ),
                                 ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      width: 40,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        color: AppColors.primary,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: IconButton(
-                                        icon: Icon(Remix.phone_line,
-                                            size: 20, color: AppColors.white),
-                                        onPressed: () {
-                                          controller.callNumber(item.nomor);
-                                        },
-                                      ),
-                                    ),
-                                    SizedBox(width: 8),
-                                    Container(
-                                      width: 40,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        color: AppColors.success,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: IconButton(
-                                        icon: Icon(Remix.whatsapp_line,
-                                            size: 20, color: AppColors.white),
-                                        onPressed: () {
-                                          controller.openWhatsApp(item.nomor);
-                                        },
-                                      ),
-                                    ),
-                                  ],
+                                Icon(
+                                  Icons.info_outline,
+                                  color: AppColors.info,
                                 ),
                               ],
                             ),
@@ -326,7 +294,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
                 padding: AppResponsive.padding(vertical: 1.5),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: AppColors.success,
+                  color: AppColors.bottonGreen,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

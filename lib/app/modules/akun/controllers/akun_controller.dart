@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:dio/dio.dart';
 
 class AkunController extends GetxController {
   final user = Rxn<UserModel>();
@@ -213,97 +214,73 @@ Future<void> uploadAvatar() async {
   }
 
   try {
-    // Tampilkan loading
     Get.dialog(
-      const Center(
-        child: CircularProgressIndicator(),
-      ),
+      const Center(child: CircularProgressIndicator()),
       barrierDismissible: false,
     );
 
-    // Siapkan FormData dari dio package
+    final file = avatar.value!;
+    final fileName = file.path.split('/').last;
+
+    if (fileName.isEmpty) {
+      throw Exception('Filename kosong');
+    }
+
     final formData = dio.FormData.fromMap({
       'avatar': await dio.MultipartFile.fromFile(
-        avatar.value!.path,
-        filename: avatarFileName.value,
+        file.path,
+        filename: fileName,
       ),
     });
 
-    // Upload ke server
+    final token = StorageService.getToken()?.trim();
+    print("ini response $formData");
+
     final response = await DioService.instance.post(
       ApiConstant.updateAvatar,
       data: formData,
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      ),
     );
 
-    // Tutup dialog loading
+
     Get.back();
 
-    // Log respons lengkap untuk debugging
-    print('Server response: ${response.data}');
+    if (response.statusCode == 200 && response.data['status'] == true) {
+      final updatedUser = UserModel.fromJson(response.data['data']);
+      await StorageService.saveUser(updatedUser);
+      user.value = updatedUser;
 
-    if (response.statusCode == 200) {
-      // Update user data dengan data terbaru dari server
-      if (response.data['status'] == true && response.data['data'] != null) {
-        try {
-          // Log data user dari server untuk debugging
-          print('User data from server: ${response.data['data']}');
-          
-          // Parse user data
-          final UserModel updatedUser = UserModel.fromJson(response.data['data']);
-          
-          // Log user data yang sudah di-parse
-          print('Parsed user data: ${updatedUser.toJson()}');
-          
-          // Simpan ke storage
-          await StorageService.saveUser(updatedUser);
-          
-          // Update state
-          user.value = updatedUser;
-          update();
-          
-          // Verifikasi data tersimpan dengan benar
-          final storedUser = StorageService.getUser();
-          print('User data after storage: ${storedUser?.toJson()}');
-        } catch (parseError) {
-          print('Error parsing user data: $parseError');
-          AppDialog.error(
-            title: 'Error',
-            message: 'Terjadi kesalahan saat memproses data: $parseError',
-            buttonText: 'Tutup',
-          );
-          return;
-        }
-      }
-
-      // Tampilkan pesan sukses
       AppDialog.success(
         title: 'Berhasil',
         message: 'Foto profil berhasil diperbarui',
         buttonText: 'OK',
       );
+
       avatar.value = null;
-      avatarFileName.value = '';
     } else {
       AppDialog.error(
         title: 'Gagal',
-        message: response.data['message'] ?? 'Terjadi kesalahan saat mengunggah foto',
+        message: response.data['message'] ?? 'Upload gagal',
         buttonText: 'Tutup',
       );
     }
   } catch (e) {
-    print('Upload Error: $e');
-    
-    if (Get.isDialogOpen == true) {
-      Get.back();
-    }
+    if (Get.isDialogOpen == true) Get.back();
 
+    print('Upload Error: $e');
     AppDialog.error(
       title: 'Error',
-      message: 'Terjadi kesalahan: ${e.toString()}',
+      message: e.toString(),
       buttonText: 'Tutup',
     );
   }
 }
+
   void showAvatarOptions() {
     AppBottomSheet.avatarPicker(
       title: 'Ubah Foto Profil',

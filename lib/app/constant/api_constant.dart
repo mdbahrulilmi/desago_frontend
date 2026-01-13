@@ -18,5 +18,5 @@ class ApiConstant {
   static const String tautkanAkunKeDesa = '/tautkan-akun';
 
   // Akun Endpoints
-  static const String updateAvatar = '$baseUrl/user/avatar';
+  static const String updateAvatar = '/user/avatar';
 }

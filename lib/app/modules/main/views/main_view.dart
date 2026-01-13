@@ -1,5 +1,6 @@
 import 'package:desago/app/components/custom_bottom_navigation_controller.dart';
 import 'package:desago/app/components/custom_bottom_navigation_widget.dart';
+import 'package:desago/app/modules/aktivitas/views/aktivitas_view.dart';
 import 'package:desago/app/modules/akun/views/akun_view.dart';
 import 'package:desago/app/modules/berita_list/views/berita_list_view.dart';
 import 'package:desago/app/modules/home/views/home_view.dart';
@@ -24,12 +25,10 @@ class MainView extends GetView<BottomNavigationController> {
               children: const [
                 HomeView(),
                 SuratPetunjukView(),
-                BeritaListView(),
+                AktivitasView(),
                 AkunView(),
               ],
             ),
-
-            // ⬇️ BOTTOM NAV OVERLAY
             Positioned(
               left: 0,
               right: 0,

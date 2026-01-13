@@ -3,6 +3,7 @@ import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:remixicon/remixicon.dart';
 
 class ProfilDesaController extends GetxController with GetSingleTickerProviderStateMixin {
   // Controller untuk TabBar
@@ -11,9 +12,9 @@ class ProfilDesaController extends GetxController with GetSingleTickerProviderSt
   // List perangkat desa
   final List<PerangkatModel> perangkatDesaList = [
     PerangkatModel(
-      nama: 'Sudirman, S.Pd.',
+      nama: 'Nailil Fitri.',
       jabatan: 'Kepala Desa',
-      foto: 'https://via.placeholder.com/150',
+      foto: 'assets/img/kepala_desa.jpg',
       periode: '2020 - 2025',
       pendidikan: 'S1 Pendidikan',
       alamat: 'Jl. Desa No. 1, RT 01/RW 01',
@@ -176,16 +177,17 @@ class ProfilDesaController extends GetxController with GetSingleTickerProviderSt
                   CircleAvatar(
                     radius: 30,
                     backgroundColor: AppColors.muted,
-                    backgroundImage: NetworkImage(perangkat.foto),
+                    backgroundImage: AssetImage("assets/img/kepala_desa.jpg"),
                     onBackgroundImageError: (exception, stackTrace) {},
-                    child: Icon(
-                      Icons.person,
-                      size: 30,
-                      color: AppColors.white,
-                    ),
                   ),
+                  // Center(
+                  //   child: Text(
+                  //     item.nama.substring(0, 1).toUpperCase(),
+                  //     style:
+                  //         AppText.h4(color: AppColors.primary),
+                  //   ),
+                  // ),
                   const SizedBox(width: 12),
-                  // Nama dan Jabatan
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -211,25 +213,41 @@ class ProfilDesaController extends GetxController with GetSingleTickerProviderSt
               _buildDetailItem('Alamat', perangkat.alamat),
               _buildDetailItem('No. Telp', perangkat.noTelp),
               
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               
-              // Tombol Tutup
               SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Get.back(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                child: Row(
+                  spacing: 10.0,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Get.back(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: AppColors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Icon(Icons.call)
+                      ),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                  child: Text(
-                    'Tutup',
-                    style: AppText.button(color: AppColors.white),
-                  ),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Get.back(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.bottonGreen,
+                          foregroundColor: AppColors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Icon(Remix.whatsapp_line)
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -239,10 +257,9 @@ class ProfilDesaController extends GetxController with GetSingleTickerProviderSt
     );
   }
   
-  // Widget untuk item detail perangkat
   Widget _buildDetailItem(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding: const EdgeInsets.only(bottom: 8.0, left: 10.0, right: 10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
