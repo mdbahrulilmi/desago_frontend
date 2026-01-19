@@ -17,104 +17,99 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Scrollable Content
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                   Obx(() => Container(
-                      height: AppResponsive.h(40),
-                      width: double.infinity,
-                      child: Stack(
-                        children: [
-                          // Image
-                          Positioned.fill(
-                            child: Image.asset(
-                              controller.product['image'] ??
-                                  'assets/img/placeholder.jpg',
-                              scale: 0.1,
-                              fit: BoxFit.cover,
-                            ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Obx(() => CustomScrollView(
+                  slivers: [
+                    SliverAppBar(
+                      automaticallyImplyLeading: false,
+                      expandedHeight: AppResponsive.h(40),
+                      floating: false,
+                      pinned: true,
+                      backgroundColor: Colors.black,
+                      leading: Padding(
+                        padding: EdgeInsets.all(AppResponsive.w(1.5)),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.4),
+                            shape: BoxShape.circle,
                           ),
-
-                          // Back button
-                          Positioned(
-                            top: AppResponsive.h(2),
-                            left: AppResponsive.w(2),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.4),
-                                shape: BoxShape.circle,
-                              ),
-                              child: IconButton(
-                                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                                onPressed: () {
-                                  Get.back(); // atau Navigator.pop(context)
-                                },
-                              ),
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_back, color: Colors.white),
+                            onPressed: () => Get.back(),
+                          ),
+                        ),
+                      ),
+                      flexibleSpace: FlexibleSpaceBar(
+                        background: Stack(
+                          fit: StackFit.expand,
+                          children:[
+                            
+                          Image.asset(
+                            controller.product['image'] ??
+                                'assets/img/placeholder.jpg',
+                            fit: BoxFit.cover,
+                          ),
+                          ] 
+                        ),
+                      ),
+                    ),
+      
+                    /// Konten bawah AppBar
+                    SliverToBoxAdapter(
+                      child: _buildProductInfo(),
+                    ),
+                  ],
+                )),
+          ),
+          Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 1,
+                  blurRadius: 5,
+                  offset: Offset(0, -3),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    width: 130,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: controller.buyNow,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.bottonGreen,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Remix.whatsapp_line, color: AppColors.white),
+                          SizedBox(width: AppResponsive.w(3)),
+                          Text(
+                            'Pesan Sekarang',
+                            style: AppText.button(
+                              color: Colors.white,
                             ),
                           ),
                         ],
                       ),
-                    )),
-
-                    _buildProductInfo(),
-                  ],
-                ),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: Offset(0, -3),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      width: 130,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: controller.buyNow,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.bottonGreen,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Remix.whatsapp_line, color: AppColors.white),
-                            SizedBox(width: AppResponsive.w(3)),
-                            Text(
-                              'Pesan Sekarang',
-                              style: AppText.button(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

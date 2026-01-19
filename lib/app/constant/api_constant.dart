@@ -1,6 +1,6 @@
 class ApiConstant {
   // Base URL
-  static const String baseUrl = 'https://londa-proinsurance-nonsalubriously.ngrok-free.dev/api';
+  static const String baseUrl = 'https://backend.desago.id/api/';
 
   // Auth Endpoints
   static const String register = '/register';
@@ -19,4 +19,5 @@ class ApiConstant {
 
   // Akun Endpoints
   static const String updateAvatar = '/user/avatar';
+  static const String editProfile = '/edit/profile';
 }

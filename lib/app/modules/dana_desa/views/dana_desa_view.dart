@@ -45,12 +45,13 @@ class DanaDesaView extends GetView<DanaDesaController> {
   Widget _buildHeader() {
   return Container(
     width: double.infinity,
-    height: 300,
+    height: 280,
     decoration: BoxDecoration(
       gradient: LinearGradient(
         colors: [
-          Color(0xFFE50914),
-          Color(0xFFB30000),
+          Color(0xFFE00004),
+          Color(0xFFB80003),
+          Color(0xFFE00004),
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,

@@ -25,12 +25,8 @@ abstract class Routes {
   static const PRODUK_DETAIL = _Paths.PRODUK_DETAIL;
   static const AGENDA = _Paths.AGENDA;
   static const AGENDA_DETAIL = _Paths.AGENDA_DETAIL;
-  static const SURAT_LIST = _Paths.SURAT_LIST;
   static const BERITA_LIST = _Paths.BERITA_LIST;
   static const BERITA_DETAIL = _Paths.BERITA_DETAIL;
-  static const SURAT_PETUNJUK = _Paths.SURAT_PETUNJUK;
-  static const SURAT_LIST_KATEGORI = _Paths.SURAT_LIST_KATEGORI;
-  static const SURAT_LIST_JENIS = _Paths.SURAT_LIST_JENIS;
   static const SURAT_FORM = _Paths.SURAT_FORM;
   static const LOKER_DESA = _Paths.LOKER_DESA;
   static const LOKER_DESA_DETAIL = _Paths.LOKER_DESA_DETAIL;
@@ -47,6 +43,8 @@ abstract class Routes {
   static const AKUN_BIODATA = _Paths.AKUN_BIODATA;
   static const MAIN = _Paths.MAIN;
   static const AKTIVITAS = _Paths.AKTIVITAS;
+  static const SURAT_LIST = _Paths.SURAT_LIST;
+  static const AKUN_EDIT = _Paths.AKUN_EDIT;
 }
 
 abstract class _Paths {
@@ -75,12 +73,8 @@ abstract class _Paths {
   static const PRODUK_DETAIL = '/produk-detail';
   static const AGENDA = '/agenda';
   static const AGENDA_DETAIL = '/agenda-detail';
-  static const SURAT_LIST = '/surat-list';
   static const BERITA_LIST = '/berita-list';
   static const BERITA_DETAIL = '/berita-detail';
-  static const SURAT_PETUNJUK = '/surat-petunjuk';
-  static const SURAT_LIST_KATEGORI = '/surat-list-kategori';
-  static const SURAT_LIST_JENIS = '/surat-list-jenis';
   static const SURAT_FORM = '/surat-form';
   static const LOKER_DESA = '/loker-desa';
   static const LOKER_DESA_DETAIL = '/loker-desa-detail';
@@ -97,4 +91,6 @@ abstract class _Paths {
   static const AKUN_BIODATA = '/akun-biodata';
   static const MAIN = '/main';
   static const AKTIVITAS = '/aktivitas';
+  static const SURAT_LIST = '/surat-list';
+  static const AKUN_EDIT = '/akun-edit';
 }

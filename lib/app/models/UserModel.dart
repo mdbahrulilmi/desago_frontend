@@ -2,7 +2,6 @@ import 'package:desago/app/models/SocialAccountModel.dart';
 
 class UserModel {
   final String? id;
-  final String? name;
   final String? username;
   final String? email;
   final String? phone;
@@ -11,12 +10,11 @@ class UserModel {
 
   UserModel({
     this.id,
-    this.name,
     this.username,
     this.email,
     this.phone,
     this.avatar,
-     this.socialAccounts,
+    this.socialAccounts,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -28,7 +26,6 @@ class UserModel {
     }
     return UserModel(
       id: json['id']?.toString(),
-      name: json['name'],
       username: json['username'],
       email: json['email'],
       phone: json['phone'],
@@ -50,12 +47,25 @@ class UserModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': name,
       'username': username,
       'email': email,
       'phone': phone,
       'avatar': avatar,
       'social_accounts': socialAccounts?.map((x) => x.toJson()).toList(), 
     };
+  }
+
+  UserModel copyWith({
+    String? email,
+    String? phone,
+    String? username,
+    String? avatar,
+  }) {
+    return UserModel(
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      username: username ?? this.username,
+      avatar: avatar ?? this.avatar,
+    );
   }
 }

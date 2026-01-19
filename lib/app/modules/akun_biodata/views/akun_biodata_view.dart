@@ -11,85 +11,42 @@ import '../controllers/akun_biodata_controller.dart';
 class AkunBiodataView extends GetView<AkunBiodataController> {
   const AkunBiodataView({super.key});
    @override
-  Widget build(BuildContext context) {
-    AppResponsive().init(context);
-    
-    return Scaffold(
-      backgroundColor: AppColors.backgroundScaffold,
-      appBar: AppBar(
-        title: Text('Biodata', style: AppText.h5(color: AppColors.dark)),
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.dark),
-          onPressed: () => Get.back(),
+  @override
+Widget build(BuildContext context) {
+  AppResponsive().init(context);
+
+  return Scaffold(
+    backgroundColor: AppColors.secondary,
+    body: Obx(() {
+      if (controller.isLoading.value) {
+        return Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        );
+      }
+
+      return SingleChildScrollView(
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Column(
+              children: [
+                _buildHeader(),
+            SizedBox(height: AppResponsive.h(1)),
+            _buildBiodataCard(),
+              ],
+            ),
+            Positioned(
+              top: 250,
+              left: 0,
+              right: 0,
+              child: Center(child: _verificationCard()),
+            ),
+          ],
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Remix.edit_2_line, color: AppColors.primary),
-            onPressed: controller.editData,
-          ),
-        ],
-      ),
-      body: Obx(() => controller.isLoading.value
-        ? Center(child: CircularProgressIndicator(color: AppColors.primary))
-        : SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildHeader(),
-                  _buildBiodataCard(),
-                  SizedBox(height: AppResponsive.h(2)),
-                  _buildVerificationSection(),
-                  SizedBox(height: AppResponsive.h(3)),
-                ],
-              ),
-            ),
-          ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      padding: AppResponsive.padding(vertical: 3, horizontal: 4),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-      ),
-      child: Column(
-        children: [
-          CircleAvatar(
-            radius: AppResponsive.w(15),
-            backgroundColor: AppColors.primary.withOpacity(0.1),
-            child: Text(
-              controller.nama.value.isNotEmpty 
-                ? controller.nama.value.split(' ').map((e) => e[0]).take(2).join()
-                : 'JS',
-              style: AppText.h2(color: AppColors.primary),
-            ),
-          ),
-          SizedBox(height: AppResponsive.h(2)),
-          Obx(() => Text(
-            controller.nama.value,
-            style: AppText.h4(color: AppColors.dark),
-            textAlign: TextAlign.center,
-          )),
-          SizedBox(height: AppResponsive.h(0.5)),
-          Obx(() => Text(
-            'NIK: ${controller.nik.value}',
-            style: AppText.bodyMedium(color: AppColors.textSecondary),
-          )),
-          SizedBox(height: AppResponsive.h(1)),
-          Obx(() => controller.isVerified.value
-            ? _buildVerifiedBadge()
-            : _buildUnverifiedBadge(),
-          ),
-        ],
-      ),
-    );
-  }
-
+      );
+}),
+  );
+}
   Widget _buildVerifiedBadge() {
     return Container(
       padding: AppResponsive.padding(horizontal: 2, vertical: 0.5),
@@ -134,31 +91,28 @@ class AkunBiodataView extends GetView<AkunBiodataController> {
 
   Widget _buildBiodataCard() {
     return Container(
-      margin: AppResponsive.padding(all: 4),
+      margin: AppResponsive.padding(all: 5),
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
+
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: AppResponsive.padding(all: 3),
-            child: Text(
-              'Data Pribadi',
-              style: AppText.h5(color: AppColors.dark),
+            padding: AppResponsive.padding(horizontal: 1, vertical: 2),
+            child: Row(
+              children: [
+                Icon(Remix.user_line, color: AppColors.text),
+                SizedBox(width: AppResponsive.w(3)),
+                Text(
+                  'Data Pribadi',
+                  style: AppText.h5(color: AppColors.text),
+                ),
+              ],
             ),
-          ),
-          Divider(height: 1, color: AppColors.muted),
-          
-          // Biodata items
+          ),          
           Obx(() => Column(
             children: [
               _buildBiodataItem(
@@ -248,12 +202,12 @@ class AkunBiodataView extends GetView<AkunBiodataController> {
                 width: AppResponsive.w(10),
                 height: AppResponsive.w(10),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(20),
                 ),
                 child: Icon(
                   icon,
-                  color: AppColors.primary,
+                  color: AppColors.secondary,
                   size: AppResponsive.w(5),
                 ),
               ),
@@ -277,62 +231,174 @@ class AkunBiodataView extends GetView<AkunBiodataController> {
             ],
           ),
         ),
-        if (!isLast) Divider(height: 1, indent: 20, endIndent: 20, color: AppColors.muted),
       ],
     );
   }
-
-  Widget _buildVerificationSection() {
-    return Obx(() => !controller.isVerified.value
-      ? Container(
-          margin: AppResponsive.padding(horizontal: 4),
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: controller.isLoading.value ? null : controller.requestVerification,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: AppColors.white,
-              padding: AppResponsive.padding(vertical: 1.8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              disabledBackgroundColor: AppColors.primary.withOpacity(0.5),
-            ),
-            child: controller.isLoading.value
-              ? SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: AppColors.white,
-                  ),
-                )
-              : Text(
-                  'MINTA VERIFIKASI DATA',
-                  style: AppText.button(color: AppColors.white),
+Widget _buildHeader() {
+  return Container(
+              width: double.infinity,
+              height: 300,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFFE00004),
+                    Color(0xFFB80003),
+                    Color(0xFFE00004),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(40),
+                ),
+              ),
+              child: SafeArea(
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      left: 16,
+                      top: 16,
+                      child: _circleButton(
+                        icon: Icons.arrow_back_ios_new,
+                        onTap: () => Get.back(),
+                      ),
+                    ),
+                    Positioned(
+                      left: AppResponsive.w(20),
+                      top: AppResponsive.h(3),
+                      child: Text("Biodata Saya",style: AppText.h5(color: AppColors.white),)
+                    ),
+                    Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Avatar
+                          Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Container(
+                                width: 110,
+                                height: 110,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColors.secondary,
+                                ),
+                                child: Container(
+                                  width: 100,
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: AppColors.primary,
+                                  ),
+                                  child: ClipOval(
+                                    child: Image.asset(
+                                      'assets/img/kepala_desa.jpg',
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 2,
+                                right: 10,
+                                child: Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: AppColors.secondary,
+                                    border: Border.all(
+                                      color: AppColors.bottonGreen,
+                                      width: 4,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+}
+
+Widget _verificationCard(){
+  return Container(
+        width: AppResponsive.w(90),
+        height: 80,
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 10,
+                    offset: Offset(0, 0),
+                  ),
+          ]
+        ),
+        padding: AppResponsive.padding(all: 1),
+        child: Expanded(
+          child: Padding(
+            padding: AppResponsive.padding(horizontal: 6),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Status Kependudukan',
+                  style: AppText.bodyMedium(color: AppColors.textSecondary),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: AppResponsive.h(0.1)),
+                Row(
+                  children: [
+                    Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.bottonGreen,
+                          ),
+                    ),
+                    SizedBox(width: AppResponsive.w(2)),
+                    Text(
+                      'Aktif/Terverifikasi',
+                      style: AppText.bodyMediumBold(
+                        color: AppColors.text,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         )
-      : Container(
-          margin: AppResponsive.padding(horizontal: 4),
-          padding: AppResponsive.padding(all: 3),
-          decoration: BoxDecoration(
-            color: AppColors.success.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: [
-              Icon(Remix.information_line, color: AppColors.success),
-              SizedBox(width: AppResponsive.w(3)),
-              Expanded(
-                child: Text(
-                  'Data Anda telah terverifikasi oleh admin desa.',
-                  style: AppText.bodyMedium(color: AppColors.success),
-                ),
-              ),
-            ],
-          ),
-        ),
-    );
-  }
+  );
+}
+Widget _circleButton({
+  required IconData icon,
+  required VoidCallback onTap,
+}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withOpacity(0.2),
+      ),
+      child: Icon(icon, color: Colors.white),
+    ),
+  );
+}
+
 }

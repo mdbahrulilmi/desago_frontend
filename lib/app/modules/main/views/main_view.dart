@@ -4,7 +4,7 @@ import 'package:desago/app/modules/aktivitas/views/aktivitas_view.dart';
 import 'package:desago/app/modules/akun/views/akun_view.dart';
 import 'package:desago/app/modules/berita_list/views/berita_list_view.dart';
 import 'package:desago/app/modules/home/views/home_view.dart';
-import 'package:desago/app/modules/surat_petunjuk/views/surat_petunjuk_view.dart';
+import 'package:desago/app/modules/surat_list/views/surat_list_view.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -24,7 +24,7 @@ class MainView extends GetView<BottomNavigationController> {
               index: controller.selectedIndex.value,
               children: const [
                 HomeView(),
-                SuratPetunjukView(),
+                SuratListView(),
                 AktivitasView(),
                 AkunView(),
               ],

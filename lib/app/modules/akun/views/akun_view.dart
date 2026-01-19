@@ -4,6 +4,7 @@ import 'package:desago/app/routes/app_pages.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:get/get.dart';
 import 'package:remixicon/remixicon.dart';
@@ -17,101 +18,53 @@ class AkunView extends GetView<AkunController> {
   Widget build(BuildContext context) {
     AppResponsive().init(context);
     return Scaffold(
-      backgroundColor: AppColors.light,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: AppResponsive.padding(all: 3.5),
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          SizedBox(
+            height: 230,
+            child: Stack(
+              children: [
+                CustomScrollView(
+                  slivers: [
+                    SliverAppBar(
+                      backgroundColor: Colors.white,
+                      automaticallyImplyLeading: false,
+                      expandedHeight: 160.5,
+                      floating: false,
+                      pinned: true,
+                      title: Padding(
+                        padding: AppResponsive.padding(left: 10),
+                        child: Text("Akun saya",
+                        style: AppText.h5(color: AppColors.white)),
+                      ),
+                      flexibleSpace: FlexibleSpaceBar(
+                        background: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Image.asset('assets/background/akun_saya.png',
+                            fit: BoxFit.contain),
+                          ],
+                        )),
+                    ),
+                  ],
+                ),
+                    Positioned.fill(
+                    top: 150,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: _profileCard()),
+                  ),
+                  
+              ],
+            ),
+          ),
+                
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: AppResponsive.w(5), vertical: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: Text(
-                    'Akun Saya',
-                    style: AppText.h4(color: AppColors.dark),
-                  ),
-                ),
-                SizedBox(height: AppResponsive.h(2)),
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: AppResponsive.padding(all: 1),
-                  child: Row(
-                    children: [
-                      Stack(
-                        children: [
-                          Obx(() {
-                            final String? avatarUrl =
-                                controller.user.value?.getAvatar;
-                            return CircleAvatar(
-                              radius: AppResponsive.w(9),
-                              backgroundColor: Colors.grey[200],
-                              backgroundImage: 
-                              // avatarUrl != null
-                                  // ? avatarUrl.startsWith('https')
-                                      // ?  NetworkImage(
-                                      //      'https://sgdiyrucfgwacuycrhvz.supabase.co/storage/v1/object/public/desago_bucket/$avatarUrl')
-                                  //     : FileImage(
-                                  //         File(avatarUrl)) 
-                                  // : 
-                                  AssetImage(
-                                          'assets/img/kepala_desa.jpg')
-                                      as ImageProvider,
-                              child: avatarUrl == null
-                                  ? Icon(Remix.user_3_line,
-                                      color: Colors.grey,
-                                      size: AppResponsive.w(9))
-                                  : null,
-                            );
-                          }),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: InkWell(
-                              onTap: () {
-                                controller.showAvatarOptions();
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: AppColors.info,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Remix.pencil_line,
-                                  color: AppColors.white,
-                                  size: AppResponsive.w(5),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: AppResponsive.w(3)),
-                      Obx(() {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              controller.user.value?.name ?? 'Nama',
-                              style: AppText.h6(color: AppColors.dark),
-                            ),
-                            Text(
-                              controller.user.value?.email ??
-                                  'Email Tidak Tersedia',
-                              style: AppText.bodySmall(
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ],
-                        );
-                      }),
-                    ],
-                  ),
-                ),
-                SizedBox(height: AppResponsive.h(2)),
                 InkWell(
                   onTap: () {
                     Get.toNamed(Routes.TAUTKAN_AKUN);
@@ -152,7 +105,7 @@ class AkunView extends GetView<AkunController> {
                     ),
                   ),
                 ),
-                SizedBox(height: AppResponsive.h(3)),
+                SizedBox(height: AppResponsive.h(1)),
                     _buildListTile(
                       Remix.id_card_line,
                       'Biodata',
@@ -242,7 +195,7 @@ class AkunView extends GetView<AkunController> {
               ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -293,4 +246,98 @@ class AkunView extends GetView<AkunController> {
     onTap: onTap,
   );
 }
+Widget _profileCard(){
+  return Container(
+        width: AppResponsive.w(90),
+        height: 80,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 1,
+                  blurRadius: 10,
+                  offset: Offset(0, 0),
+                ),
+        ]
+      ),
+      padding: AppResponsive.padding(all: 1),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Stack(
+            children: [
+              Obx(() {
+                final String? avatarUrl =
+                    controller.user.value?.getAvatar;
+                    return CircleAvatar(
+                      key: ValueKey(avatarUrl),
+                      radius: AppResponsive.w(9),
+                      backgroundColor: Colors.grey[200],
+                      backgroundImage: avatarUrl != null ? NetworkImage('https://backend.desago.id/${avatarUrl}') : null,
+                      child: avatarUrl == null
+                          ? Icon(
+                              Remix.user_3_line,
+                              color: Colors.grey,
+                              size: AppResponsive.w(9),
+                            )
+                          : null,
+                    );
+                    }),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: InkWell(
+                  onTap: () {
+                    Get.toNamed(Routes.AKUN_EDIT);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: AppColors.info,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Remix.pencil_line,
+                      color: AppColors.white,
+                      size: AppResponsive.w(5),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(width: AppResponsive.w(3)),
+          Obx(() {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  controller.user.value?.username ?? 'Tidak Ada Nama',
+                  style: AppText.h6(color: AppColors.dark),
+                ),
+                Text(
+                  controller.user.value?.email ??
+                      'Email Tidak Tersedia',
+                  style: AppText.bodySmall(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                Text(
+                      controller.user.value?.phone ??
+                      'Nomor telepon tidak tersedia',
+                  style: AppText.bodySmall(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            );
+          }),
+        ],
+      ),
+    );
 }
+}
+

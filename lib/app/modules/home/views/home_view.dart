@@ -157,7 +157,7 @@ class HomeView extends GetView<HomeController> {
                             _buildMenuItem(Remix.mail_fill, 'Surat',
                                 AppColors.primary,
                                 AppColors.secondary, () {
-                                 Get.toNamed(Routes.SURAT_PETUNJUK);
+                                 Get.toNamed(Routes.SURAT_LIST);
                                 }),                            
                             _buildMenuItem(Remix.file_chart_fill, 'Dana Desa',
                                 AppColors.secondary,

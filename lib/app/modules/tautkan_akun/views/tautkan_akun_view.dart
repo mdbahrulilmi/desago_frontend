@@ -37,7 +37,7 @@ class TautkanAkunView extends GetView<TautkanAkunController> {
           children: [
             SizedBox(
               width: AppResponsive.w(70),
-              height: AppResponsive.w(70),
+              height: AppResponsive.h(40),
               child: Lottie.asset(
                 'assets/lottie/tautkan.json',
                 repeat: true,
@@ -56,7 +56,7 @@ class TautkanAkunView extends GetView<TautkanAkunController> {
                 ),
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: AppResponsive.padding(horizontal: 8, vertical: 3),
                     child: Column(
                       children: [
                         Text('Tautkan Akun Anda Dengan Desa',
@@ -68,12 +68,6 @@ class TautkanAkunView extends GetView<TautkanAkunController> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            SvgPicture.asset(
-                              'assets/icons/biodata.svg',
-                              color: Colors.white,
-                              width: 65,
-                              height: 65,
-                            ),
                             SizedBox(width: 10),
                             Flexible(
                               child: Column(
@@ -101,12 +95,6 @@ class TautkanAkunView extends GetView<TautkanAkunController> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            SvgPicture.asset(
-                              'assets/icons/surat.svg',
-                              color: Colors.white,
-                              width: 65,
-                              height: 65,
-                            ),
                             SizedBox(width: 10),
                             Flexible(
                               child: Column(
@@ -134,12 +122,6 @@ class TautkanAkunView extends GetView<TautkanAkunController> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            SvgPicture.asset(
-                              'assets/icons/berita.svg',
-                              color: Colors.white,
-                              width: 65,
-                              height: 65,
-                            ),
                             SizedBox(width: 10),
                             Flexible(
                               child: Column(

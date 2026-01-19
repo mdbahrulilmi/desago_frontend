@@ -32,7 +32,6 @@ class AppBottomSheet {
     );
   }
 
-  /// Bottom Sheet dengan opsi picker (digunakan untuk pilihan sederhana)
   static Future<T?> picker<T>({
     String? title,
     String? message,
@@ -77,21 +76,22 @@ class AppBottomSheet {
         message: message,
         content: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildAvatarOption(
-                icon: Remix.image_line,
+                icon: Remix.image_fill,
                 title: galleryText,
-                color: AppColors.info,
+                color: AppColors.primary,
                 onTap: () {
                   Get.back(result: true);
                   onGallery();
                 },
               ),
+              SizedBox(width: AppResponsive.w(2)),
               _buildAvatarOption(
-                icon: Remix.camera_3_line,
+                icon: Remix.camera_3_fill,
                 title: cameraText,
-                color: AppColors.primary,
+                color: AppColors.text,
                 onTap: () {
                   Get.back(result: true);
                   onCamera();
@@ -100,7 +100,7 @@ class AppBottomSheet {
             ],
           ),
         ],
-        showCancelButton: true,
+        showCancelButton: false,
         cancelText: cancelText,
         backgroundColor: backgroundColor,
       ),
@@ -217,30 +217,21 @@ class AppBottomSheet {
       onTap: onTap,
       borderRadius: BorderRadius.circular(15),
       child: Container(
-        width: AppResponsive.w(35),
+        width: AppResponsive.w(20),
         padding: AppResponsive.padding(vertical: 2),
         decoration: BoxDecoration(
+          color: color,
           borderRadius: BorderRadius.circular(15),
-          color: color.withOpacity(0.1),
         ),
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
-                shape: BoxShape.circle,
-              ),
+              padding: EdgeInsets.all(4),
               child: Icon(
                 icon,
-                color: color,
-                size: AppResponsive.w(8),
+                color: AppColors.secondary,
+                size: AppResponsive.w(10),
               ),
-            ),
-            SizedBox(height: AppResponsive.h(1)),
-            Text(
-              title,
-              style: AppText.bodyLarge(color: color),
             ),
           ],
         ),

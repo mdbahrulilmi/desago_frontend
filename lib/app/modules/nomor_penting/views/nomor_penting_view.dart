@@ -12,7 +12,7 @@ import '../controllers/nomor_penting_controller.dart';
 class NomorPentingView extends GetView<NomorPentingController> {
   const NomorPentingView({super.key});
 
-  @override
+  @override 
   Widget build(BuildContext context) {
     // Inisialisasi AppResponsive
     final AppResponsive responsive = AppResponsive();
@@ -69,31 +69,34 @@ class NomorPentingView extends GetView<NomorPentingController> {
                     ],
                   ),
                   child: TextField(
-                    controller: controller.searchController,
-                    onChanged: controller.filterNomorPenting,
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(vertical: 12),
-                      hintText: 'Cari nomor penting...',
-                      hintStyle:
-                          AppText.bodyMedium(color: AppColors.textSecondary),
-                      prefixIcon:
-                          Icon(Remix.search_line, color: AppColors.iconGrey),
-                      suffixIcon:
-                          Obx(() => controller.searchText.value.isNotEmpty
-                              ? IconButton(
-                                  icon: Icon(Remix.close_line,
-                                      color: AppColors.primary),
-                                  onPressed: () {
-                                    controller.searchController.clear();
-                                    controller.filterNomorPenting('');
-                                  },
-                                )
-                              : SizedBox()),
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                    ),
-                  ),
+  controller: controller.searchController,
+  onChanged: controller.filterNomorPenting,
+  decoration: InputDecoration(
+    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+    hintText: 'Cari nomor penting...',
+    hintStyle: AppText.bodyMedium(color: AppColors.textSecondary),
+    prefixIcon: Icon(Remix.search_line, color: AppColors.iconGrey),
+
+    suffixIcon: ValueListenableBuilder<TextEditingValue>(
+      valueListenable: controller.searchController,
+      builder: (context, value, child) {
+        if (value.text.isEmpty) return const SizedBox();
+        return IconButton(
+          icon: Icon(Remix.close_line, color: AppColors.primary),
+          onPressed: () {
+            controller.searchController.clear();
+            controller.filterNomorPenting('');
+          },
+        );
+      },
+    ),
+
+    border: InputBorder.none,
+    enabledBorder: InputBorder.none,
+    focusedBorder: InputBorder.none,
+  ),
+),
+
                 ),
               ],
             ),

@@ -1,15 +1,12 @@
 import 'package:desago/app/components/custom_bottom_navigation_controller.dart';
-import 'package:desago/app/routes/app_pages.dart';
 import 'package:desago/app/utils/app_colors.dart';
-import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:remixicon/remixicon.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
-
-class CustomBottomNavigationBar extends GetView<BottomNavigationController> {
+class CustomBottomNavigationBar
+    extends GetView<BottomNavigationController> {
   const CustomBottomNavigationBar({Key? key}) : super(key: key);
 
   @override
@@ -18,196 +15,139 @@ class CustomBottomNavigationBar extends GetView<BottomNavigationController> {
       clipBehavior: Clip.none,
       children: [
         ClipRRect(
-            borderRadius: BorderRadius.only(
-    topLeft: Radius.circular(24),
-    topRight: Radius.circular(24),
-        ),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
           child: Container(
-            width: double.infinity,
             height: 80,
+            width: double.infinity,
             decoration: BoxDecoration(
               color: AppColors.primary,
               boxShadow: [
                 BoxShadow(
                   blurRadius: 10,
-                  offset: const Offset(0, 5),
+                  offset: const Offset(0, -2),
+                  color: Colors.black.withOpacity(0.15),
                 ),
               ],
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Expanded(
-                  child: _buildNavItem(
-                    context,
-                    index: 0,
-                    route: controller.indexToRoute[0],
-                    label: controller.pageNames[0],
-                  ),
-                ),
-                Expanded(
-                  child: _buildNavItem(
-                    context,
-                    index: 1,
-                    route: controller.indexToRoute[1],
-                    label: controller.pageNames[1],
-                  ),
-                ),
-                SizedBox(width: 80),
-                Expanded(
-                  child: _buildNavItem(
-                    context,
-                    index: 2,
-                    route: controller.indexToRoute[2],
-                    label: controller.pageNames[2],
-                  ),
-                ),
-                Expanded(
-                  child: _buildNavItem(
-                    context,
-                    index: 3,
-                    route: controller.indexToRoute[3],
-                    label: controller.pageNames[3],
-                  ),
-                ),
+                Expanded(child: _buildNavItem(index: 0)),
+                Expanded(child: _buildNavItem(index: 1)),
+                const SizedBox(width: 80),
+                Expanded(child: _buildNavItem(index: 2)),
+                Expanded(child: _buildNavItem(index: 3)),
               ],
             ),
           ),
         ),
+
+        /// FLOATING LAPOR BUTTON
         Positioned(
-  top: -30,
-  left: 0,
-  right: 0,
-  child: Center(
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // 🔘 BUTTON CIRCLE
-        Material(
-          elevation: 8,
-          shadowColor: Colors.black.withOpacity(0.3),
-          shape: const CircleBorder(
-            side: BorderSide(
-              color: Colors.white,
-              width: 2,
-            ),
-          ),
-          child: InkWell(
-            onTap: () {
-              Get.toNamed(Routes.LAPOR);
-            },
-            customBorder: const CircleBorder(),
-            child: Container(
-              width: 70,
-              height: 70,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-              ),
-              child: Center(
-                child: SvgPicture.asset(
-                  'assets/icons/navigation/report.svg',
-                  width: 65,
+          top: -30,
+          left: 0,
+          right: 0,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Material(
+                elevation: 8,
+                shape: const CircleBorder(
+                  side: BorderSide(color: Colors.white, width: 2),
+                ),
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: controller.navigateToLapor,
+                  child: Container(
+                    width: 70,
+                    height: 70,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                    ),
+                    child: Center(
+                      child: SvgPicture.asset(
+                        'assets/icons/navigation/report.svg',
+                        width: 40,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 6),
-
-        // 📝 TEXT LAPOR
-        Text(
-          "Lapor",
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: AppColors.text,
-          ),
-        ),
-      ],
-    ),
-  ),
-),
- ],
-    );
-  }
-
-  Widget _buildNavItem(
-    BuildContext context, {
-    required int index,
-    required String route,
-    required String label,
-  }) {
-
-    Widget ImageIcon(String route, bool isActive){
-       switch (route) {
-        case Routes.HOME:
-          return SvgPicture.asset(
-    isActive
-        ? 'assets/icons/navigation/home_active.svg'
-        : 'assets/icons/navigation/home.svg',
-    width: 32,
-    height: 32,
-  );
-        case Routes.SURAT_PETUNJUK:
-          return SvgPicture.asset(
-    isActive
-        ? 'assets/icons/navigation/letter_active.svg'
-        : 'assets/icons/navigation/letter.svg',
-    width: 32,
-    height: 32,
-  );
-        case Routes.BERITA_LIST:
-          return SvgPicture.asset(
-    isActive
-        ? 'assets/icons/navigation/activity_active.svg'
-        : 'assets/icons/navigation/activity.svg',
-    width: 32,
-    height: 32,
-  );
-        case Routes.AKUN:
-          return SvgPicture.asset(
-    isActive
-        ? 'assets/icons/navigation/account_active.svg'
-        : 'assets/icons/navigation/account.svg',
-    width: 32,
-    height: 32,
-  );
-        default:
-        return SvgPicture.asset(
-    isActive
-        ? 'assets/icons/navigation/home.svg'
-        : 'assets/icons/navigation/home.svg',
-    width: 32,
-    height: 32,
-  );
-    }}
-
-    return Obx(() {
-      final isSelected = controller.selectedIndex.value == index;
-
-      return InkWell(
-        onTap: () => controller.changePage(index),
-        child: Container(
-          width: double.infinity,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ImageIcon(route, isSelected),
-              SizedBox(height: 4),
-              Text(
-                label,
-                style: isSelected
-                    ? AppText.smallBold(color: Colors.white)
-                    : AppText.small(color: Colors.black),
-                textAlign: TextAlign.center,
+              const SizedBox(height: 6),
+              const Text(
+                'Lapor',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
         ),
+      ],
+    );
+  }
+
+  /// SINGLE NAV ITEM
+  Widget _buildNavItem({required int index}) {
+    return Obx(() {
+      final bool isActive = controller.isActive(index);
+
+      return InkWell(
+        onTap: () => controller.changePage(index),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _navIcon(index, isActive),
+            const SizedBox(height: 4),
+            Text(
+              controller.pageNames[index],
+              style: isActive
+                  ? AppText.smallBold(color: Colors.white)
+                  : AppText.small(color: Colors.black),
+            ),
+          ],
+        ),
       );
     });
+  }
+
+  /// ICON HANDLER (AMAN & BERSIH)
+  Widget _navIcon(int index, bool isActive) {
+    switch (index) {
+      case 0:
+        return SvgPicture.asset(
+          isActive
+              ? 'assets/icons/navigation/home_active.svg'
+              : 'assets/icons/navigation/home.svg',
+          width: 28,
+        );
+      case 1:
+        return SvgPicture.asset(
+          isActive
+              ? 'assets/icons/navigation/letter_active.svg'
+              : 'assets/icons/navigation/letter.svg',
+          width: 28,
+        );
+      case 2:
+        return SvgPicture.asset(
+          isActive
+              ? 'assets/icons/navigation/activity_active.svg'
+              : 'assets/icons/navigation/activity.svg',
+          width: 28,
+        );
+      case 3:
+        return SvgPicture.asset(
+          isActive
+              ? 'assets/icons/navigation/account_active.svg'
+              : 'assets/icons/navigation/account.svg',
+          width: 28,
+        );
+      default:
+        return const SizedBox();
+    }
   }
 }

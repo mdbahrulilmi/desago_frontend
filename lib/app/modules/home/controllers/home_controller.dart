@@ -18,7 +18,7 @@ class HomeController extends GetxController {
     user.value = StorageService.getUser();
   }
 
-  String get userName => user.value?.name ?? 'User';
+  String get userName => user.value?.username ?? 'User';
   String get userEmail => user.value?.email ?? '-';
   String get userPhone => user.value?.phone ?? '-';
 

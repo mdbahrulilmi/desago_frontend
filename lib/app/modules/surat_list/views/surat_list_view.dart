@@ -3,59 +3,83 @@ import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/surat_list_jenis_controller.dart';
 
-class SuratListJenisView extends GetView<SuratListJenisController> {
-  const SuratListJenisView({super.key});
+class SuratListView extends StatelessWidget {
+  const SuratListView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Initialize responsive sizing
     AppResponsive().init(context);
 
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: AppColors.primary,
         elevation: 0,
-        centerTitle: true,
-        title: Obx(() => Text(
-              controller.kategoriTitle.value,
-              style: AppText.h5(color: AppColors.dark),
-            )),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.dark),
+        leading: Navigator.canPop(Get.context!)
+      ? IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: AppColors.secondary),
           onPressed: () => Get.back(),
+        )
+      : null,
+        title: Text(
+          'Jenis Surat',
+          style: AppText.h5(color: AppColors.secondary),
         ),
+        centerTitle: true,
       ),
-      body: Obx(() => controller.isLoading.value
-          ? Center(child: CircularProgressIndicator())
-          : _buildJenisSuratList()),
+      body: _buildJenisSuratList(),
     );
   }
 
+  /// DATA STATIK
+  final List<Map<String, String>> jenisSuratList = const [
+    {
+      'title': 'Surat Keterangan Domisili',
+      'description': 'Digunakan untuk keperluan administrasi domisili.'
+    },
+    {
+      'title': 'Surat Keterangan Usaha',
+      'description': 'Digunakan untuk pengajuan usaha atau UMKM.'
+    },
+    {
+      'title': 'Surat Pengantar',
+      'description': 'Digunakan sebagai surat pengantar resmi.'
+    },
+    {
+      'title': 'Surat Keterangan Tidak Mampu',
+      'description': 'Digunakan untuk bantuan atau keperluan sosial.'
+    },
+  ];
+
   Widget _buildJenisSuratList() {
     return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: controller.jenisSuratList.length,
+      padding: const EdgeInsets.all(16),
+      itemCount: jenisSuratList.length,
       itemBuilder: (context, index) {
-        final item = controller.jenisSuratList[index];
-        return // Widget item list surat menggunakan BoxDecoration dengan border
-            Container(
-          margin: EdgeInsets.only(bottom: 12),
+        final item = jenisSuratList[index];
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: AppColors.dark.withOpacity(0.2),
-              width: 1,
             ),
           ),
           child: InkWell(
-            onTap: () => controller.navigateToDetail(item),
+            onTap: () {
+              // STATIK → sementara kosong / snackbar
+              Get.snackbar(
+                'Info',
+                item['title'] ?? '',
+                snackPosition: SnackPosition.BOTTOM,
+              );
+            },
             borderRadius: BorderRadius.circular(12),
             child: Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
                   Expanded(
@@ -66,18 +90,18 @@ class SuratListJenisView extends GetView<SuratListJenisController> {
                           item['title'] ?? 'Jenis Surat',
                           style: AppText.h6(color: AppColors.dark),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         Text(
-                          item['description'] ?? 'Deskripsi jenis surat',
+                          item['description'] ?? '-',
                           style: AppText.bodyMedium(
-                              color: AppColors.textSecondary),
+                            color: AppColors.textSecondary,
+                          ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                   ),
-                  // Icon chevron
                   Icon(
                     Icons.chevron_right,
                     color: AppColors.dark,

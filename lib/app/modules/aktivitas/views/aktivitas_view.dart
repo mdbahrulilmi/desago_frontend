@@ -3,6 +3,7 @@ import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:remixicon/remixicon.dart';
 import '../controllers/aktivitas_controller.dart';
 
 class AktivitasView extends GetView<AktivitasController> {
@@ -24,6 +25,7 @@ class AktivitasView extends GetView<AktivitasController> {
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
           _buildReportCard(
+            icon: Remix.alarm_warning_fill,
             title: 'Lapor',
             subtitle: 'Laporan Kebersihan - LPR001',
             date: '01 December 2025, 09.50',
@@ -33,6 +35,7 @@ class AktivitasView extends GetView<AktivitasController> {
             },
           ),
           _buildReportCard(
+             icon: Remix.mail_send_fill,
             title: 'Surat',
             subtitle: 'Pengajuan Surat Izin',
             date: '01 Juni 2025, 10.50',
@@ -47,6 +50,7 @@ class AktivitasView extends GetView<AktivitasController> {
   }
 
   Widget _buildReportCard({
+    required IconData icon,
     required String title,
     required String subtitle,
     required String date,
@@ -59,19 +63,23 @@ class AktivitasView extends GetView<AktivitasController> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Placeholder Image
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              const SizedBox(width: 16),
-              // Content
               Expanded(
-                child: Column(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 54,
+                      height: 54,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(icon,
+                      color: AppColors.secondary),
+                    ),
+                const SizedBox(width: 16),
+                // Content
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -98,6 +106,8 @@ class AktivitasView extends GetView<AktivitasController> {
                         color: Colors.grey[600],
                       ),
                     ),
+                  ],
+                ),
                   ],
                 ),
               ),

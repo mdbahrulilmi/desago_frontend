@@ -1,3 +1,7 @@
+import 'package:desago/app/modules/akun_edit/bindings/akun_edit_binding.dart';
+import 'package:desago/app/modules/akun_edit/views/akun_edit_view.dart';
+import 'package:desago/app/modules/surat_list/bindings/surat_list_binding.dart';
+import 'package:desago/app/modules/surat_list/views/surat_list_view.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -65,12 +69,6 @@ import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/register_view.dart';
 import '../modules/surat_form/bindings/surat_form_binding.dart';
 import '../modules/surat_form/views/surat_form_view.dart';
-import '../modules/surat_list_jenis/bindings/surat_list_jenis_binding.dart';
-import '../modules/surat_list_jenis/views/surat_list_jenis_view.dart';
-import '../modules/surat_list_kategori/bindings/surat_list_kategori_binding.dart';
-import '../modules/surat_list_kategori/views/surat_list_kategori_view.dart';
-import '../modules/surat_petunjuk/bindings/surat_petunjuk_binding.dart';
-import '../modules/surat_petunjuk/views/surat_petunjuk_view.dart';
 import '../modules/surat_riwayat_pengajuan/bindings/surat_riwayat_pengajuan_binding.dart';
 import '../modules/surat_riwayat_pengajuan/views/surat_riwayat_pengajuan_view.dart';
 import '../modules/surat_riwayat_pengajuan_detail/bindings/surat_riwayat_pengajuan_detail_binding.dart';
@@ -226,21 +224,7 @@ class AppPages {
       page: () => const BeritaDetailView(),
       binding: BeritaDetailBinding(),
     ),
-    GetPage(
-      name: _Paths.SURAT_PETUNJUK,
-      page: () => const SuratPetunjukView(),
-      binding: SuratPetunjukBinding(),
-    ),
-    GetPage(
-      name: _Paths.SURAT_LIST_KATEGORI,
-      page: () => const SuratListKategoriView(),
-      binding: SuratListKategoriBinding(),
-    ),
-    GetPage(
-      name: _Paths.SURAT_LIST_JENIS,
-      page: () => const SuratListJenisView(),
-      binding: SuratListJenisBinding(),
-    ),
+  
     GetPage(
       name: _Paths.SURAT_FORM,
       page: () => const SuratFormView(),
@@ -315,6 +299,16 @@ class AppPages {
       name: _Paths.AKTIVITAS,
       page: () => const AktivitasView(),
       binding: AktivitasBinding(),
+    ),
+    GetPage(
+      name: _Paths.SURAT_LIST,
+      page: () => const SuratListView (),
+      binding: SuratListBinding(),
+    ),
+    GetPage(
+      name: _Paths.AKUN_EDIT,
+      page: () => const AkunEditView(),
+      binding: AkunEditBinding(),
     ),
   ];
 }
