@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:desago/app/components/custom_bottom_navigation_controller.dart';
 import 'package:desago/app/components/custom_bottom_navigation_widget.dart';
+import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/routes/app_pages.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
@@ -48,6 +49,9 @@ class HomeView extends GetView<HomeController> {
                     options: CarouselOptions(
                       height: AppResponsive.h(20),
                       autoPlay: true,
+                      autoPlayCurve: Curves.fastOutSlowIn,
+                      autoPlayInterval: Duration(seconds: 3),
+                      autoPlayAnimationDuration: Duration(seconds: 2),
                       aspectRatio: 16 / 9,
                       viewportFraction: 1,
                     ),
@@ -259,7 +263,7 @@ class HomeView extends GetView<HomeController> {
               size: AppResponsive.sp(26),
             ),
           ),
-          SizedBox(height: AppResponsive.h(1)),
+          SizedBox(height: AppResponsive.h(0.5)),
           Container(
             padding: EdgeInsets.symmetric(horizontal: AppResponsive.w(0)),
             child: Text(
@@ -345,24 +349,29 @@ class HomeView extends GetView<HomeController> {
               ),
               elevation: 2,
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                Icon(
-                  Remix.whatsapp_line,
-                  color: Colors.white,
-                  size: 16,
-                ),
-                SizedBox(width: 8),
-                Text(
-                  "Pesan Sekarang",
-                  style: TextStyle(
+            child: GestureDetector(
+              onTap: () {
+                controller.openWhatsApp(phone: product['phone']);
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(
+                    Remix.whatsapp_line,
                     color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
+                    size: 16,
                   ),
-                ),
-              ],
+                  SizedBox(width: 2),
+                  Text(
+                    "Pesan Sekarang",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -393,10 +402,9 @@ class HomeView extends GetView<HomeController> {
         carouselController: controller.carouselController,
         options: CarouselOptions(
           height: AppResponsive.h(35),
-          viewportFraction: 0.52,
+          viewportFraction: 0.50,
           enableInfiniteScroll: false,
           padEnds: false,
-          autoPlayInterval: Duration(seconds: 3),
           onPageChanged: (index, reason) {
             controller.changeSlide(index);
           },
@@ -413,12 +421,27 @@ class HomeView extends GetView<HomeController> {
   );
 }
 
-  Widget _buildNewsSection(BuildContext context) {
+Widget _buildNewsSection(BuildContext context) {
+  return Obx(() {
+    if (controller.isLoading.value) {
+      return SizedBox(
+        height: AppResponsive.h(30),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (controller.beritas.isEmpty) {
+      return SizedBox(
+        height: AppResponsive.h(30),
+        child: Center(child: Text('Belum ada berita')),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          margin: EdgeInsets.only(left: 9, right: 3),
+          margin: const EdgeInsets.only(left: 9, right: 3),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -436,41 +459,27 @@ class HomeView extends GetView<HomeController> {
             height: AppResponsive.h(30),
             viewportFraction: 0.70,
             autoPlayCurve: Curves.fastOutSlowIn,
-            autoPlayAnimationDuration: const Duration(milliseconds: 1000),
+            autoPlayInterval: Duration(seconds: 5),
+            autoPlayAnimationDuration: const Duration(seconds: 3),
             pauseAutoPlayOnTouch: true,
             padEnds: false,
             enlargeCenterPage: false,
           ),
-          items: [
-            _buildNewsCard(
+          items: controller.beritas.map((berita) {
+            return _buildNewsCard(
               context,
-              'Pembangunan Infrastruktur Desa Tahap Kedua Dimulai',
-              'assets/img/berita_1.jpg',
-              '12 Mei 2024',
-            ),
-            _buildNewsCard(
-              context,
-              'Pelatihan UMKM Dorong Ekonomi Kreatif Warga Desa',
-              'assets/img/berita_2.jpeg',
-              '15 Mei 2024',
-            ),
-            _buildNewsCard(
-              context,
-              'Festival Budaya Lokal Tingkatkan Pariwisata Desa',
-              'assets/img/berita_3.jpg',
-              '18 Mei 2024',
-            ),
-            _buildNewsCard(
-              context,
-              'Program Penanaman Pohon Serentak Capai 1000 Bibit',
-              'assets/img/berita_4.jpg',
-              '20 Mei 2024',
-            ),
-          ],
+              berita['title'],
+              berita['image'],
+              berita['date'],
+              berita,
+            );
+          }).toList(),
         ),
       ],
     );
-  }
+  });
+}
+
   
 
  Widget _buildNewsCard(
@@ -478,59 +487,63 @@ class HomeView extends GetView<HomeController> {
   String title,
   String imagePath,
   String date,
+  dynamic raw,
 ) {
-  return Container(
-    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-    decoration: BoxDecoration(
-      color: AppColors.white,
-      borderRadius: BorderRadius.circular(12),
-      boxShadow: [
-        BoxShadow(
-          color: AppColors.shadow.withOpacity(0.1),
-          blurRadius: 3,
-          offset: const Offset(0, 1),
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // 🖼 IMAGE (16:9)
-        ClipRRect(
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(12),
+  return GestureDetector(
+    onTap: () => controller.bacaBeritaLengkap(raw),
+    child: Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow.withOpacity(0.1),
+            blurRadius: 3,
+            offset: const Offset(0, 1),
           ),
-          child: AspectRatio(
-            aspectRatio: 16 / 10,
-            child: Image.asset(
-              imagePath,
-              fit: BoxFit.cover,
-              width: double.infinity,
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 🖼 IMAGE (16:9)
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(12),
+            ),
+            child: AspectRatio(
+              aspectRatio: 16 / 10,
+              child: Image.network(
+                "${ApiConstant.pictureUrl}${imagePath}",
+                fit: BoxFit.cover,
+                width: double.infinity,
+              ),
             ),
           ),
-        ),
-
-        // 📝 TEXT SECTION
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: AppText.h6(color: AppColors.dark),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 6),
-              Text(
-                date,
-                style: AppText.caption(color: AppColors.grey),
-              ),
-            ],
+    
+          // 📝 TEXT SECTION
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppText.h6(color: AppColors.dark),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  date,
+                  style: AppText.caption(color: AppColors.grey),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     ),
   );
 }

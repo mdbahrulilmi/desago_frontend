@@ -1,6 +1,14 @@
 class ApiConstant {
   // Base URL
   static const String baseUrl = 'https://backend.desago.id/api/';
+  static const String pictureUrl = 'https://www.desatinggo.id/upload/picture/';
+
+  // Desa
+  static const String desa = 'desatinggo.id';
+  static const String profilDesa = "/desa/${desa}/profil";
+  static const String beritaDesa = "/desa/${desa}/berita";
+  static const String beritaDesaCarousel = "/desa/${desa}/berita/carousel";
+  static const String danaDesa = "/desa/${desa}/dana";
 
   // Auth Endpoints
   static const String register = '/register';

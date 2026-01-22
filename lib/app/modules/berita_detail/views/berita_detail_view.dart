@@ -1,4 +1,6 @@
+import 'package:desago/app/constant/api_constant.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:desago/app/utils/app_colors.dart';
@@ -12,9 +14,12 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       body: Obx(() {
         final berita = controller.berita.value;
+        String tanggal = (berita['tgl'] ?? "").split(' ').first;
+        final html = berita['isi'];
 
         if (berita.isEmpty) {
           return const Center(child: CircularProgressIndicator());
@@ -36,12 +41,10 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                 background: Stack(
                   fit: StackFit.expand,
                   children: [
-                    // Gambar Utama
-                    Image.asset(
-                      berita['image'],
-                      fit: BoxFit.cover,
-                    ),
-
+                     Image.network(
+                        "${ApiConstant.pictureUrl}${berita["gambar"]}",
+                        fit: BoxFit.cover,
+                      ),
                     DecoratedBox(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -69,7 +72,7 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          berita['category'],
+                          berita['category'] ?? "",
                           style: AppText.small(color: Colors.white),
                         ),
                       ),
@@ -86,7 +89,7 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                             child: IconButton(
                               icon: const Icon(Remix.share_line,
                                   color: Colors.white),
-                              onPressed: controller.shareBerita,
+                              onPressed: () => controller.shareBerita,
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -107,7 +110,7 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                        berita['title'],
+                        berita['judul'] ?? "",
                         style: AppText.h5(color: AppColors.text),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -125,28 +128,37 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                         ),
                         const SizedBox(width: 8.0),
                         Text(
-                          berita['author'],
+                          berita['user_desa']["nama"]?? "",
                           style: AppText.bodyMedium(color: AppColors.text),
                         ),
                         SizedBox(width: 20.0),
                         Icon(Remix.calendar_2_fill),
                         SizedBox(width: 8.0),
                         Text(
-                          berita['date'],
+                          tanggal ?? "",
                           style:
                               AppText.bodyMedium(color: AppColors.text),
                         ),
                       ],
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 12),
 
-                    // Konten Utama
-                    Text(
-                      berita['content'],
-                      style: AppText.bodyMedium(color: AppColors.text),
-                      textAlign: TextAlign.justify,
-                    ),
+                    Html(
+                      data: html,
+                      style: {
+                        "body": Style(
+                          margin: Margins.zero,
+                          padding: HtmlPaddings.zero,
+                          fontSize: FontSize(14),
+                          textAlign: TextAlign.justify,
+                          color: AppColors.text,
+                        ),
+                        "p": Style(
+                          margin: Margins.only(bottom: 12),
+                        ),
+                      },
+                    )     
                   ],
                 ),
               ),

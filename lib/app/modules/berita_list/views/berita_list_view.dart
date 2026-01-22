@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
@@ -57,7 +58,7 @@ class BeritaListView extends GetView<BeritaListController> {
       ),
       child: TextField(
         controller: controller.searchController,
-        onChanged: (value) => controller.filterBerita(value),
+        // onChanged: (value) => controller.filterBerita(value),
         decoration: InputDecoration(
           hintText: 'Cari Berita',
           hintStyle: AppText.bodyMedium(color: AppColors.textSecondary),
@@ -90,6 +91,7 @@ class BeritaListView extends GetView<BeritaListController> {
 
  // Kartu Berita
 Widget _buildBeritaCard(Map<String, dynamic> berita) {
+  String? gambar = berita['image'];
   return GestureDetector(
     onTap: () => controller.bacaBeritaLengkap(berita),
     child: Row(
@@ -113,10 +115,15 @@ Widget _buildBeritaCard(Map<String, dynamic> berita) {
             child: SizedBox(
               width: AppResponsive.w(35),
               height: AppResponsive.h(16),
-              child: Image.asset(
-                berita['image'],
-                fit: BoxFit.cover,
-              ),
+              child: (gambar != null && gambar.isNotEmpty)
+                ? Image.network(
+                    "${ApiConstant.pictureUrl}$gambar",
+                    fit: BoxFit.cover,
+                  )
+                : Image.asset(
+                    "assets/images/default.png", // fallback image
+                    fit: BoxFit.cover,
+                  ),
             ),
           ),
         ),

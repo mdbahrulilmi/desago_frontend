@@ -1,101 +1,89 @@
+import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/routes/app_pages.dart';
+import 'package:desago/app/services/dio_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class BeritaListController extends GetxController {
-   final TextEditingController searchController = TextEditingController();
-  
+  final TextEditingController searchController = TextEditingController();
+
   final RxList<String> categories = [
-    'Semua', 
-    'Pemerintahan', 
-    'Pembangunan', 
-    'Budaya', 
-    'Sosial'
-  ].obs;
-  
-  final RxString selectedCategory = 'Semua'.obs;
-  
-  // List berita dengan detail lengkap
-  final RxList<Map<String, dynamic>> beritas = [
-    {
-      'title': 'Pembangunan Jembatan Desa Tahap Akhir',
-      'author': 'Admin Desa',
-      'date': '15 Maret 2025',
-      'category': 'Pembangunan',
-      'excerpt': 'Pembangunan jembatan penghubung antar dusun telah memasuki tahap akhir...',
-      'content': 'Pembangunan jembatan penghubung antar dusun telah memasuki tahap akhir. Proyek ini diharapkan dapat meningkatkan akses transportasi warga dan memperlancar kegiatan ekonomi masyarakat.',
-      'image': 'assets/img/berita_1.jpg',
-      'views': 256,
-      'comments': 12
-    },
-    {
-      'title': 'Pelestarian Budaya Lokal Melalui Festival Seni',
-      'author': 'Kepala Desa',
-      'date': '10 Maret 2025',
-      'category': 'Budaya',
-      'excerpt': 'Desa Sukamaju menggelar Festival Seni untuk melestarikan budaya tradisional...',
-      'content': 'Dalam upaya melestarikan warisan budaya, Desa Sukamaju menggelar Festival Seni tahunan yang menampilkan berbagai kesenian tradisional dari berbagai kelompok masyarakat.',
-      'image': 'assets/img/berita_2.jpeg',
-      'views': 412,
-      'comments': 25
-    },
-    {
-      'title': 'Program Bantuan Sosial untuk Warga Kurang Mampu',
-      'author': 'Tim Kesejahteraan',
-      'date': '05 Maret 2025',
-      'category': 'Sosial',
-      'excerpt': 'Pemerintah desa meluncurkan program bantuan sosial untuk warga kurang mampu...',
-      'content': 'Dalam rangka meningkatkan kesejahteraan masyarakat, pemerintah desa meluncurkan program bantuan sosial yang akan mendistribusikan bantuan langsung kepada warga yang membutuhkan.',
-      'image': 'assets/img/berita_3.jpg',
-      'views': 189,
-      'comments': 8
-    },
+    'Semua',
+    'Pemerintahan',
+    'Pembangunan',
+    'Budaya',
+    'Sosial',
   ].obs;
 
+  final RxString selectedCategory = 'Semua'.obs;
+
+  final RxList<Map<String, dynamic>> beritas = <Map<String, dynamic>>[].obs;
   final RxList<Map<String, dynamic>> filteredBeritas = <Map<String, dynamic>>[].obs;
+
+  var isLoading = true.obs;
 
   @override
   void onInit() {
-    filteredBeritas.value = beritas;
     super.onInit();
+    fetchBerita();
+
+    // Listener search
+    searchController.addListener(() {
+      filterBerita(searchController.text);
+    });
   }
 
-  void filterBerita(String query) {
-    if (query.isEmpty) {
-      filteredBeritas.value = beritas;
-    } else {
-      filteredBeritas.value = beritas.where((berita) {
-        return berita['title'].toLowerCase().contains(query.toLowerCase()) ||
-               berita['content'].toLowerCase().contains(query.toLowerCase()) ||
-               berita['author'].toLowerCase().contains(query.toLowerCase());
-      }).toList();
-    }
-  }
+  Future<void> fetchBerita() async {
+  try {
+    isLoading.value = true;
+    final res = await DioService.instance.get(ApiConstant.beritaDesa);
 
-  void filterByCategory(String category) {
-    if (category == 'Semua') {
-      filteredBeritas.value = beritas;
-    } else {
-      filteredBeritas.value = beritas.where((berita) {
-        return berita['category'] == category;
-      }).toList();
-    }
+    List<Map<String, dynamic>> data =
+        List<Map<String, dynamic>>.from(res.data).map((berita) {
+      return {
+        "image": berita['gambar'] ?? '',
+        "title": berita['judul'] ?? '-',
+        "excerpt": (berita['isi'] ?? '').replaceAll(RegExp(r'<[^>]*>'), '').substring(0, 100),
+        "category": berita['kategori'] ?? 'Umum',
+        "date": berita['tgl']?.split(' ')?.first ?? '-',
+        "raw": berita,
+      };
+    }).toList();
+
+    beritas.value = data;
+    filteredBeritas.value = data;
+  } catch (e) {
+    beritas.value = [];
+    filteredBeritas.value = [];
+    print("Error fetchBerita: $e");
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+
+  void filterBerita(String keyword) {
+    List<Map<String, dynamic>> temp = beritas.where((berita) {
+      final matchesCategory = selectedCategory.value == 'Semua' ||
+          berita['category'] == selectedCategory.value;
+      final matchesKeyword = keyword.isEmpty ||
+          berita['title']
+              .toString()
+              .toLowerCase()
+              .contains(keyword.toLowerCase());
+      return matchesCategory && matchesKeyword;
+    }).toList();
+
+    filteredBeritas.value = temp;
   }
 
   void setSelectedCategory(String category) {
     selectedCategory.value = category;
-    filterByCategory(category);
+    filterBerita(searchController.text);
   }
 
   void bacaBeritaLengkap(Map<String, dynamic> berita) {
-    Get.toNamed(Routes.BERITA_DETAIL, arguments: berita);
-  }
+  Get.toNamed(Routes.BERITA_DETAIL, arguments: berita['raw']);
+}
 
-  // Metode untuk menambah jumlah views
-  void tambahViews(Map<String, dynamic> berita) {
-    int index = beritas.indexWhere((b) => b['title'] == berita['title']);
-    if (index != -1) {
-      beritas[index]['views'] = (beritas[index]['views'] ?? 0) + 1;
-    }
-  }
 }

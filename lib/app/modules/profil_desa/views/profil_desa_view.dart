@@ -1,9 +1,12 @@
+import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/profil_desa_controller.dart';
+import 'package:flutter_html/flutter_html.dart';
+
 
 class ProfilDesaView extends GetView<ProfilDesaController> {
   const ProfilDesaView({super.key});
@@ -12,6 +15,7 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
   Widget build(BuildContext context) {
     // Inisialisasi AppResponsive
     final AppResponsive responsive = AppResponsive();
+    
     responsive.init(context);
 
     return Scaffold(
@@ -85,119 +89,132 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
-            child: Column(
-              children: [
-                Text(
-                  'Sambutan Kepala Desa',
-                  style: 
-                  AppText.h5(color: AppColors.dark),
-                ),
-                const SizedBox(height: 12),
-                  ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.asset('assets/img/kepala_desa.jpg',
-                          width: 147,
-                            height: 203,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                width: 120,
-                                height: 160,
-                                color: AppColors.muted,
-                                child: Icon(
-                                  Icons.person,
-                                  size: 60,
-                                  color: AppColors.textSecondary,
+            child: Obx(() {
+              
+              if (controller.isLoading.value) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+              final html = controller.profile['isi'];
+              final List misiList = controller.profile["informasi_desa"]?["misi"] ?? [];
+              return Column(
+                children: [
+                  Text(
+                    controller.profile["profile"] ?? "",
+                    style: 
+                    AppText.h5(color: AppColors.dark),
+                  ),
+                  const SizedBox(height: 12),
+                    ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network("${ApiConstant.pictureUrl}${controller.profile['gambar']}" ?? "",
+                            width: 147,
+                              height: 203,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  width: 120,
+                                  height: 160,
+                                  color: AppColors.muted,
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 60,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                );})
+                          ),
+                          const SizedBox(height: 18),
+                          Text(
+                                  controller.profile['kepala_desa']?['nama'] ?? '',
+                                  style: AppText.h4(color: AppColors.text),
                                 ),
-                              );})
+                          const SizedBox(height: 18),
+                               Html(
+                                  data: html,
+                                  style: {
+                                    "body": Style(
+                                      margin: Margins.zero,
+                                      padding: HtmlPaddings.zero,
+                                      fontSize: FontSize(14),
+                                      textAlign: TextAlign.justify,
+                                      color: AppColors.text,
+                                    ),
+                                    "p": Style(
+                                      margin: Margins.only(bottom: 12),
+                                    ),
+                                  },
+                                ),
+                                 const SizedBox(height: 16),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Informasi Desa',
+                              style: AppText.h5(color: AppColors.dark),
+                            ),
+                            const SizedBox(height: 16),
+                      
+                            _buildInfoItem('Nama Desa', 'Desa ${controller.profile["informasi_desa"]?["nama"]}'),
+                            _buildInfoItem('Kecamatan', controller.profile["informasi_desa"]?["kecamatan"]),
+                            _buildInfoItem('Kabupaten', controller.profile["informasi_desa"]?["kabupaten"]),
+                            _buildInfoItem('Provinsi', controller.profile["informasi_desa"]?["provinsi"]),
+                            _buildInfoItem('Kode Pos', controller.profile["informasi_desa"]?["kodepos"]),
+                            _buildInfoItem('Luas Wilayah', controller.profile["informasi_desa"]?["luas_wilayah"]),
+                            _buildInfoItem('Jumlah Penduduk', controller.profile["informasi_desa"]?["jumlah_penduduk"]),
+                            _buildInfoItem('Jumlah KK', controller.profile["informasi_desa"]?["jumlah_kk"]),
+                            _buildInfoItem('Batas Utara', controller.profile["informasi_desa"]?["batas_utara"]),
+                            _buildInfoItem('Batas Selatan', controller.profile["informasi_desa"]?["batas_selatan"]),
+                            _buildInfoItem('Batas Timur', controller.profile["informasi_desa"]?["batas_timur"]),
+                            _buildInfoItem('Batas Barat', controller.profile["informasi_desa"]?["batas_barat"]),
+                          ],
                         ),
-                        const SizedBox(height: 18),
-                        Text(
-                                'Nailil Fitri',
-                                style: AppText.h4(color: AppColors.text),
-                              ),
-                        const SizedBox(height: 18),
-                        Text(
-                          'Selamat datang di Profil Desa Banjaranayar.Desa kami merupakan desa yang terus berkomitmen untuk berkembang, menghadirkan pelayanan terbaik bagi masyarakat, serta mendorong berbagai potensi lokal agar dapat memberikan manfaat seluas-luasnya bagi warga. Melalui halaman profil ini, kami berharap masyarakat dapat mengenal lebih dekat sejarah, visi misi, layanan, serta berbagai program pembangunan yang sedang dan akan dijalankan. Kami juga berterima kasih atas dukungan seluruh warga dalam menjaga kekompakan, gotong royong, dan partisipasi aktif demi kemajuan Desa Banjaranayar. Semoga informasi yang kami sajikan dapat menjadi sumber pengetahuan dan membuka peluang kolaborasi untuk mewujudkan desa yang lebih maju, mandiri, dan sejahtera.',
-                          textAlign: TextAlign.justify,
-                        )
-                      ],
-                    ),
-          ),
+                        const SizedBox(height: 16),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Visi & Misi',
+                              style: AppText.h5(color: AppColors.dark),
+                            ),
+                            const SizedBox(height: 16),
+                        
+                            // Visi
+                            Text(
+                              'Visi',
+                              style: AppText.h6(color: AppColors.text),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              controller.profile["informasi_desa"]?["visi"],
+                              style: AppText.bodyMedium(color: AppColors.text),
+                              textAlign: TextAlign.justify,
+                            ),
+                        
+                            const SizedBox(height: 16),
+                        
+                            // Misi
+                            Text(
+                              'Misi',
+                              style: AppText.h6(color: AppColors.text),
+                            ),
+                            const SizedBox(height: 8),
 
-          const SizedBox(height: 16),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: misiList
+                                  .map((e) => _buildMisiItem(e))
+                                  .toList(),
+                            )
 
-          // Card Informasi Desa
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Informasi Desa',
-                style: AppText.h5(color: AppColors.dark),
-              ),
-              const SizedBox(height: 16),
-          
-              // Daftar informasi desa
-              _buildInfoItem('Nama Desa', 'Desa Sukamakmur'),
-              _buildInfoItem('Kecamatan', 'Ciomas'),
-              _buildInfoItem('Kabupaten', 'Bogor'),
-              _buildInfoItem('Provinsi', 'Jawa Barat'),
-              _buildInfoItem('Kode Pos', '16610'),
-              _buildInfoItem('Luas Wilayah', '5.2 km²'),
-              _buildInfoItem('Jumlah Penduduk', '8.750 jiwa'),
-              _buildInfoItem('Jumlah KK', '2.160 KK'),
-              _buildInfoItem('Batas Utara', 'Desa Sukajaya'),
-              _buildInfoItem('Batas Selatan', 'Desa Sukatani'),
-              _buildInfoItem('Batas Timur', 'Desa Sukamaju'),
-              _buildInfoItem('Batas Barat', 'Desa Sukaraja'),
-            ],
+                          ],
+                        ),
+                            
+                        ],
+                      );
+            }),
           ),
-
-          const SizedBox(height: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Visi & Misi',
-                style: AppText.h5(color: AppColors.dark),
-              ),
-              const SizedBox(height: 16),
-          
-              // Visi
-              Text(
-                'Visi',
-                style: AppText.h6(color: AppColors.text),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Terwujudnya Desa Sukamakmur yang maju, mandiri, sejahtera, dan bermartabat dengan berlandaskan iman dan takwa.',
-                style: AppText.bodyMedium(color: AppColors.text),
-                textAlign: TextAlign.justify,
-              ),
-          
-              const SizedBox(height: 16),
-          
-              // Misi
-              Text(
-                'Misi',
-                style: AppText.h6(color: AppColors.text),
-              ),
-              const SizedBox(height: 8),
-              _buildMisiItem(
-                  'Meningkatkan pelayanan publik yang profesional dan berkualitas'),
-              _buildMisiItem(
-                  'Memperkuat ekonomi kerakyatan melalui pengembangan potensi lokal'),
-              _buildMisiItem(
-                  'Meningkatkan kualitas pendidikan dan kesehatan masyarakat'),
-              _buildMisiItem(
-                  'Melestarikan nilai-nilai budaya dan kearifan lokal'),
-              _buildMisiItem(
-                  'Membangun infrastruktur desa yang memadai dan berkelanjutan'),
-              _buildMisiItem(
-                  'Menjaga keamanan, ketertiban, dan kerukunan warga'),
-            ],
-          ),
-        ],
+          ],
       ),
     );
   }
@@ -341,33 +358,34 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
   }
 
   // Widget untuk item informasi desa
-  Widget _buildInfoItem(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 150,
-            child: Text(
-              label,
-              style: AppText.bodyMedium(color: AppColors.textSecondary),
-            ),
+  Widget _buildInfoItem(String label, dynamic value) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 8.0),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 150,
+          child: Text(
+            label,
+            style: AppText.bodyMedium(color: AppColors.textSecondary),
           ),
-          Text(': ', style: AppText.bodyMedium(color: AppColors.text)),
-          Expanded(
-            child: Text(
-              value,
-              style: AppText.bodyMedium(color: AppColors.text),
-            ),
+        ),
+        Text(': ', style: AppText.bodyMedium(color: AppColors.text)),
+        Expanded(
+          child: Text(
+            value?.toString() ?? '-',
+            style: AppText.bodyMedium(color: AppColors.text),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
+
 
   // Widget untuk item misi
-  Widget _buildMisiItem(String text) {
+  Widget _buildMisiItem(dynamic text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(

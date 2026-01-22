@@ -1,4 +1,6 @@
+import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/models/PerangkatModel.dart';
+import 'package:desago/app/services/dio_services.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_text.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +10,8 @@ import 'package:remixicon/remixicon.dart';
 class ProfilDesaController extends GetxController with GetSingleTickerProviderStateMixin {
   // Controller untuk TabBar
   late TabController tabController;
-  
+  var isLoading = true.obs;
+  final profile = <String, dynamic>{}.obs;
   // List perangkat desa
   final List<PerangkatModel> perangkatDesaList = [
     PerangkatModel(
@@ -145,8 +148,8 @@ class ProfilDesaController extends GetxController with GetSingleTickerProviderSt
 
   @override
   void onInit() {
+    fetchprofile();
     super.onInit();
-    // Inisialisasi TabController
     tabController = TabController(length: 2, vsync: this);
   }
 
@@ -156,8 +159,21 @@ class ProfilDesaController extends GetxController with GetSingleTickerProviderSt
     tabController.dispose();
     super.onClose();
   }
+
+  Future<void> fetchprofile() async{
+    try{
+      final res = await DioService.instance.get(
+        ApiConstant.profilDesa,
+      );
+
+     profile.value = Map<String, dynamic>.from(res.data);
+      } catch (e) {
+        return;
+    } finally{
+      isLoading.value = false;
+    }
+  }
   
-  // Fungsi untuk menampilkan detail perangkat desa
   void showPerangkatDetail(PerangkatModel perangkat) {
     Get.dialog(
       Dialog(
@@ -180,13 +196,6 @@ class ProfilDesaController extends GetxController with GetSingleTickerProviderSt
                     backgroundImage: AssetImage("assets/img/kepala_desa.jpg"),
                     onBackgroundImageError: (exception, stackTrace) {},
                   ),
-                  // Center(
-                  //   child: Text(
-                  //     item.nama.substring(0, 1).toUpperCase(),
-                  //     style:
-                  //         AppText.h4(color: AppColors.primary),
-                  //   ),
-                  // ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(

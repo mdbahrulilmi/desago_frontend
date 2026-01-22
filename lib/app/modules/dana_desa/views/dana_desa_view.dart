@@ -26,11 +26,15 @@ class DanaDesaView extends GetView<DanaDesaController> {
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
-                  _totalBelanja(),
+                  _totalPengeluaran(),
+                  SizedBox(height: AppResponsive.h(3)),
+                  _dividerTitle('Rincian Pendapatan'),
+                  SizedBox(height: AppResponsive.h(3)),
+                  _rincianPendapatan(),
                   SizedBox(height: AppResponsive.h(3)),
                   _dividerTitle('Rincian Belanja'),
                   SizedBox(height: AppResponsive.h(3)),
-                  _rincianBelanja()
+                  _rincianPengeluaran()
                 ],
               ),
             ),
@@ -278,71 +282,89 @@ Widget _danaDesaCard({
   );
 }
 
-Widget _totalBelanja(){
-  return Column(
-    children: [
-    _danaDesaCard(
-      title: "Jumlah Pendapatan",
-      nominal: "1.849.012.930",
-      icon: Icons.attach_money,
-      profit: true,
-    ),
-    SizedBox(height: AppResponsive.h(1))
-    ,
-    _danaDesaCard(
-      title: "Jumlah Belanja",
-      nominal: "1.849.012.930",
-      icon: Icons.shopping_basket,
-      profit: false,
-    ),
+Widget _totalPengeluaran(){
+  return Obx((){
+    if (controller.isLoading.value) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-    ]
-  );  
+    if (controller.apbn_pengeluaran.isEmpty) {
+      return const Text('Belum ada data belanja');
+    }
+    if (controller.apbn_pendapatan.isEmpty) {
+      return const Text('Belum ada data belanja');
+    }
+    return Column(
+      children: [
+      _danaDesaCard(
+        title: "Jumlah Pendapatan",
+        nominal: controller.formatRupiah(controller.totalPendapatan),
+        icon: Icons.attach_money,
+        profit: true,
+      ),
+      SizedBox(height: AppResponsive.h(1))
+      ,
+      _danaDesaCard(
+        title: "Jumlah Belanja",
+        nominal: controller.formatRupiah(controller.totalBelanja),
+        icon: Icons.shopping_basket,
+        profit: false,
+      ),
+    
+      ]
+    );  
+  });  
 }
 
-Widget _rincianBelanja(){
-  return Column(
-    children: [
-    _danaDesaCard(
-      title: "Penyelenggaraan Pemdes",
-      nominal: "1.849.012.930",
-      icon: Icons.insert_drive_file,
-      profit: false,
-    ),
-    SizedBox(height: AppResponsive.h(1))
-    ,
-    _danaDesaCard(
-      title: "Pembangunan Desa",
-      nominal: "1.849.012.930",
-      icon: Icons.build,
-      profit: false,
-    ),
-    SizedBox(height: AppResponsive.h(1)),
-    _danaDesaCard(
-      title: "Pemberdayaan Masyarakat",
-      nominal: "1.849.012.930",
-      icon: Icons.nature_people,
-      profit: false,
-    ),
-    SizedBox(height: AppResponsive.h(1)),
-    _danaDesaCard(
-      title: "Pembinaan Kemasyarakatan",
-      nominal: "1.849.012.930",
-      icon: Icons.people,
-      profit: false,
-    ),
-    SizedBox(height: AppResponsive.h(1)),
-    _danaDesaCard(
-      title: "Penanggulangan Bencana",
-      nominal: "1.849.012.930",
-      icon: Icons.crisis_alert,
-      profit: false,
-    ),
-    SizedBox(height: AppResponsive.h(1)),
+Widget _rincianPendapatan(){
+  return Obx( () {
+    if (controller.isLoading.value) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-    ]
-  );  
+    if (controller.apbn_pengeluaran.isEmpty) {
+      return const Text('Belum ada data belanja');
+    }
+    return Column(
+          children: controller.apbn_pendapatan.map((item) {
+            return Padding(
+              padding: EdgeInsets.only(bottom: AppResponsive.h(1)),
+              child: _danaDesaCard(
+                title: item['description'] ?? '-',
+                nominal: controller.formatRupiah(item['anggaran'] ?? 0),
+                icon: Icons.insert_drive_file,
+                profit: true,
+              ),
+            );
+          }).toList(),
+        );
+  });  
 }
+Widget _rincianPengeluaran(){
+  return Obx( () {
+    if (controller.isLoading.value) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (controller.apbn_pengeluaran.isEmpty) {
+      return const Text('Belum ada data belanja');
+    }
+    return Column(
+          children: controller.apbn_pengeluaran.map((item) {
+            return Padding(
+              padding: EdgeInsets.only(bottom: AppResponsive.h(1)),
+              child: _danaDesaCard(
+                title: item['description'] ?? '-',
+                nominal: controller.formatRupiah(item['anggaran'] ?? 0),
+                icon: Icons.insert_drive_file,
+                profit: false,
+              ),
+            );
+          }).toList(),
+        );
+  });  
+}
+
 Widget _dividerTitle(String title) {
   return Row(
     children: [

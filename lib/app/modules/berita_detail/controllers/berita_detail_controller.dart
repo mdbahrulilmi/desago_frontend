@@ -1,38 +1,43 @@
 import 'package:get/get.dart';
+// import 'package:share_plus/share_plus.dart';
 
 class BeritaDetailController extends GetxController {
-  // Reactive variable untuk menyimpan detail berita
   final Rx<Map<String, dynamic>> berita = Rx<Map<String, dynamic>>({});
 
   @override
   void onInit() {
     super.onInit();
-    // Ambil argumen berita yang dikirim dari halaman sebelumnya
     final arguments = Get.arguments;
     if (arguments != null) {
       berita.value = arguments;
-      // Increment views
+      print(berita.value["user_desa"]);
       berita.value['views'] = (berita.value['views'] ?? 0) + 1;
     }
   }
 
-  // Metode untuk berbagi berita
-  void shareBerita() {
-    // Implementasi berbagi berita
-    Get.snackbar(
-      'Berbagi Berita',
-      'Fitur berbagi sedang dikembangkan',
-      snackPosition: SnackPosition.BOTTOM,
-    );
-  }
-
-  // Metode untuk menandai sebagai favorit
   void toggleFavorite() {
-    // Implementasi toggle favorit
     Get.snackbar(
       'Favorit',
       'Berita telah ditambahkan ke favorit',
       snackPosition: SnackPosition.BOTTOM,
     );
+  }
+
+void shareBerita(Map<String, dynamic> berita) {
+    final raw = berita['raw'];
+
+    final text = '''
+    ${berita['title']}
+
+    ${berita['excerpt']}
+
+  Baca selengkapnya:
+  https://desatinggo.id/berita/${raw['slug']}
+  ''';
+
+    // Share.share(
+    //   text,
+    //   subject: berita['title'],
+    // );
   }
 }
