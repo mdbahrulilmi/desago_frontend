@@ -70,7 +70,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
                   ),
                   child: TextField(
   controller: controller.searchController,
-  onChanged: controller.filterNomorPenting,
+  onChanged: controller.filterNomorDarurat,
   decoration: InputDecoration(
     contentPadding: const EdgeInsets.symmetric(vertical: 12),
     hintText: 'Cari nomor penting...',
@@ -85,7 +85,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
           icon: Icon(Remix.close_line, color: AppColors.primary),
           onPressed: () {
             controller.searchController.clear();
-            controller.filterNomorPenting('');
+            // controller.filterNomorPenting('');
           },
         );
       },
@@ -102,7 +102,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
             ),
           ),
           Expanded(
-            child: Obx(() => controller.filteredNomorPentingList.isEmpty
+            child: Obx(() => controller.filteredNomor.isEmpty
                 ? Center(
                     child: Text(
                       'Nomor tidak ditemukan',
@@ -111,9 +111,9 @@ class NomorPentingView extends GetView<NomorPentingController> {
                   )
                 : ListView.builder(
                     padding: EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: controller.filteredNomorPentingList.length,
+                    itemCount: controller.filteredNomor.length,
                     itemBuilder: (context, index) {
-                      final item = controller.filteredNomorPentingList[index];
+                      final item = controller.filteredNomor[index];
                       return Card(
                         color: AppColors.white,
                         margin: EdgeInsets.only(bottom: 12),
@@ -138,7 +138,10 @@ class NomorPentingView extends GetView<NomorPentingController> {
                                   child: CircleAvatar(
                                   radius: 30,
                                   backgroundColor: AppColors.muted,
-                                  backgroundImage: AssetImage("assets/img/kepala_desa.jpg"),
+                                  backgroundImage: item.image != null && item.image!.isNotEmpty
+                                  ? NetworkImage(item.image!)
+                                  : const AssetImage('assets/img/kepala_desa.jpg') as ImageProvider,
+
                                   onBackgroundImageError: (exception, stackTrace) {},
                                 ),
                                 ),
@@ -149,7 +152,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       AutoSizeText(
-                                        item.nama,
+                                        item.name,
                                         style:
                                             AppText.h6(color: AppColors.dark),
                                       ),
@@ -157,7 +160,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
                                       Row(
                                         children: [
                                           Text(
-                                            item.nomor,
+                                            item.phone,
                                             style: AppText.bodyMedium(
                                                 color: AppColors.textSecondary),
                                           ),
@@ -165,7 +168,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
                                           InkWell(
                                             onTap: () {
                                               controller
-                                                  .copyToClipboard(item.nomor);
+                                                  .copyToClipboard(item.phone);
                                             },
                                             child: Icon(
                                               Remix.file_copy_line,
@@ -201,26 +204,21 @@ class NomorPentingView extends GetView<NomorPentingController> {
       title: 'Detail Kontak',
       content: [
         Center(
-          child: Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                item.nama.substring(0, 1).toUpperCase(),
-                style: AppText.h2(color: AppColors.primary),
-              ),
-            ),
+          child: CircleAvatar(
+            radius: 50,
+            backgroundColor: AppColors.muted,
+            backgroundImage: item.image != null && item.image!.isNotEmpty
+            ? NetworkImage(item.image!)
+            : const AssetImage('assets/img/kepala_desa.jpg') as ImageProvider,
+          
+            onBackgroundImageError: (exception, stackTrace) {},
           ),
         ),
         SizedBox(height: AppResponsive.h(2)),
 
         Center(
           child: Text(
-            item.nama,
+            item.name,
             style: AppText.h5(color: AppColors.dark),
             textAlign: TextAlign.center,
           ),
@@ -231,14 +229,14 @@ class NomorPentingView extends GetView<NomorPentingController> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              item.nomor,
+              item.phone,
               style: AppText.h6(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
             SizedBox(width: 8),
             InkWell(
               onTap: () {
-                controller.copyToClipboard(item.nomor);
+                controller.copyToClipboard(item.phone);
               },
               borderRadius: BorderRadius.circular(15),
               child: Container(
@@ -263,7 +261,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
             InkWell(
               onTap: () {
                 Get.back();
-                controller.callNumber(item.nomor);
+                controller.callNumber(item.phone);
               },
               borderRadius: BorderRadius.circular(10),
               child: Container(
@@ -289,7 +287,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
             InkWell(
               onTap: () {
                 Get.back();
-                controller.openWhatsApp(item.nomor);
+                controller.openWhatsApp(item.phone);
               },
               borderRadius: BorderRadius.circular(10),
               child: Container(

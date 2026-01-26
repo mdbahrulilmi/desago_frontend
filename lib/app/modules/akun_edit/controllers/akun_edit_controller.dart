@@ -48,7 +48,6 @@ class AkunEditController extends GetxController {
     }
   }
 
-  /// PICK AVATAR DARI CAMERA
   Future<void> captureAvatar() async {
     if (!await PermissionHelper.checkAndRequestCameraPermissions()) return;
     try {
@@ -61,13 +60,12 @@ class AkunEditController extends GetxController {
         return;
       }
 
-      avatar.value = file; // update lokal, langsung tampil di UI
+      avatar.value = file;
     } catch (e) {
       _showError('Gagal mengambil foto: $e');
     }
   }
 
-  /// SHOW OPTIONS PICKER
   void showAvatarOptions() {
     AppBottomSheet.avatarPicker(
       title: 'Ubah Foto Profil',
@@ -79,7 +77,6 @@ class AkunEditController extends GetxController {
     );
   }
 
-  /// UPDATE PROFILE + AVATAR SEKALIGUS
   Future<void> updateProfile() async {
   try {
     isLoading.value = true;

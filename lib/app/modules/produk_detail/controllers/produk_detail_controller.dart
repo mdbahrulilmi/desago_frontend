@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProdukDetailController extends GetxController {
   final RxMap<String, dynamic> product = <String, dynamic>{}.obs;
@@ -27,21 +28,28 @@ class ProdukDetailController extends GetxController {
     isFavorite.value = !isFavorite.value;
   }
   
-  void share() {
-    // Implement share functionality
-    Get.snackbar(
-      'Share',
-      'Sharing ${product['name']}',
-      snackPosition: SnackPosition.BOTTOM,
+  Future<void> openWhatsApp({
+  required String phone,
+  required String product,
+  String? message,
+}) async {
+  final text = message ??
+      '''Halo kak 😊
+Aku lihat $product, mau nanya detailnya dong.
+''';
+
+  final url = Uri.parse(
+    'https://wa.me/$phone?text=${Uri.encodeComponent(text)}',
+  );
+
+  if (await canLaunchUrl(url)) {
+    await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
     );
+  } else {
+    throw 'Tidak bisa membuka WhatsApp';
   }
-  
-  void buyNow() {
-    // Implement buy now functionality
-    Get.snackbar(
-      'Buy Now',
-      'Buying ${quantity.value} ${product['name']}',
-      snackPosition: SnackPosition.BOTTOM,
-    );
-  }
+}
+
 }

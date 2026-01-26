@@ -149,8 +149,8 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
                     topLeft: Radius.circular(12),
                     topRight: Radius.circular(12),
                   ),
-                  child: Image.asset(
-                    laporan['foto'],
+                  child: Image.network(
+                    "https://backend.desago.id/uploads/lapor/${laporan['image']}",
                     width: double.infinity,
                     height: AppResponsive.h(18),
                     fit: BoxFit.cover,
@@ -169,7 +169,7 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         SizedBox(width: AppResponsive.w(0.5)),
-                        Text(laporan['kategori'], style: AppText.small(color: AppColors.text)),
+                        Text("${laporan['kategori']['name']}", style: AppText.small(color: AppColors.text)),
                       ],
                     ),
                   ),
@@ -184,7 +184,7 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      laporan['status'],
+                      laporan['status'] ?? "Menunggu",
                       style: AppText.small(
                           color: AppColors.secondary),
                     ),
@@ -199,12 +199,12 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
                 children: [
                   Row(
                     children: [
-                      Text('ID: ${laporan['id']}',
+                      Text('ID: ${laporan['no']}',
                           style: AppText.bodySmall(color: AppColors.textSecondary)),
                       SizedBox(width: AppResponsive.w(1)),
                       Expanded(
                         child: Text(
-                          controller.dateFormat.format(laporan['tanggal']),
+                          "${laporan['created_at']}",
                           style: AppText.bodySmall(color: AppColors.textSecondary),
                           textAlign: TextAlign.right,
                         ),
@@ -213,20 +213,20 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
                   ),
                   SizedBox(height: AppResponsive.h(1)),
                   Text(
-                      laporan['judul'],
+                      laporan['title'],
                       style: AppText.h6(color: AppColors.text),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   SizedBox(height: AppResponsive.h(1)),
                   Text(
-                    laporan['deskripsi'],
+                    laporan['description'],
                     style: AppText.bodyMedium(color: AppColors.textSecondary),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: AppResponsive.h(1)),
-                  if (laporan['keterangan'] != null)
+                  if (laporan['status'] != null)
                     Container(
                       width: double.infinity,
                       padding: AppResponsive.padding(all: 1.5),
@@ -235,7 +235,7 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        laporan['keterangan'],
+                        laporan['status'] ?? "Menunggu",
                         style: AppText.bodySmall(color: AppColors.textSecondary),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

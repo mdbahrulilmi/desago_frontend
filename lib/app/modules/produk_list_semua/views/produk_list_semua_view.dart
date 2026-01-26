@@ -93,15 +93,21 @@ class ProdukListSemuaView extends GetView<ProdukListSemuaController> {
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: SizedBox(
-              width: AppResponsive.w(35),
-              child: Image.asset(
-                product['image'],
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
+  borderRadius: BorderRadius.circular(12),
+  child: SizedBox(
+    width: AppResponsive.w(35),
+    height: AppResponsive.w(35), // sama dengan width
+    child: Image.network(
+      product['image']?.toString() ?? '',
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => Image.asset(
+        'assets/images/no_image.png',
+        fit: BoxFit.cover,
+      ),
+    ),
+  ),
+),
+
         ),
 
         Expanded(
@@ -112,7 +118,7 @@ class ProdukListSemuaView extends GetView<ProdukListSemuaController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 AutoSizeText(
-                  product['name']?.toString() ?? '-',
+                  product['title']?.toString() ?? '-',
                   style: AppText.pSmallBold(color: AppColors.dark),
                   maxLines: 1,
                   minFontSize: 8,
@@ -121,7 +127,7 @@ class ProdukListSemuaView extends GetView<ProdukListSemuaController> {
                 ),
                 SizedBox(height: AppResponsive.h(0.5)),
                 Text(
-                  product['price_range'],
+                  'Mulai dari Rp ${product['harga_mulai']?.toString() ?? '0'}',
                   style: AppText.smallBold(color: AppColors.textSecondary),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -134,13 +140,13 @@ class ProdukListSemuaView extends GetView<ProdukListSemuaController> {
                     borderRadius: BorderRadius.circular(8)
                   ),
                   child: Text(
-                    '${product['open_time']}',
+                    '07:00 - 16:00',
                     style: AppText.bodySmall(color: AppColors.secondary),
                   ),
                 ),
                 SizedBox(height: AppResponsive.h(1)),
                 Text(
-                  '${product['category']}',
+                  '${product['kategori']['name']}',
                   style: AppText.smallBold(color: AppColors.grey),
                 ),
                 SizedBox(height: AppResponsive.h(1)),

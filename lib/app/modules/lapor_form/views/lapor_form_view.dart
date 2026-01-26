@@ -1,7 +1,9 @@
+import 'package:desago/app/constant/api_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_text.dart';
+import 'package:get_storage/get_storage.dart';
 import '../controllers/lapor_form_controller.dart';
 
 class LaporFormView extends GetView<LaporFormController> {
@@ -127,6 +129,44 @@ class LaporFormView extends GetView<LaporFormController> {
                 cursorColor: AppColors.dark,
               ),
               const SizedBox(height: 16),
+              Obx(() => DropdownButtonFormField<int>(
+                value: controller.selectedCategoryId.value != 0
+                    ? controller.selectedCategoryId.value
+                    : null,
+                style: AppText.bodyMedium(color: AppColors.dark),
+                decoration: InputDecoration(
+                  hintText: 'Pilih Kategori',
+                  hintStyle: AppText.bodyMedium(color: AppColors.textSecondary),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: AppColors.textSecondary),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: AppColors.textSecondary),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: AppColors.primary),
+                  ),
+                ),
+                items: controller.categories.map((e) {
+                  return DropdownMenuItem<int>(
+                    value: e['id'],
+                    child: Text(e['name'], style: AppText.bodyMedium()),
+                  );
+                }).toList(),
+                onChanged: (int? val) {
+                  if (val != null) {
+                    controller.selectedCategoryId.value = val;
+                    controller.selectedCategoryName.value =
+                        controller.categories.firstWhere((e) => e['id'] == val)['name'];
+                  }
+                },
+                isExpanded: true,
+                icon: Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+              )),
+              const SizedBox(height: 16),
               TextFormField(
                 style: AppText.bodyMedium(color: AppColors.dark),
                 controller: controller.deskripsiController,
@@ -151,7 +191,15 @@ class LaporFormView extends GetView<LaporFormController> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () => controller.kirimLaporan(),
+                onPressed: () => 
+                controller.createLapor(
+                  subdomain: ApiConstant.desa, 
+                  title: controller.judulController.text,
+                  category: controller.selectedCategoryId.value, 
+                  ditujukan: controller.selectedTujuan.value,
+                  description: controller.deskripsiController.text,
+                  image: controller.laporController.imageFile.value,
+                  ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: AppColors.white,

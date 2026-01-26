@@ -1,4 +1,6 @@
+import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/models/NomorPentingModel.dart';
+import 'package:desago/app/services/dio_services.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,27 +8,16 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NomorPentingController extends GetxController {
-  final RxList<NomorPentingModel> nomorPentingList = <NomorPentingModel>[
-    NomorPentingModel(nama: 'Ambulans', nomor: '118'),
-    NomorPentingModel(nama: 'Polisi', nomor: '110'),
-    NomorPentingModel(nama: 'Pemadam Kebakaran', nomor: '113'),
-    NomorPentingModel(nama: 'Basarnas', nomor: '115'),
-    NomorPentingModel(nama: 'PLN', nomor: '123'),
-    NomorPentingModel(nama: 'Layanan Darurat Telkom', nomor: '147'),
-    NomorPentingModel(nama: 'Call Center Jasa Marga', nomor: '14080'),
-    NomorPentingModel(nama: 'BPJS Kesehatan', nomor: '1500400'),
-    NomorPentingModel(nama: 'Posko Bencana BNPB', nomor: '081281973311'),
-  ].obs;
-
-  final RxList<NomorPentingModel> filteredNomorPentingList =
-      <NomorPentingModel>[].obs;
+  final RxList<NomorPentingModel> nomorDarurat = <NomorPentingModel>[].obs;
+  final RxList<NomorPentingModel> filteredNomor = <NomorPentingModel>[].obs;
   final TextEditingController searchController = TextEditingController();
   final RxString searchText = ''.obs;
+  var isLoading = true.obs;
 
   @override
   void onInit() {
     super.onInit();
-    filteredNomorPentingList.assignAll(nomorPentingList);
+    fetchNomorDarurat();
   }
 
   @override
@@ -35,19 +26,43 @@ class NomorPentingController extends GetxController {
     super.onClose();
   }
 
-  void filterNomorPenting(String query) {
-    searchText.value = query;
+  Future<void> fetchNomorDarurat() async {
+  try {
+    isLoading.value = true;
 
-    if (query.isEmpty) {
-      filteredNomorPentingList.assignAll(nomorPentingList);
-    } else {
-      filteredNomorPentingList.assignAll(nomorPentingList.where((item) =>
-          item.nama.toLowerCase().contains(query.toLowerCase()) ||
-          item.nomor.toLowerCase().contains(query.toLowerCase())));
+    final res = await DioService.instance.get(ApiConstant.nomorDarurat);
+
+    final List listData =
+        res.data is List ? res.data : res.data['data'] ?? [];
+
+    nomorDarurat.value =
+        listData.map((e) => NomorPentingModel.fromJson(e)).toList();
+
+      filteredNomor.assignAll(nomorDarurat);
+    } catch (e) {
+      nomorDarurat.clear();
+      filteredNomor.clear();
+      print("Error fetchNomorDarurat: $e");
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  // Fungsi untuk melakukan panggilan telepon
+
+  void filterNomorDarurat(String keyword) {
+    if (keyword.isEmpty) {
+      filteredNomor.assignAll(nomorDarurat);
+    } else {
+      filteredNomor.assignAll(
+        nomorDarurat.where((item) {
+          return item.name.toLowerCase().contains(keyword.toLowerCase());
+        }).toList(),
+      );
+    }
+  }
+
+
+
   Future<void> callNumber(String phoneNumber) async {
     final Uri url = Uri.parse('tel:$phoneNumber');
     if (await canLaunchUrl(url)) {
@@ -61,7 +76,8 @@ class NomorPentingController extends GetxController {
     }
   }
 
-  // Fungsi untuk membuka WhatsApp
+
+
   Future<void> openWhatsApp(String phoneNumber) async {
     String formattedNumber = phoneNumber;
     if (!formattedNumber.startsWith('+')) {

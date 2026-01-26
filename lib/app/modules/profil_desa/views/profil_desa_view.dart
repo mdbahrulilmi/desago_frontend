@@ -22,10 +22,17 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
       backgroundColor: AppColors.white,
       appBar: AppBar(
         backgroundColor: AppColors.primary,
-        title: Text(
-          'Profil Desa Sukamakmur',
+        title: Obx((){
+          if (controller.isLoading.value) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          return Text(
+          'Profil Desa ${controller.profile["informasi_desa"]?["nama"]}',
           style: AppText.h5(color: AppColors.white),
-        ),
+        );
+        }),        
         centerTitle: true,
         leading: IconButton(
           icon: Icon(
@@ -221,6 +228,10 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
 
   // Widget untuk Tab Perangkat
   Widget _buildPerangkatTab(BuildContext context) {
+    return Obx(() {
+    if (controller.isLoading.value) {
+      return const Center(child: CircularProgressIndicator());
+    }
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -240,9 +251,9 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: controller.perangkatDesaList.length,
+                  itemCount: controller.perangkatDesa.length,
                   itemBuilder: (context, index) {
-                    final item = controller.perangkatDesaList[index];
+                    final item = controller.perangkatDesa[index];
                     return Card(
                       color: AppColors.white,
                       elevation: 1,
@@ -257,18 +268,11 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
                             CircleAvatar(
                                 radius: 30,
                                 backgroundColor: AppColors.muted,
-                                backgroundImage: AssetImage("assets/img/kepala_desa.jpg"),
+                                backgroundImage: item.image != null && item.image!.isNotEmpty
+                                  ? NetworkImage(item.image!)
+                                  : const AssetImage('assets/img/kepala_desa.jpg') as ImageProvider,
                                 onBackgroundImageError: (exception, stackTrace) {},
-                                // child: Icon(
-                                //   Icons.person,
-                                //   size: 30,
-                                //   color: AppColors.white,
-                                // ),
                               ),
-                          // Text(
-                          //   item.nama.substring(0, 1),
-                          //   style: AppText.h6(color: AppColors.primary),
-                          // ),
                         ),
                         title: Text(
                           item.nama,
@@ -324,10 +328,14 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
                       child: ListTile(
                         leading: CircleAvatar(
                           backgroundColor: AppColors.info.withOpacity(0.1),
-                          child: Text(
-                            item.nama.substring(0, 1),
-                            style: AppText.h6(color: AppColors.info),
-                          ),
+                          child: CircleAvatar(
+                                radius: 30,
+                                backgroundColor: AppColors.muted,
+                                backgroundImage: item.image != null && item.image!.isNotEmpty
+                                  ? NetworkImage(item.image!)
+                                  : const AssetImage('assets/img/kepala_desa.jpg') as ImageProvider,
+                                onBackgroundImageError: (exception, stackTrace) {},
+                              ),
                         ),
                         title: Text(
                           item.nama,
@@ -355,6 +363,7 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
         ],
       ),
     );
+    });
   }
 
   // Widget untuk item informasi desa

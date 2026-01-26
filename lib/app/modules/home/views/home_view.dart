@@ -45,38 +45,49 @@ class HomeView extends GetView<HomeController> {
                     ],
                   ),
                   SizedBox(height: AppResponsive.h(2)),
-                  CarouselSlider(
-                    options: CarouselOptions(
-                      height: AppResponsive.h(20),
-                      autoPlay: true,
-                      autoPlayCurve: Curves.fastOutSlowIn,
-                      autoPlayInterval: Duration(seconds: 3),
-                      autoPlayAnimationDuration: Duration(seconds: 2),
-                      aspectRatio: 16 / 9,
-                      viewportFraction: 1,
-                    ),
-                    items: [
-                      'assets/img/slide1.jpg',
-                      'assets/img/slide2.jpg',
-                      'assets/img/slide3.jpg',
-                    ].map((imagePath) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Container(
-                            margin: EdgeInsets.symmetric(horizontal: 5),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.asset(
-                                imagePath,
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                              ),
-                            ),
-                          );
-                        },
+                  Obx(() {
+                    if (controller.isLoading.value && controller.carousel.isEmpty) {
+                      return SizedBox(
+                        height: AppResponsive.h(20),
+                        child: const Center(child: CircularProgressIndicator()),
                       );
-                    }).toList(),
-                  ),
+                    }
+
+                    if (controller.carousel.isEmpty) {
+                      return SizedBox(
+                        height: AppResponsive.h(20),
+                        child: const Center(child: Text('Carousel kosong')),
+                      );
+                    }
+
+                    return CarouselSlider(
+                      options: CarouselOptions(
+                        height: AppResponsive.h(20),
+                        autoPlay: true,
+                        autoPlayCurve: Curves.fastOutSlowIn,
+                        autoPlayInterval: const Duration(seconds: 3),
+                        autoPlayAnimationDuration: const Duration(seconds: 2),
+                        viewportFraction: 1,
+                      ),
+                      items: controller.carousel.map((item) {
+                        final imageUrl = '${ApiConstant.pictureUrl}${item['gambar']}';
+
+                        return Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 5),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.network(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              errorBuilder: (_, __, ___) =>
+                                  const Icon(Icons.broken_image),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  }),
                   SizedBox(height: AppResponsive.h(2)),
                   InkWell(
                     onTap: () {
@@ -304,8 +315,8 @@ class HomeView extends GetView<HomeController> {
           ),
           child: AspectRatio(
             aspectRatio: 16 / 14,
-            child: Image.asset(
-              product['image'],
+            child: Image.network(
+              product['image']?.toString() ?? '',
               fit: BoxFit.cover,
               width: double.infinity,
             ),
@@ -315,7 +326,7 @@ class HomeView extends GetView<HomeController> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           child: Text(
-            product['category'] ?? "Makanan",
+             '${product['kategori']['name']}' ?? "Makanan",
             style: AppText.bodySmall(color: AppColors.grey),
             textAlign: TextAlign.center,
             maxLines: 2,
@@ -325,7 +336,7 @@ class HomeView extends GetView<HomeController> {
         Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
         child: AutoSizeText(
-          product['name'],
+          product['title'],
           style: AppText.h6(color: AppColors.text),
           textAlign: TextAlign.start,
           maxLines: 2,
@@ -351,7 +362,7 @@ class HomeView extends GetView<HomeController> {
             ),
             child: GestureDetector(
               onTap: () {
-                controller.openWhatsApp(phone: product['phone']);
+                controller.openWhatsApp(phone: product['notelp_fix'], product: product['title']);
               },
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -398,24 +409,34 @@ class HomeView extends GetView<HomeController> {
         ),
       ),
       SizedBox(height: AppResponsive.h(3)),
-      CarouselSlider(
-        carouselController: controller.carouselController,
-        options: CarouselOptions(
-          height: AppResponsive.h(35),
-          viewportFraction: 0.50,
-          enableInfiniteScroll: false,
-          padEnds: false,
-          onPageChanged: (index, reason) {
-            controller.changeSlide(index);
-          },
+      Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (controller.products.isEmpty) {
+          return const Center(child: Text('Produk kosong'));
+        }
+
+        return SizedBox(
+        height: AppResponsive.h(35),
+        child: CarouselSlider(
+          carouselController: controller.carouselController,
+          options: CarouselOptions(
+            height: AppResponsive.h(35),
+            viewportFraction: 0.50,
+            enableInfiniteScroll: false,
+            padEnds: false,
+            onPageChanged: (index, reason) {
+              controller.changeSlide(index);
+            },
+          ),
+          items: controller.products.map((product) {
+            return _buildProductCard(context, product);
+          }).toList(),
         ),
-        items: controller.products.map((product) {
-          return _buildProductCard(
-            context, 
-            product,
-          );
-        }).toList(),
-      ),
+      );
+}),
       SizedBox(height: AppResponsive.h(2)),
     ],
   );

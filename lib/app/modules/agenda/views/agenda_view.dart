@@ -1,3 +1,5 @@
+import 'package:desago/app/helpers/color_helper.dart';
+import 'package:desago/app/helpers/time_helper.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
@@ -68,6 +70,7 @@ class AgendaView extends GetView<AgendaController> {
           ],
         ),
         child: TableCalendar(
+          key: ValueKey(controller.agendas.length),
           locale: 'id_ID',
           firstDay: DateTime.utc(2010, 1, 1),
           lastDay: DateTime.utc(2030, 12, 31),
@@ -75,7 +78,6 @@ class AgendaView extends GetView<AgendaController> {
           selectedDayPredicate: (day) =>
               isSameDay(controller.selectedDay.value, day),
 
-          /// 🔥 INI KUNCINYA
           eventLoader: (day) {
             return controller.getAgendaByDay(day);
           },
@@ -136,7 +138,6 @@ class AgendaView extends GetView<AgendaController> {
     });
   }
 
-  /// ================= AGENDA LIST =================
   Widget _agendaList() {
     return Obx(() {
       final list = controller.agendaByDate;
@@ -156,11 +157,12 @@ class AgendaView extends GetView<AgendaController> {
         itemBuilder: (context, index) {
           final e = list[index];
           return _agendaCard(
-            category: e['category'],
+            category: e['kategori']['nama'],
             title: e['title'],
-            time: e['time'],
+            time: "${TimeHelper.formatTime(e['waktu_mulai'])} - ${TimeHelper.formatTime(e['waktu_selesai'])}",
             location: e['location'],
-            color: e['color'],
+            color: ColorHelper.colorFromCategoryId(e['kategori']['id']),
+            agenda: e,
           );
         },
       );
@@ -174,6 +176,7 @@ class AgendaView extends GetView<AgendaController> {
     required String time,
     required String location,
     required Color color,
+    required dynamic agenda,
   }) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -246,7 +249,14 @@ class AgendaView extends GetView<AgendaController> {
                 ),
               ],
             ),
-          )
+          ),
+          IconButton(
+                  icon: Icon(Icons.share, size: 25, color: color,),
+                  onPressed: () {
+                    controller.shareAgenda(agenda);
+                  },
+                )
+
         ],
       ),
     );

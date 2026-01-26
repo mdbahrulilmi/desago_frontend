@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-// import 'package:share_plus/share_plus.dart';
+import 'package:share_plus/share_plus.dart';
 
 class BeritaDetailController extends GetxController {
   final Rx<Map<String, dynamic>> berita = Rx<Map<String, dynamic>>({});
@@ -10,7 +10,6 @@ class BeritaDetailController extends GetxController {
     final arguments = Get.arguments;
     if (arguments != null) {
       berita.value = arguments;
-      print(berita.value["user_desa"]);
       berita.value['views'] = (berita.value['views'] ?? 0) + 1;
     }
   }
@@ -24,20 +23,27 @@ class BeritaDetailController extends GetxController {
   }
 
 void shareBerita(Map<String, dynamic> berita) {
-    final raw = berita['raw'];
+  final id = berita['no'];
+  final title = berita['judul'] ?? 'Berita Desa';
+  final fullText = berita['isi'] ?? '';
+  final maxLength = 100; 
+  final excerpt = fullText.length > maxLength
+    ? '${fullText.substring(0, maxLength)}...'
+    : fullText;
+  final link = berita['link'] ?? 'tidak-tersedia';
 
-    final text = '''
-    ${berita['title']}
+  final text = '''
+$title
 
-    ${berita['excerpt']}
+$excerpt
 
-  Baca selengkapnya:
-  https://desatinggo.id/berita/${raw['slug']}
-  ''';
+Baca selengkapnya:
+https://desatinggo.id/berita/detail/$id/$link
+''';
 
-    // Share.share(
-    //   text,
-    //   subject: berita['title'],
-    // );
+    Share.share(
+      text,
+      subject: title,
+    );
   }
 }

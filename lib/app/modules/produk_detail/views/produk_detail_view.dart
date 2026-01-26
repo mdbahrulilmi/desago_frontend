@@ -46,9 +46,8 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
                           fit: StackFit.expand,
                           children:[
                             
-                          Image.asset(
-                            controller.product['image'] ??
-                                'assets/img/placeholder.jpg',
+                          Image.network(
+                          controller.product['image']?.toString() ?? '',
                             fit: BoxFit.cover,
                           ),
                           ] 
@@ -83,7 +82,7 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
                     width: 130,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: controller.buyNow,
+                      onPressed: ()=> controller.openWhatsApp(phone: controller.product['notelp_fix'], product: controller.product['title']),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.bottonGreen,
                         shape: RoundedRectangleBorder(
@@ -127,17 +126,17 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
                     borderRadius: BorderRadius.circular(4)
                   ),
                   child: Text(
-                    controller.product['category'] ?? 'Category',
+                    "${controller.product['kategori']['name']}" ?? 'Category',
                     style: AppText.bodyMedium(color: AppColors.category),
                     )),
           SizedBox(height: 8),
           Obx(() => Text(
-                controller.product['name'] ?? 'Product Name',
+                controller.product['title'] ?? 'Product Name',
                 style: AppText.h5(color: AppColors.dark),
               )),
               SizedBox(height: 8),
               Obx(() => Text(
-                "Mulai ${controller.product['price_range'] ?? 'No price range available'}",
+                "Mulai Rp${controller.product['harga_mulai'] ?? 'No price range available'}",
                 style: AppText.bodyMedium(color: AppColors.textSecondary),
                 
               )),
@@ -149,7 +148,7 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
                     borderRadius: BorderRadius.circular(4)
                   ),
                   child: Text(
-                    '${controller.product['open_time']}',
+                    '${controller.product['buka_mulai']} - ${controller.product['buka_sampai']}',
                     style: AppText.bodyMedium(color: AppColors.secondary),
                   ),
                 ),),
@@ -181,7 +180,7 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
           SizedBox(height: 8),
           Obx(() => GestureDetector(
                   onTap: () async {
-                    final url = controller.product['maps_url'];
+                    final url = controller.product['maps'];
                     if (url != null && await canLaunchUrl(Uri.parse(url))) {
                       await launchUrl(
                         Uri.parse(url),
@@ -190,7 +189,7 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
                     }
                   },
                   child: Text(
-                    controller.product['maps_url'] ?? 'No Maps available',
+                    controller.product['maps'] ?? 'No Maps available',
                     style: AppText.bodyMedium(
                       color: Colors.blue,
                     ),

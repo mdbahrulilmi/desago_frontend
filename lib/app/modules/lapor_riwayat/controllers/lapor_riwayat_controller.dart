@@ -1,3 +1,5 @@
+import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/services/dio_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -30,100 +32,35 @@ class LaporRiwayatController extends GetxController {
   }
   
   Future<void> fetchLaporanList() async {
+  try {
     isLoading.value = true;
-    
-    try {
-      // Simulasi delay loading data
-      await Future.delayed(Duration(seconds: 1));
-      
-      // Data contoh untuk laporan
-      laporanList.value = [
-        {
-          'id': 'LPR001',
-          'judul': 'Jalan Rusak di RT 03',
-          'tanggal': DateTime.now().subtract(Duration(days: 10)),
-          'kategori': 'Infrastruktur',
-          'deskripsi': 'Terdapat jalan berlubang yang cukup dalam di area RT 03 yang membahayakan pengendara motor.',
-          'status': 'Selesai',
-          'foto': 'assets/img/noimage.png',
-          'keterangan': 'Perbaikan jalan sudah dilakukan pada tanggal 15 Juli 2024',
-          'tanggapan': 'Terima kasih atas laporannya. Perbaikan telah dilakukan.'
-        },
-        {
-          'id': 'LPR002',
-          'judul': 'Lampu Jalan Mati di Jalan Mawar',
-          'tanggal': DateTime.now().subtract(Duration(days: 5)),
-          'kategori': 'Fasilitas Umum',
-          'deskripsi': 'Lampu jalan di sepanjang Jalan Mawar mati sejak 3 hari yang lalu.',
-          'status': 'Diproses',
-          'foto': 'assets/img/noimage.png',
-          'keterangan': 'Sudah dijadwalkan perbaikan pada minggu ini',
-          'tanggapan': 'Laporan Anda sedang kami tindaklanjuti. Tim teknis akan segera melakukan perbaikan.'
-        },
-        {
-          'id': 'LPR003',
-          'judul': 'Sampah Menumpuk di Pasar',
-          'tanggal': DateTime.now().subtract(Duration(days: 2)),
-          'kategori': 'Kebersihan',
-          'deskripsi': 'Sampah di area pasar desa menumpuk dan tidak diangkut selama beberapa hari.',
-          'status': 'Menunggu',
-          'foto': 'assets/img/noimage.png',
-          'keterangan': 'Menunggu jadwal pengangkutan sampah',
-          'tanggapan': null
-        },
-        {
-          'id': 'LPR004',
-          'judul': 'Pohon Tumbang di Jalan Utama',
-          'tanggal': DateTime.now().subtract(Duration(days: 15)),
-          'kategori': 'Bencana',
-          'deskripsi': 'Pohon besar tumbang dan menghalangi jalan utama desa setelah hujan deras semalam.',
-          'status': 'Selesai',
-          'foto': 'assets/img/noimage.png',
-          'keterangan': 'Pohon telah dipindahkan oleh tim Dinas Lingkungan Hidup',
-          'tanggapan': 'Pohon telah berhasil dipindahkan. Terima kasih atas laporannya.'
-        },
-        {
-          'id': 'LPR005',
-          'judul': 'Kegiatan Mencurigakan di Rumah Kosong',
-          'tanggal': DateTime.now().subtract(Duration(days: 1)),
-          'kategori': 'Keamanan',
-          'deskripsi': 'Terdapat aktivitas mencurigakan di rumah kosong di RT 05.',
-          'status': 'Ditolak',
-          'foto': 'assets/img/noimage.png',
-          'keterangan': 'Setelah diperiksa, rumah tersebut sedang dalam renovasi oleh pemiliknya',
-          'tanggapan': 'Setelah dilakukan pengecekan, aktivitas tersebut adalah tim renovasi yang bekerja lembur.'
-        },
-      ];
-      
-      // Filter data awal
-      filterLaporan();
-      
-    } catch (e) {
-      print('Error fetching data: $e');
-      
-      // Tampilkan error message
-      Get.snackbar(
-        'Error',
-        'Gagal memuat data laporan. Silakan coba lagi.',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      
-    } finally {
-      isLoading.value = false;
-    }
+
+    final res = await DioService.instance.get(ApiConstant.lapor);
+
+    final listData = res.data is List ? res.data : (res.data['data'] ?? []);
+
+    laporanList.assignAll(
+      listData.map<Map<String, dynamic>>((e) => e as Map<String, dynamic>).toList(),
+    );
+    filterLaporan();
+  } catch (e, stackTrace) {
+    debugPrint('Error fetchLaporanList: $e');
+    debugPrint(stackTrace.toString());
+  } finally {
+    isLoading.value = false;
   }
+}
+
   
   void filterLaporan() {
     String searchQuery = searchController.text.toLowerCase();
     
     filteredLaporanList.value = laporanList.where((laporan) {
       // Filter berdasarkan teks
-      bool matchesSearch = laporan['judul'].toString().toLowerCase().contains(searchQuery) ||
-                          laporan['deskripsi'].toString().toLowerCase().contains(searchQuery) ||
-                          laporan['kategori'].toString().toLowerCase().contains(searchQuery) ||
-                          laporan['id'].toString().toLowerCase().contains(searchQuery);
+      bool matchesSearch = laporan['title'].toString().toLowerCase().contains(searchQuery) ||
+                          laporan['description'].toString().toLowerCase().contains(searchQuery) ||
+                          laporan['lapor_category']['name'].toString().toLowerCase().contains(searchQuery) ||
+                          laporan['no'].toString().toLowerCase().contains(searchQuery);
       
       // Filter berdasarkan status
       bool matchesStatus = selectedStatus.value == 'Semua' || 
@@ -139,12 +76,10 @@ class LaporRiwayatController extends GetxController {
   }
   
   void viewDetail(Map<String, dynamic> laporan) {
-    // Navigasi ke halaman detail dengan data laporan
     Get.toNamed('/lapor/detail', arguments: {'data': laporan});
   }
   
   void buatLaporanBaru() {
-    // Navigasi ke halaman buat laporan baru
     Get.toNamed('/lapor/buat');
   }
   

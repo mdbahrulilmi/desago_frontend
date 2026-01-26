@@ -14,6 +14,8 @@ class HomeController extends GetxController {
   
   final CarouselSliderController carouselController = CarouselSliderController();
   final RxList<Map<String, dynamic>> beritas = <Map<String, dynamic>>[].obs;
+  final RxList<Map<String, dynamic>> products = <Map<String, dynamic>>[].obs;
+  final RxList<Map<String, dynamic>> carousel = <Map<String, dynamic>>[].obs;
   final RxInt currentIndex = 0.obs;
   var isLoading = true.obs;
 
@@ -21,12 +23,34 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     fetchBerita();
+    fetchProduct();
+    fetchCarousel();
     user.value = StorageService.getUser();
   }
 
   String get userName => user.value?.username ?? 'User';
   String get userEmail => user.value?.email ?? '-';
   String get userPhone => user.value?.phone ?? '-';
+
+  Future<void> fetchCarousel() async {
+    try {
+      isLoading.value = true;
+      final res = await DioService.instance.get(ApiConstant.carouselDesa);
+
+     final List listData =
+          res.data is List
+              ? res.data
+              : res.data['data'] ?? [];
+
+      carousel.value =
+          listData.map((e) => Map<String, dynamic>.from(e)).toList();
+
+    } catch (e) {
+      return;
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   Future<void> fetchBerita() async {
     try {
@@ -96,64 +120,54 @@ class HomeController extends GetxController {
   } 
 
   // Data produk
-  final List<Map<String, dynamic>> products = [
-    {
-      'name': 'Kripik Ikan Meggalodon Khas Jepara',
-      'image': 'assets/img/produk_1.jpg',
-      'price': 'Rp 25.000',
-      'phone' : "+6282226627175"
-    },
-    {
-      'name': 'Kopi Robusta',
-      'image': 'assets/img/produk_2.jpg',
-      'price': 'Rp 50.000',
-      'phone' : "+6282226627175"
-    },
-    {
-      'name': 'Tembakau Gayo',
-      'image': 'assets/img/produk_3.jpg',
-      'price': 'Rp 75.000',
-      'phone' : "+6282226627175"
-    },
-    {
-      'name': 'Kayu Manis',
-      'image': 'assets/img/produk_4.jpg',
-      'price': 'Rp 40.000',
-      'phone' : "+6282226627175"
-    },
-  ];
-
     void changeSlide(int index) {
     currentIndex.value = index;
   }
 
-  // Method untuk memesan produk
-  void pesanProduk(Map<String, dynamic> produk) {
-    // Implementasi logika pemesanan
-    Get.snackbar(
-      'Pemesanan',
-      'Anda memesan ${produk['name']}',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: AppColors.primary,
-      colorText: AppColors.white,
-    );
-  }
-
   Future<void> openWhatsApp({
-    required String phone,
-    String message = '',
-  }) async {
-    final url = Uri.parse(
-      "https://wa.me/$phone?text=${Uri.encodeComponent(message)}",
-    );
+  required String phone,
+  required String product,
+  String? message,
+}) async {
+  final text = message ??
+      '''Halo kak 😊
+Aku lihat $product, mau nanya detailnya dong.
+''';
 
-    if (await canLaunchUrl(url)) {
-      await launchUrl(
-        url,
-        mode: LaunchMode.externalApplication,
-      );
-    } else {
-      throw 'Tidak bisa membuka WhatsApp';
+  final url = Uri.parse(
+    'https://wa.me/$phone?text=${Uri.encodeComponent(text)}',
+  );
+
+  if (await canLaunchUrl(url)) {
+    await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    );
+  } else {
+    throw 'Tidak bisa membuka WhatsApp';
+  }
+}
+
+  Future<void> fetchProduct() async {
+    try {
+      isLoading.value = true;
+
+      final res = await DioService.instance.get(ApiConstant.produkDesaCarousel);
+
+      final List listData =
+          res.data is List
+              ? res.data
+              : res.data['data'] ?? [];
+
+      products.value =
+          listData.map((e) => Map<String, dynamic>.from(e)).toList();
+
+      print('Produk loaded: ${products.length}');
+    } catch (e) {
+      products.clear();
+      return;
+    } finally {
+      isLoading.value = false;
     }
   }
 

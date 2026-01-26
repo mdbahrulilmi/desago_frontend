@@ -5,10 +5,18 @@ class ApiConstant {
 
   // Desa
   static const String desa = 'desatinggo.id';
+  static const String carouselDesa = "/desa/${desa}/carousel";
   static const String profilDesa = "/desa/${desa}/profil";
   static const String beritaDesa = "/desa/${desa}/berita";
   static const String beritaDesaCarousel = "/desa/${desa}/berita/carousel";
   static const String danaDesa = "/desa/${desa}/dana";
+  static const String agendaDesa = "/desa/${desa}/agenda";
+  static const String produkDesa = "/desa/${desa}/umkm";
+  static const String produkDesaCarousel = "/desa/${desa}/umkm/carousel";
+  static const String nomorDarurat = "/desa/${desa}/no-darurat";
+  static const String lapor = "/desa/${desa}/lapor";
+  static const String laporKategori = "/desa/${desa}/lapor/kategori";
+  static const String laporCreate = "/desa/${desa}/lapor/create";
 
   // Auth Endpoints
   static const String register = '/register';

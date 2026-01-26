@@ -4,149 +4,20 @@ import 'package:desago/app/services/dio_services.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:remixicon/remixicon.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilDesaController extends GetxController with GetSingleTickerProviderStateMixin {
   // Controller untuk TabBar
   late TabController tabController;
   var isLoading = true.obs;
   final profile = <String, dynamic>{}.obs;
-  // List perangkat desa
-  final List<PerangkatModel> perangkatDesaList = [
-    PerangkatModel(
-      nama: 'Nailil Fitri.',
-      jabatan: 'Kepala Desa',
-      foto: 'assets/img/kepala_desa.jpg',
-      periode: '2020 - 2025',
-      pendidikan: 'S1 Pendidikan',
-      alamat: 'Jl. Desa No. 1, RT 01/RW 01',
-      noTelp: '08123456789',
-    ),
-    PerangkatModel(
-      nama: 'Ahmad Fauzi',
-      jabatan: 'Sekretaris Desa',
-      foto: 'https://via.placeholder.com/150',
-      periode: '2020 - 2025',
-      pendidikan: 'D3 Administrasi Pemerintahan',
-      alamat: 'Jl. Desa No. 5, RT 02/RW 01',
-      noTelp: '08123456790',
-    ),
-    PerangkatModel(
-      nama: 'Siti Aminah, S.E.',
-      jabatan: 'Kepala Urusan Keuangan',
-      foto: 'https://via.placeholder.com/150',
-      periode: '2020 - 2025',
-      pendidikan: 'S1 Ekonomi',
-      alamat: 'Jl. Desa No. 8, RT 03/RW 02',
-      noTelp: '08123456791',
-    ),
-    PerangkatModel(
-      nama: 'Budi Santoso',
-      jabatan: 'Kepala Urusan Umum',
-      foto: 'https://via.placeholder.com/150',
-      periode: '2020 - 2025',
-      pendidikan: 'SMA',
-      alamat: 'Jl. Desa No. 12, RT 04/RW 02',
-      noTelp: '08123456792',
-    ),
-    PerangkatModel(
-      nama: 'Dedi Supriadi',
-      jabatan: 'Kepala Seksi Pemerintahan',
-      foto: 'https://via.placeholder.com/150',
-      periode: '2020 - 2025',
-      pendidikan: 'D3 Administrasi Publik',
-      alamat: 'Jl. Desa No. 15, RT 05/RW 03',
-      noTelp: '08123456793',
-    ),
-    PerangkatModel(
-      nama: 'Rina Wati',
-      jabatan: 'Kepala Seksi Kesejahteraan',
-      foto: 'https://via.placeholder.com/150',
-      periode: '2020 - 2025',
-      pendidikan: 'S1 Sosiologi',
-      alamat: 'Jl. Desa No. 18, RT 06/RW 03',
-      noTelp: '08123456794',
-    ),
-    PerangkatModel(
-      nama: 'Hendra Gunawan',
-      jabatan: 'Kepala Seksi Pelayanan',
-      foto: 'https://via.placeholder.com/150',
-      periode: '2020 - 2025',
-      pendidikan: 'D3 Manajemen',
-      alamat: 'Jl. Desa No. 21, RT 07/RW 04',
-      noTelp: '08123456795',
-    ),
-    PerangkatModel(
-      nama: 'Agus Setiawan',
-      jabatan: 'Kepala Dusun 1',
-      foto: 'https://via.placeholder.com/150',
-      periode: '2020 - 2025',
-      pendidikan: 'SMA',
-      alamat: 'Jl. Dusun 1 No. 5, RT 08/RW 05',
-      noTelp: '08123456796',
-    ),
-    PerangkatModel(
-      nama: 'Joko Susilo',
-      jabatan: 'Kepala Dusun 2',
-      foto: 'https://via.placeholder.com/150',
-      periode: '2020 - 2025',
-      pendidikan: 'SMA',
-      alamat: 'Jl. Dusun 2 No. 3, RT 10/RW 06',
-      noTelp: '08123456797',
-    ),
-  ];
-  
-  // List BPD
-  final List<PerangkatModel> bpdList = [
-    PerangkatModel(
-      nama: 'H. Mansur, S.H.',
-      jabatan: 'Ketua BPD',
-      foto: 'https://via.placeholder.com/150',
-      periode: '2020 - 2025',
-      pendidikan: 'S1 Hukum',
-      alamat: 'Jl. Desa No. 25, RT 01/RW 01',
-      noTelp: '08123456798',
-    ),
-    PerangkatModel(
-      nama: 'Hj. Fatimah, S.Pd.',
-      jabatan: 'Wakil Ketua BPD',
-      foto: 'https://via.placeholder.com/150',
-      periode: '2020 - 2025',
-      pendidikan: 'S1 Pendidikan',
-      alamat: 'Jl. Desa No. 30, RT 02/RW 01',
-      noTelp: '08123456799',
-    ),
-    PerangkatModel(
-      nama: 'Rahmat Hidayat',
-      jabatan: 'Sekretaris BPD',
-      foto: 'https://via.placeholder.com/150',
-      periode: '2020 - 2025',
-      pendidikan: 'D3 Administrasi',
-      alamat: 'Jl. Desa No. 35, RT 03/RW 02',
-      noTelp: '08123456800',
-    ),
-    PerangkatModel(
-      nama: 'Dewi Lestari',
-      jabatan: 'Anggota BPD',
-      foto: 'https://via.placeholder.com/150',
-      periode: '2020 - 2025',
-      pendidikan: 'SMA',
-      alamat: 'Jl. Desa No. 40, RT 04/RW 02',
-      noTelp: '08123456801',
-    ),
-    PerangkatModel(
-      nama: 'Sugeng Riyadi',
-      jabatan: 'Anggota BPD',
-      foto: 'https://via.placeholder.com/150',
-      periode: '2020 - 2025',
-      pendidikan: 'SMA',
-      alamat: 'Jl. Desa No. 45, RT 05/RW 03',
-      noTelp: '08123456802',
-    ),
-  ];
+  final RxList<PerangkatModel> perangkatDesa = <PerangkatModel>[].obs;
+  final RxList<PerangkatModel> bpdList = <PerangkatModel>[].obs;
 
-  @override
+ @override
   void onInit() {
     fetchprofile();
     super.onInit();
@@ -160,20 +31,38 @@ class ProfilDesaController extends GetxController with GetSingleTickerProviderSt
     super.onClose();
   }
 
-  Future<void> fetchprofile() async{
-    try{
-      final res = await DioService.instance.get(
-        ApiConstant.profilDesa,
-      );
+  Future<void> fetchprofile() async {
+  try {
+    isLoading.value = true;
 
-     profile.value = Map<String, dynamic>.from(res.data);
-      } catch (e) {
-        return;
-    } finally{
-      isLoading.value = false;
-    }
+    final res = await DioService.instance.get(ApiConstant.profilDesa);
+    final data = Map<String, dynamic>.from(res.data);
+
+    profile.value = data;
+
+    // 🔥 AMBIL LIST PERANGKAT DESA
+    if (data['perangkat_desa'] is List) {
+    final list = data['perangkat_desa'];
+
+    bpdList.value = list
+        .where((e) => e['is_bpd'] == 1)
+        .map<PerangkatModel>((e) => PerangkatModel.fromJson(e))
+        .toList();
+
+    perangkatDesa.value = list
+        .where((e) => e['is_bpd'] == 0)
+        .map<PerangkatModel>((e) => PerangkatModel.fromJson(e))
+        .toList();
   }
-  
+  print(bpdList);
+
+  } catch (e) {
+    print('Error fetch profile: $e');
+  } finally {
+    isLoading.value = false;
+  }
+}
+
   void showPerangkatDetail(PerangkatModel perangkat) {
     Get.dialog(
       Dialog(
@@ -193,7 +82,9 @@ class ProfilDesaController extends GetxController with GetSingleTickerProviderSt
                   CircleAvatar(
                     radius: 30,
                     backgroundColor: AppColors.muted,
-                    backgroundImage: AssetImage("assets/img/kepala_desa.jpg"),
+                    backgroundImage: perangkat.image != null && perangkat.image!.isNotEmpty
+                    ? NetworkImage(perangkat.image!)
+                    : const AssetImage('assets/img/kepala_desa.jpg') as ImageProvider,
                     onBackgroundImageError: (exception, stackTrace) {},
                   ),
                   const SizedBox(width: 12),
@@ -230,7 +121,7 @@ class ProfilDesaController extends GetxController with GetSingleTickerProviderSt
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () => Get.back(),
+                        onPressed: () => callNumber(perangkat.noTelp),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           foregroundColor: AppColors.white,
@@ -244,7 +135,7 @@ class ProfilDesaController extends GetxController with GetSingleTickerProviderSt
                     ),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () => Get.back(),
+                        onPressed: () => openWhatsApp(perangkat.noTelp),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.bottonGreen,
                           foregroundColor: AppColors.white,
@@ -289,5 +180,64 @@ class ProfilDesaController extends GetxController with GetSingleTickerProviderSt
         ],
       ),
     );
+  }
+  
+
+  Future<void> openWhatsApp(String phoneNumber) async {
+    String formattedNumber = phoneNumber;
+    if (!formattedNumber.startsWith('+')) {
+      if (formattedNumber.startsWith('0')) {
+        formattedNumber = '+62${formattedNumber.substring(1)}';
+      } else if (!formattedNumber.startsWith('62')) {
+        formattedNumber = '+62$formattedNumber';
+      } else {
+        formattedNumber = '+$formattedNumber';
+      }
+    }
+    final Uri url = Uri.parse('https://wa.me/$formattedNumber');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      Get.snackbar(
+        'Kesalahan',
+        'Tidak dapat membuka WhatsApp untuk nomor $phoneNumber',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  Future<void> callNumber(String phoneNumber) async {
+    final Uri url = Uri.parse('tel:$phoneNumber');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      Get.snackbar(
+        'Kesalahan',
+        'Tidak dapat melakukan panggilan ke nomor $phoneNumber',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  void copyToClipboard(String text) {
+    try {
+      Clipboard.setData(ClipboardData(text: text));
+      Get.snackbar(
+        'Berhasil',
+        'Nomor $text telah disalin ke clipboard',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.success.withOpacity(0.8),
+        colorText: AppColors.white,
+        duration: Duration(seconds: 2),
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Kesalahan',
+        'Gagal menyalin nomor: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.danger.withOpacity(0.8),
+        colorText: AppColors.white,
+      );
+    }
   }
 }

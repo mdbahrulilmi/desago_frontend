@@ -89,7 +89,7 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                             child: IconButton(
                               icon: const Icon(Remix.share_line,
                                   color: Colors.white),
-                              onPressed: () => controller.shareBerita,
+                              onPressed: () => controller.shareBerita(berita),
                             ),
                           ),
                           const SizedBox(width: 10),
