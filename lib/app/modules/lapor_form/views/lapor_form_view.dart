@@ -190,9 +190,11 @@ class LaporFormView extends GetView<LaporFormController> {
                 cursorColor: AppColors.dark,
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () => 
-                controller.createLapor(
+              
+             Obx(() => ElevatedButton(
+                 onPressed: controller.isSubmitting.value
+                  ? null
+                  : ()=> controller.createLapor(
                   subdomain: ApiConstant.desa, 
                   title: controller.judulController.text,
                   category: controller.selectedCategoryId.value, 
@@ -208,11 +210,13 @@ class LaporFormView extends GetView<LaporFormController> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: Text(
+                child: controller.isSubmitting.value
+                  ? CircularProgressIndicator(color: Colors.white)
+                  : Text(
                   'Kirim Laporan',
                   style: AppText.button(color: AppColors.white),
                 ),
-              ),
+              )),
             ],
           ),
         ),

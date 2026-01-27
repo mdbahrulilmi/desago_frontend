@@ -1,3 +1,4 @@
+import 'package:desago/app/helpers/time_helper.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
@@ -148,7 +149,7 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
                     borderRadius: BorderRadius.circular(4)
                   ),
                   child: Text(
-                    '${controller.product['buka_mulai']} - ${controller.product['buka_sampai']}',
+                    "${TimeHelper.formatTime(controller.product['buka_mulai'])} - ${TimeHelper.formatTime(controller.product['buka_sampai'])}",
                     style: AppText.bodyMedium(color: AppColors.secondary),
                   ),
                 ),),

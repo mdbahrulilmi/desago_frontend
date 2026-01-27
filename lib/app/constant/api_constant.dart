@@ -17,6 +17,8 @@ class ApiConstant {
   static const String lapor = "/desa/${desa}/lapor";
   static const String laporKategori = "/desa/${desa}/lapor/kategori";
   static const String laporCreate = "/desa/${desa}/lapor/create";
+  static const String jenisSurat = "/desa/${desa}/surat";
+  static const String tambahSurat = "/desa/${desa}/surat/create";
 
   // Auth Endpoints
   static const String register = '/register';

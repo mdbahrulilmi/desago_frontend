@@ -1,7 +1,3 @@
-import 'package:desago/app/modules/akun_edit/bindings/akun_edit_binding.dart';
-import 'package:desago/app/modules/akun_edit/views/akun_edit_view.dart';
-import 'package:desago/app/modules/surat_list/bindings/surat_list_binding.dart';
-import 'package:desago/app/modules/surat_list/views/surat_list_view.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -15,6 +11,8 @@ import '../modules/akun/bindings/akun_binding.dart';
 import '../modules/akun/views/akun_view.dart';
 import '../modules/akun_biodata/bindings/akun_biodata_binding.dart';
 import '../modules/akun_biodata/views/akun_biodata_view.dart';
+import '../modules/akun_edit/bindings/akun_edit_binding.dart';
+import '../modules/akun_edit/views/akun_edit_view.dart';
 import '../modules/akun_pengaturan/bindings/akun_pengaturan_binding.dart';
 import '../modules/akun_pengaturan/views/akun_pengaturan_view.dart';
 import '../modules/akun_ubah_password/bindings/akun_ubah_password_binding.dart';
@@ -37,6 +35,8 @@ import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/lapor/bindings/lapor_binding.dart';
 import '../modules/lapor/views/lapor_view.dart';
+import '../modules/lapor_detail/bindings/lapor_detail_binding.dart';
+import '../modules/lapor_detail/views/lapor_detail_view.dart';
 import '../modules/lapor_form/bindings/lapor_form_binding.dart';
 import '../modules/lapor_form/views/lapor_form_view.dart';
 import '../modules/lapor_riwayat/bindings/lapor_riwayat_binding.dart';
@@ -69,6 +69,8 @@ import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/register_view.dart';
 import '../modules/surat_form/bindings/surat_form_binding.dart';
 import '../modules/surat_form/views/surat_form_view.dart';
+import '../modules/surat_list/bindings/surat_list_binding.dart';
+import '../modules/surat_list/views/surat_list_view.dart';
 import '../modules/surat_riwayat_pengajuan/bindings/surat_riwayat_pengajuan_binding.dart';
 import '../modules/surat_riwayat_pengajuan/views/surat_riwayat_pengajuan_view.dart';
 import '../modules/surat_riwayat_pengajuan_detail/bindings/surat_riwayat_pengajuan_detail_binding.dart';
@@ -224,7 +226,6 @@ class AppPages {
       page: () => const BeritaDetailView(),
       binding: BeritaDetailBinding(),
     ),
-  
     GetPage(
       name: _Paths.SURAT_FORM,
       page: () => const SuratFormView(),
@@ -302,13 +303,18 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.SURAT_LIST,
-      page: () => const SuratListView (),
+      page: () => const SuratListView(),
       binding: SuratListBinding(),
     ),
     GetPage(
       name: _Paths.AKUN_EDIT,
       page: () => const AkunEditView(),
       binding: AkunEditBinding(),
+    ),
+    GetPage(
+      name: _Paths.LAPOR_DETAIL,
+      page: () => const LaporDetailView(),
+      binding: LaporDetailBinding(),
     ),
   ];
 }

@@ -1,8 +1,10 @@
+import 'package:desago/app/modules/surat_list/controllers/surat_list_controller.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:remixicon/remixicon.dart';
 
 class SuratListView extends StatelessWidget {
   const SuratListView({super.key});
@@ -10,6 +12,8 @@ class SuratListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppResponsive().init(context);
+
+    final controller = Get.put(SuratListController());
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -28,36 +32,90 @@ class SuratListView extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: _buildJenisSuratList(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              margin: AppResponsive.margin(horizontal: 4),
+              height: AppResponsive.h(14.2),
+              width: double.infinity,
+              padding: AppResponsive.padding(vertical: 1),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: AppColors.warningCard,
+                  border: Border.all(color: AppColors.strokeWarningCard)
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Informasi Penting',
+                        style: AppText.bodyMediumBold(color: AppColors.text),
+                      ),
+                      SizedBox(height: AppResponsive.h(0.5)),
+                      Text(
+                        'Pastikan data diri Anda di menu Biodata sudah lengkap sebelum mengajukan surat. Proses verifikasi memakan waktu 1-3 hari kerja.',
+                        style: AppText.small(color: AppColors.text),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppResponsive.w(4),
+              vertical: AppResponsive.h(1),
+            ),
+            child: TextField(
+              // controller: controller.searchController,
+              // onChanged: (value) => controller.filterProducts(value),
+              decoration: InputDecoration(
+                hintText: 'Cari umkm...',
+                hintStyle: AppText.bodyMedium(color: AppColors.textSecondary),
+                prefixIcon: Icon(Remix.search_line, color: AppColors.iconGrey),
+                fillColor: AppColors.grey.withOpacity(0.1),
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ),
+           _buildJenisSuratList(controller),
+          ],
+        ),
+      ),
     );
   }
 
-  /// DATA STATIK
-  final List<Map<String, String>> jenisSuratList = const [
-    {
-      'title': 'Surat Keterangan Domisili',
-      'description': 'Digunakan untuk keperluan administrasi domisili.'
-    },
-    {
-      'title': 'Surat Keterangan Usaha',
-      'description': 'Digunakan untuk pengajuan usaha atau UMKM.'
-    },
-    {
-      'title': 'Surat Pengantar',
-      'description': 'Digunakan sebagai surat pengantar resmi.'
-    },
-    {
-      'title': 'Surat Keterangan Tidak Mampu',
-      'description': 'Digunakan untuk bantuan atau keperluan sosial.'
-    },
-  ];
+ Widget _buildJenisSuratList(SuratListController controller) {
+  return Obx(() {
+    if (controller.isLoading.value) {
+      return Padding(
+        padding: EdgeInsets.only(top: AppResponsive.h(4)),
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
-  Widget _buildJenisSuratList() {
+    if (controller.jenisSuratList.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.only(top: AppResponsive.h(4)),
+        child: const Center(child: Text('Data jenis surat kosong')),
+      );
+    }
+
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: jenisSuratList.length,
+      padding: AppResponsive.padding(horizontal: 4, top: 1),
+      itemCount: controller.jenisSuratList.length,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
-        final item = jenisSuratList[index];
+        final item = controller.jenisSuratList[index];
 
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
@@ -69,14 +127,7 @@ class SuratListView extends StatelessWidget {
             ),
           ),
           child: InkWell(
-            onTap: () {
-              // STATIK → sementara kosong / snackbar
-              Get.snackbar(
-                'Info',
-                item['title'] ?? '',
-                snackPosition: SnackPosition.BOTTOM,
-              );
-            },
+            onTap: () => controller.navigateToDetail(item),
             borderRadius: BorderRadius.circular(12),
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -87,12 +138,12 @@ class SuratListView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item['title'] ?? 'Jenis Surat',
+                          item['nama'] ?? 'Jenis Surat',
                           style: AppText.h6(color: AppColors.dark),
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          item['description'] ?? '-',
+                          item['deskripsi'] ?? '-',
                           style: AppText.bodyMedium(
                             color: AppColors.textSecondary,
                           ),
@@ -113,5 +164,6 @@ class SuratListView extends StatelessWidget {
         );
       },
     );
-  }
+  });
+}
 }

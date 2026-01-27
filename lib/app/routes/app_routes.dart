@@ -45,6 +45,7 @@ abstract class Routes {
   static const AKTIVITAS = _Paths.AKTIVITAS;
   static const SURAT_LIST = _Paths.SURAT_LIST;
   static const AKUN_EDIT = _Paths.AKUN_EDIT;
+  static const LAPOR_DETAIL = _Paths.LAPOR_DETAIL;
 }
 
 abstract class _Paths {
@@ -93,4 +94,5 @@ abstract class _Paths {
   static const AKTIVITAS = '/aktivitas';
   static const SURAT_LIST = '/surat-list';
   static const AKUN_EDIT = '/akun-edit';
+  static const LAPOR_DETAIL = '/lapor-detail';
 }

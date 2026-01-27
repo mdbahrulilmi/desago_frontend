@@ -51,24 +51,9 @@ class ProdukListSemuaController extends GetxController {
       filteredProducts.value = products;
     } else {
       filteredProducts.value = products.where((product) {
-        return product['name'].toLowerCase().contains(query.toLowerCase()) ||
+        return product['title'].toLowerCase().contains(query.toLowerCase()) ||
             product['description'].toLowerCase().contains(query.toLowerCase());
       }).toList();
     }
-  }
-
-  void filterByCategory(String category) {
-    if (category == 'Semua') {
-      filteredProducts.value = products;
-    } else {
-      filteredProducts.value = products.where((product) {
-        return product['category'] == category;
-      }).toList();
-    }
-  }
-
-  void setSelectedCategory(String category) {
-    selectedCategory.value = category;
-    filterByCategory(category);
   }
 }

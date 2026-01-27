@@ -1,3 +1,5 @@
+import 'package:desago/app/helpers/string_casing_extension.dart';
+import 'package:desago/app/helpers/time_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -30,7 +32,7 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.primary,
-        onPressed: controller.buatLaporanBaru,
+        onPressed: Get.back,
         child: Icon(Icons.add, color: AppColors.white),
       ),
       body: Column(
@@ -57,37 +59,45 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
           Container(
             height: AppResponsive.h(5),
             margin: EdgeInsets.only(top: 2, bottom: 4),
-            child: Obx(() => ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.symmetric(horizontal: AppResponsive.w(4)),
-                  itemCount: controller.statusOptions.length,
-                  itemBuilder: (context, index) {
-                    final status = controller.statusOptions[index];
-                    final isSelected = controller.selectedStatus.value == status;
-                    return GestureDetector(
-                      onTap: () => controller.setStatusFilter(status),
-                      child: Container(
-                        margin: EdgeInsets.only(right: AppResponsive.w(3)),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: AppResponsive.w(4),
-                          vertical: AppResponsive.h(1),
-                        ),
-                        decoration: BoxDecoration(
-                          color: isSelected ? AppColors.primary : AppColors.grey.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Center(
-                          child: Text(
-                            status,
-                            style: AppText.small(
-                              color: isSelected ? AppColors.white : AppColors.textSecondary,
-                            ),
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(horizontal: AppResponsive.w(4)),
+              itemCount: controller.statusOptions.length,
+              itemBuilder: (context, index) {
+                final status = controller.statusOptions[index];
+
+                return Obx(() {
+                  final isSelected = controller.selectedStatus.value == status;
+
+                  return GestureDetector(
+                    onTap: () => controller.setStatusFilter(status),
+                    child: Container(
+                      margin: EdgeInsets.only(right: AppResponsive.w(3)),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppResponsive.w(4),
+                        vertical: AppResponsive.h(1),
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.grey.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Center(
+                        child: Text(
+                          status,
+                          style: AppText.small(
+                            color: isSelected
+                                ? AppColors.white
+                                : AppColors.textSecondary,
                           ),
                         ),
                       ),
-                    );
-                  },
-                )),
+                    ),
+                  );
+                });
+              },
+            ),
           ),
           SizedBox(height: AppResponsive.h(1)),
           Expanded(
@@ -180,11 +190,11 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
                   child: Container(
                     padding: AppResponsive.padding(horizontal: 1.5, vertical: 0.5),
                     decoration: BoxDecoration(
-                      color: controller.getStatusColor(laporan['status']),
+                      color: controller.getStatusColor(laporan['status'].toString().capitalizeEachWord()),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      laporan['status'] ?? "Menunggu",
+                      laporan['status'].toString().capitalizeEachWord(),
                       style: AppText.small(
                           color: AppColors.secondary),
                     ),
@@ -193,7 +203,7 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
                  ],
             ),
             Padding(
-              padding: AppResponsive.padding(all: 2),
+              padding: AppResponsive.padding(vertical: 2, horizontal: 3),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -204,7 +214,7 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
                       SizedBox(width: AppResponsive.w(1)),
                       Expanded(
                         child: Text(
-                          "${laporan['created_at']}",
+                          "${TimeHelper.formatTanggalIndonesia(laporan['created_at'])}, ${TimeHelper.formatJam(laporan['created_at'])}" ,
                           style: AppText.bodySmall(color: AppColors.textSecondary),
                           textAlign: TextAlign.right,
                         ),
@@ -229,13 +239,13 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
                   if (laporan['status'] != null)
                     Container(
                       width: double.infinity,
-                      padding: AppResponsive.padding(all: 1.5),
+                      padding: AppResponsive.padding(vertical: 1.5, horizontal: 3),
                       decoration: BoxDecoration(
                         color: AppColors.muted,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        laporan['status'] ?? "Menunggu",
+                        laporan['tanggapan'] ?? "Malas menanggapi",
                         style: AppText.bodySmall(color: AppColors.textSecondary),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

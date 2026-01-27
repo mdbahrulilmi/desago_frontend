@@ -19,7 +19,7 @@ class LaporFormController extends GetxController {
 
 
   var isLoading = true.obs;
-
+  var isSubmitting = false.obs;
   final List<String> tujuanList = [
     'Pemerintah Desa',
     'Kepala Desa',
@@ -78,8 +78,9 @@ Future<void> createLapor({
   File? image,
   }) async {
     if (!validateForm()) return;
-
+    if (isSubmitting.value) return;
     try {
+      isSubmitting.value = true;
       final formData = dio.FormData.fromMap({
         'subdomain': subdomain,
         'ditujukan': ditujukan,
@@ -97,16 +98,11 @@ Future<void> createLapor({
         ApiConstant.laporCreate,
         data: formData,
       );
-
-      AppDialog.success(
-        title: 'Berhasil',
-        message: 'Laporan Berhasil Dikirim',
-        buttonText: 'OK',
-        onConfirm: () {
-          Get.back(); 
-          Get.offNamed(Routes.LAPOR_RIWAYAT);
-        },
+      Get.offNamed(
+        Routes.LAPOR_RIWAYAT,
+        arguments: {'refresh': true},
       );
+
     } catch (e) {
       // Jika gagal, tampilkan error
       AppDialog.error(

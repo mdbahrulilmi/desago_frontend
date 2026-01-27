@@ -1,4 +1,6 @@
 import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/modules/lapor_detail/controllers/lapor_detail_controller.dart';
+import 'package:desago/app/modules/lapor_detail/views/lapor_detail_view.dart';
 import 'package:desago/app/services/dio_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,7 +19,7 @@ class LaporRiwayatController extends GetxController {
   // Filter
   final TextEditingController searchController = TextEditingController();
   final RxString selectedStatus = 'Semua'.obs;
-  final RxList<String> statusOptions = ['Semua', 'Diproses', 'Ditolak', 'Selesai', 'Menunggu'].obs;
+  final RxList<String> statusOptions = ['Semua', 'Menunggu', 'Diproses', 'Selesai', 'Ditolak'].obs;
   
   @override
   void onInit() {
@@ -53,22 +55,31 @@ class LaporRiwayatController extends GetxController {
 
   
   void filterLaporan() {
-    String searchQuery = searchController.text.toLowerCase();
-    
-    filteredLaporanList.value = laporanList.where((laporan) {
-      // Filter berdasarkan teks
-      bool matchesSearch = laporan['title'].toString().toLowerCase().contains(searchQuery) ||
-                          laporan['description'].toString().toLowerCase().contains(searchQuery) ||
-                          laporan['lapor_category']['name'].toString().toLowerCase().contains(searchQuery) ||
-                          laporan['no'].toString().toLowerCase().contains(searchQuery);
-      
-      // Filter berdasarkan status
-      bool matchesStatus = selectedStatus.value == 'Semua' || 
-                          laporan['status'] == selectedStatus.value;
-      
+  final searchQuery = searchController.text.toLowerCase();
+  final selected = selectedStatus.value.toLowerCase();
+
+  filteredLaporanList.value = laporanList.where((laporan) {
+    final title = laporan['title']?.toString().toLowerCase() ?? '';
+    final desc = laporan['description']?.toString().toLowerCase() ?? '';
+    final kategori = laporan['kategori']?['name']?.toString().toLowerCase() ?? '';
+    final no = laporan['no']?.toString().toLowerCase() ?? '';
+    final status = laporan['status']?.toString().toLowerCase() ?? '';
+
+    // 🔍 search text
+    final matchesSearch =
+        title.contains(searchQuery) ||
+        desc.contains(searchQuery) ||
+        kategori.contains(searchQuery) ||
+        no.contains(searchQuery);
+
+    // 🎯 filter status
+    final matchesStatus =
+        selected == 'semua' || status == selected;
+
       return matchesSearch && matchesStatus;
     }).toList();
   }
+
   
   void setStatusFilter(String status) {
     selectedStatus.value = status;
@@ -76,7 +87,8 @@ class LaporRiwayatController extends GetxController {
   }
   
   void viewDetail(Map<String, dynamic> laporan) {
-    Get.toNamed('/lapor/detail', arguments: {'data': laporan});
+    Get.to(() => LaporDetailView(), arguments: {'data': laporan});
+    Get.put(LaporDetailController());
   }
   
   void buatLaporanBaru() {
@@ -89,14 +101,14 @@ class LaporRiwayatController extends GetxController {
   
   Color getStatusColor(String status) {
     switch (status) {
+      case 'Menunggu':
+        return Colors.orange;
       case 'Diproses':
         return Colors.blue;
       case 'Ditolak':
         return Colors.red;
       case 'Selesai':
         return Colors.green;
-      case 'Menunggu':
-        return Colors.orange;
       default:
         return Colors.grey;
     }

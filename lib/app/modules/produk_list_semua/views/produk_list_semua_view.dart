@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:desago/app/helpers/time_helper.dart';
 import 'package:desago/app/routes/app_pages.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:flutter/material.dart';
@@ -93,20 +94,20 @@ class ProdukListSemuaView extends GetView<ProdukListSemuaController> {
             ],
           ),
           child: ClipRRect(
-  borderRadius: BorderRadius.circular(12),
-  child: SizedBox(
-    width: AppResponsive.w(35),
-    height: AppResponsive.w(35), // sama dengan width
-    child: Image.network(
-      product['image']?.toString() ?? '',
-      fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => Image.asset(
-        'assets/images/no_image.png',
-        fit: BoxFit.cover,
-      ),
-    ),
-  ),
-),
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              width: AppResponsive.w(35),
+              height: AppResponsive.w(35), // sama dengan width
+              child: Image.network(
+                product['image']?.toString() ?? '',
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Image.asset(
+                  'assets/images/no_image.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
 
         ),
 
@@ -140,7 +141,7 @@ class ProdukListSemuaView extends GetView<ProdukListSemuaController> {
                     borderRadius: BorderRadius.circular(8)
                   ),
                   child: Text(
-                    '07:00 - 16:00',
+                    "${TimeHelper.formatTime(product['buka_mulai'])} - ${TimeHelper.formatTime(product['buka_sampai'])}",
                     style: AppText.bodySmall(color: AppColors.secondary),
                   ),
                 ),

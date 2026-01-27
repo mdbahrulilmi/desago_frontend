@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:get/get.dart';
+import 'package:desago/app/services/dio_services.dart';
+import 'package:desago/app/constant/api_constant.dart';
 
 class SuratListController extends GetxController {
   final isLoading = true.obs;
@@ -10,38 +13,50 @@ class SuratListController extends GetxController {
     fetchJenisSurat();
   }
 
-  void fetchJenisSurat() {
-    isLoading.value = true;
+  Future<void> fetchJenisSurat() async {
+    try {
+      isLoading.value = true;
 
-    // LANGSUNG AMBIL SURAT KETERANGAN
-    jenisSuratList.value = _getSuratKeteranganList();
+      final response = await DioService.instance.get(ApiConstant.jenisSurat);
 
-    isLoading.value = false;
+      dynamic raw = response.data;
+      List listData = [];
+
+      if (raw is List) {
+        listData = raw;
+      } 
+      else if (raw is Map) {
+        if (raw['data'] is List) {
+          listData = raw['data'];
+        } 
+        else if (raw['data'] is String) {
+          // 🔥 INI KASUS KAMU
+          listData = jsonDecode(raw['data']);
+        }
+      }
+
+      jenisSuratList.assignAll(
+        listData.map((e) => Map<String, dynamic>.from(e)).toList(),
+      );
+
+      print('Jenis surat loaded: ${jenisSuratList.length}');
+    } catch (e, s) {
+      print('fetchJenisSurat error: $e');
+      print(s);
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void navigateToDetail(Map<String, dynamic> surat) {
-    Get.toNamed('/surat-form', arguments: {
-      'suratId': surat['id'],
-      'suratTitle': surat['title'],
+  Get.toNamed(
+    '/surat-form',
+    arguments: {
+      'suratId': surat['id'].toString(),       // pastikan string
+      'suratTitle': surat['nama'].toString(),  // pastikan string
       'suratData': surat,
-    });
-  }
+    },
+  );
+}
 
-  // ================= DATA =================
-  List<Map<String, dynamic>> _getSuratKeteranganList() {
-    return [
-      {
-        'id': 'k1',
-        'title': 'Surat Keterangan Format Bebas',
-        'description': 'Surat keterangan dengan format bebas sesuai kebutuhan',
-        'estimasi': '3 hari kerja'
-      },
-      {
-        'id': 'k2',
-        'title': 'Surat Keterangan Asal-Usul',
-        'description': 'Surat yang menerangkan asal-usul seseorang',
-        'estimasi': '3 hari kerja'
-      },
-    ];
-  }
 }
