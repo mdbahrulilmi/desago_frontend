@@ -1,4 +1,5 @@
 import 'package:desago/app/modules/surat_list/controllers/surat_list_controller.dart';
+import 'package:desago/app/routes/app_pages.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
@@ -27,9 +28,45 @@ class SuratListView extends StatelessWidget {
         )
       : null,
         title: Text(
-          'Jenis Surat',
+          'Layanan Surat',
           style: AppText.h5(color: AppColors.secondary),
         ),
+        actions: [
+          Padding(
+            padding: AppResponsive.padding(right: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                ElevatedButton(
+                onPressed: () {
+                  Get.toNamed(Routes.SURAT_RIWAYAT_PENGAJUAN)  ;
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: AppResponsive.padding(horizontal: 2, vertical: 0.5),
+                  backgroundColor: Colors.white,
+                  foregroundColor: AppColors.primary,
+                  elevation: 0,
+                  side: BorderSide(color: AppColors.primary),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.history),
+                    SizedBox(width: AppResponsive.w(1)),
+                    Text(
+                      "Riwayat",
+                      style: AppText.bodyMedium(color: AppColors.primary),
+                    ),
+                  ],
+                ),
+            )
+            
+              ],
+            ),
+          )
+        ],
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -87,6 +124,10 @@ class SuratListView extends StatelessWidget {
             ),
           ),
            _buildJenisSuratList(controller),
+
+          SizedBox(height: Navigator.canPop(Get.context!)
+          ? 0
+          : AppResponsive.h(15))
           ],
         ),
       ),

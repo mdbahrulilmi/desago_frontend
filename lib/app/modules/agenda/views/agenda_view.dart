@@ -5,6 +5,7 @@ import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:remixicon/remixicon.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -144,9 +145,32 @@ class AgendaView extends GetView<AgendaController> {
 
       if (list.isEmpty) {
         return Center(
-          child: Text(
-            "Tidak ada agenda di tanggal ini",
-            style: AppText.bodyMedium(color: AppColors.textSecondary),
+          child: Column(
+            children: [
+              SizedBox(height: AppResponsive.h(5)),
+              Container(
+                width: 80,
+                height:80,
+                decoration: BoxDecoration(
+                  color: AppColors.borderAgenda,
+                  borderRadius: BorderRadius.all(Radius.circular(50))
+                ),
+                child: Icon(
+                  Remix.calendar_2_fill,
+                  color:AppColors.secondary,
+                  size: 40, 
+                  )),
+                  SizedBox(height: AppResponsive.h(1.5)),
+              Text(
+                "Tidak ada agenda",
+                style: AppText.h5(color: AppColors.textSecondary),
+              ),
+              SizedBox(height: AppResponsive.h(0.5)),
+              Text(
+                "Pilih tanggal lain yang bertanda titik",
+                style: AppText.bodyMedium(color: AppColors.textSecondary),
+              ),
+            ],
           ),
         );
       }

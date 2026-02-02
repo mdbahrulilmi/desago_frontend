@@ -185,34 +185,39 @@ class SuratRiwayatPengajuanView
                     child: Card(
                       color: AppColors.white,
                       margin: AppResponsive.margin(bottom: 1.5),
-                      elevation: 2,
+                      elevation: 1,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(14),
                       ),
                       child: Padding(
-                        padding: AppResponsive.padding(all: 2),
+                        padding: AppResponsive.padding(horizontal: 4, vertical: 2),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  '${item['jenis']}',
-                                  style: AppText.h6(color: AppColors.text),
+                                Container(
+                                  width: AppResponsive.h(28),
+                                  child: Text(
+                                    '${item['jenis_surat']['nama']}',
+                                    style: AppText.h6(color: AppColors.text),
+                                    softWrap: true,
+                                    overflow: TextOverflow.visible,
+                                  ),
                                 ),
                                 Container(
                                   padding: AppResponsive.padding(
-                                      horizontal: 1, vertical: 0.5),
+                                      horizontal: 3, vertical: 0.8),
                                   decoration: BoxDecoration(
                                     color: controller
                                         .getStatusColor(item['status'])
                                         .withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
                                     '${item['status']}',
-                                    style: AppText.small(
+                                    style: AppText.smallBold(
                                       color: controller
                                           .getStatusColor(item['status']),
                                     ),
@@ -220,7 +225,7 @@ class SuratRiwayatPengajuanView
                                 ),
                               ],
                             ),
-                            SizedBox(height: AppResponsive.h(1.5)),
+                            SizedBox(height: AppResponsive.h(1)),
                             Row(
                               children: [
                                 Icon(Icons.numbers,
@@ -228,7 +233,7 @@ class SuratRiwayatPengajuanView
                                     color: AppColors.textSecondary),
                                 SizedBox(width: AppResponsive.w(0.5)),
                                 Text(
-                                  'No. Pengajuan: ${item['id']}',
+                                  'No. Pengajuan - ${item['id']}',
                                   style: AppText.pSmall(
                                       color: AppColors.textSecondary),
                                 ),
@@ -242,18 +247,22 @@ class SuratRiwayatPengajuanView
                                     color: AppColors.textSecondary),
                                 SizedBox(width: AppResponsive.w(0.5)),
                                 Text(
-                                  'Tanggal: ${controller.dateFormat.format(item['tanggal'])}',
+                                  'Tanggal: ${item['created_at'] != null
+                                  ? controller.dateFormat.format(
+                                      DateTime.parse(item['created_at']),
+                                    )
+                                  : '-'}',
                                   style: AppText.pSmall(
                                       color: AppColors.textSecondary),
                                 ),
                               ],
                             ),
-                            SizedBox(height: AppResponsive.h(1)),
+                            SizedBox(height: AppResponsive.h(0.5)),
                             Text(
-                              'Keterangan: ${item['keterangan']}',
+                              'Keterangan: ${item['catatan_admin'] ?? '-'}',
                               style: AppText.pSmall(color: AppColors.text),
                             ),
-                            SizedBox(height: AppResponsive.h(1.5)),
+                            SizedBox(height: AppResponsive.h(0.2)),
                           ],
                         ),
                       ),

@@ -1,28 +1,32 @@
+import 'dart:convert';
+
+import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/services/dio_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class SuratRiwayatPengajuanController extends GetxController {
   final TextEditingController searchController = TextEditingController();
-  final dateFormat = DateFormat('dd/MM/yyyy');
-  
-  // Filter variables
-  var selectedStatus = 'Semua'.obs;
-  var startDate = Rx<DateTime?>(null);
-  var endDate = Rx<DateTime?>(null);
-  
-  // Data
-  var isLoading = false.obs;
-  var originalData = <Map<String, dynamic>>[].obs;
-  var filteredData = <Map<String, dynamic>>[].obs;
-  
-  // Status options
+  final DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+
+  // ===== FILTER =====
+  final selectedStatus = 'Semua'.obs;
+  final startDate = Rx<DateTime?>(null);
+  final endDate = Rx<DateTime?>(null);
+
+  // ===== DATA =====
+  final isLoading = false.obs;
+  final originalData = <Map<String, dynamic>>[].obs;
+  final filteredData = <Map<String, dynamic>>[].obs;
+
+  // ===== STATUS OPTIONS (sesuai backend) =====
   final List<String> statusOptions = [
     'Semua',
-    'Diproses',
-    'Ditolak',
-    'Selesai',
-    'Menunggu'
+    'menunggu',
+    'diproses',
+    'ditolak',
+    'selesai',
   ];
 
   @override
@@ -37,91 +41,80 @@ class SuratRiwayatPengajuanController extends GetxController {
     super.onClose();
   }
 
+  // ================= FETCH DATA =================
   Future<void> fetchData() async {
-    isLoading.value = true;
-    
     try {
-      // Mock data - replace with actual API call
-      await Future.delayed(Duration(seconds: 1));
-      
-      originalData.value = [
-        {
-          'id': '001',
-          'jenis': 'Surat Keterangan Domisili',
-          'tanggal': DateTime.now().subtract(Duration(days: 5)),
-          'status': 'Diproses',
-          'keterangan': 'Dokumen sedang diproses'
-        },
-        {
-          'id': '002',
-          'jenis': 'Surat Pengantar',
-          'tanggal': DateTime.now().subtract(Duration(days: 10)),
-          'status': 'Selesai',
-          'keterangan': 'Dokumen telah selesai'
-        },
-        {
-          'id': '003',
-          'jenis': 'Surat Keterangan Usaha',
-          'tanggal': DateTime.now().subtract(Duration(days: 15)),
-          'status': 'Ditolak',
-          'keterangan': 'Dokumen tidak lengkap'
-        },
-        {
-          'id': '004',
-          'jenis': 'Surat Keterangan Tidak Mampu',
-          'tanggal': DateTime.now().subtract(Duration(days: 2)),
-          'status': 'Menunggu',
-          'keterangan': 'Menunggu persetujuan'
-        },
-        {
-          'id': '005',
-          'jenis': 'Surat Keterangan Domisili',
-          'tanggal': DateTime.now().subtract(Duration(days: 20)),
-          'status': 'Selesai',
-          'keterangan': 'Dokumen telah selesai'
-        },
-      ];
-      
-      // Initialize filtered data
+      isLoading.value = true;
+
+      final response =
+          await DioService.instance.get(ApiConstant.suratRiwayat);
+
+      dynamic raw = response.data;
+      List listData = [];
+
+      if (raw is List) {
+        listData = raw;
+      } else if (raw is Map && raw['data'] != null) {
+        if (raw['data'] is List) {
+          listData = raw['data'];
+        } else if (raw['data'] is String) {
+          listData = jsonDecode(raw['data']);
+        }
+      }
+
+      originalData.assignAll(
+        listData.map((e) => Map<String, dynamic>.from(e)).toList(),
+      );
+
       filterData();
     } catch (e) {
-      print('Error fetching data: $e');
+      debugPrint('❌ fetchData error: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
+  // ================= FILTER DATA =================
   void filterData() {
-    String searchQuery = searchController.text.toLowerCase();
-    
+    final query = searchController.text.toLowerCase();
+
     filteredData.value = originalData.where((item) {
-      // Apply text search filter
-      bool matchesSearch = item['jenis'].toString().toLowerCase().contains(searchQuery) ||
-                         item['keterangan'].toString().toLowerCase().contains(searchQuery) ||
-                         item['id'].toString().toLowerCase().contains(searchQuery);
-      
-      // Apply status filter
-      bool matchesStatus = selectedStatus.value == 'Semua' || 
-                          item['status'] == selectedStatus.value;
-      
-      // Apply date range filter
-      bool matchesDateRange = true;
-      if (startDate.value != null) {
-        DateTime itemDate = item['tanggal'];
-        matchesDateRange = itemDate.isAfter(startDate.value!) || 
-                           itemDate.isAtSameMomentAs(startDate.value!);
+      // 🔍 SEARCH
+      final matchesSearch =
+          item['id'].toString().contains(query) ||
+          item['status'].toString().toLowerCase().contains(query) ||
+          item['data_form'].toString().toLowerCase().contains(query);
+
+      // 📌 STATUS
+      final matchesStatus =
+          selectedStatus.value == 'Semua' ||
+          item['status'] == selectedStatus.value;
+
+      // 📅 DATE (created_at)
+      bool matchesDate = true;
+
+      if (item['created_at'] != null) {
+        final createdAt =
+            DateTime.parse(item['created_at'].toString());
+
+        if (startDate.value != null) {
+          matchesDate =
+              createdAt.isAfter(startDate.value!) ||
+              createdAt.isAtSameMomentAs(startDate.value!);
+        }
+
+        if (endDate.value != null && matchesDate) {
+          matchesDate = createdAt.isBefore(
+            endDate.value!.add(const Duration(days: 1)),
+          );
+        }
       }
-      if (endDate.value != null && matchesDateRange) {
-        DateTime itemDate = item['tanggal'];
-        // Add one day to end date to include the end date in results
-        DateTime adjustedEndDate = endDate.value!.add(Duration(days: 1));
-        matchesDateRange = itemDate.isBefore(adjustedEndDate);
-      }
-      
-      return matchesSearch && matchesStatus && matchesDateRange;
+
+      return matchesSearch && matchesStatus && matchesDate;
     }).toList();
   }
 
+  // ================= FILTER ACTION =================
   void setStatusFilter(String status) {
     selectedStatus.value = status;
     filterData();
@@ -133,24 +126,16 @@ class SuratRiwayatPengajuanController extends GetxController {
       initialDate: startDate.value ?? DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: Color(0xFFE70000),
-            colorScheme: ColorScheme.light(primary: Color(0xFFE70000)),
-            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
-          ),
-          child: child!,
-        );
-      },
     );
-    
+
     if (picked != null) {
       startDate.value = picked;
-      // If end date is before start date, reset end date
-      if (endDate.value != null && endDate.value!.isBefore(picked)) {
+
+      if (endDate.value != null &&
+          endDate.value!.isBefore(picked)) {
         endDate.value = null;
       }
+
       filterData();
     }
   }
@@ -161,24 +146,14 @@ class SuratRiwayatPengajuanController extends GetxController {
       initialDate: endDate.value ?? DateTime.now(),
       firstDate: startDate.value ?? DateTime(2020),
       lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: Color(0xFFE70000),
-            colorScheme: ColorScheme.light(primary: Color(0xFFE70000)),
-            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
-          ),
-          child: child!,
-        );
-      },
     );
-    
+
     if (picked != null) {
       endDate.value = picked;
       filterData();
     }
   }
-  
+
   void resetFilters() {
     searchController.clear();
     selectedStatus.value = 'Semua';
@@ -189,13 +164,15 @@ class SuratRiwayatPengajuanController extends GetxController {
 
   Color getStatusColor(String status) {
     switch (status) {
-      case 'Diproses':
+      case 'diproses':
         return Colors.blue;
-      case 'Ditolak':
+      case 'verifikasi':
+        return Colors.purple;
+      case 'ditolak':
         return Colors.red;
-      case 'Selesai':
+      case 'selesai':
         return Colors.green;
-      case 'Menunggu':
+      case 'menunggu':
         return Colors.orange;
       default:
         return Colors.grey;

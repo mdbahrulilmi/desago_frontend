@@ -45,100 +45,72 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Header Card
-                  Card(
-                    color: AppColors.white,
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: AppResponsive.padding(all: 2),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
+                  Padding(
+                    padding: AppResponsive.padding(all: 2),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${controller.data['jenis_surat']['nama'] ?? "-"}',
+                                  style: AppText.h6(color: AppColors.text),
+                                ),
+                                SizedBox(height: AppResponsive.h(0.5)),
+                                Text(
+                                  'No. Reg: 2026/SKCK/${controller.data['id'] ?? "-"}',
+                                  style: AppText.bodyMedium(color: AppColors.text),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: AppResponsive.h(2)),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Nomor Pengajuan:',
+                                    'Tanggal Pengajuan:',
                                     style: AppText.bodySmall(color: AppColors.textSecondary),
                                   ),
                                   SizedBox(height: AppResponsive.h(0.5)),
                                   Text(
-                                    '${controller.data['id'] ?? "-"}',
-                                    style: AppText.h5(color: AppColors.text),
+                                    controller.data['created_at'] != null
+                                    ? controller.dateFormat.format(
+                                        DateTime.parse(controller.data['created_at']),
+                                      )
+                                    : '-',
+                                    style: AppText.bodyMediumBold(color: AppColors.text),
                                   ),
                                 ],
                               ),
-                              Container(
-                                padding: AppResponsive.padding(horizontal: 1.5, vertical: 0.8),
-                                decoration: BoxDecoration(
-                                  color: controller.getStatusColor(controller.data['status']).withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  '${controller.data['status'] ?? "-"}',
-                                  style: AppText.pSmallBold(
-                                    color: controller.getStatusColor(controller.data['status']),
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Pemohon:',
+                                    style: AppText.bodySmall(color: AppColors.textSecondary),
                                   ),
-                                ),
+                                  SizedBox(height: AppResponsive.h(0.5)),
+                                  Text(
+                                    '${controller.data['pemohon'] ?? "Tolkah Mozaik"}',
+                                    style: AppText.bodyMediumBold(color: AppColors.text),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          SizedBox(height: AppResponsive.h(2)),
-                          Text(
-                            'Jenis Surat:',
-                            style: AppText.bodySmall(color: AppColors.textSecondary),
-                          ),
-                          SizedBox(height: AppResponsive.h(0.5)),
-                          Text(
-                            '${controller.data['jenis'] ?? "-"}',
-                            style: AppText.h6(color: AppColors.text),
-                          ),
-                          SizedBox(height: AppResponsive.h(2)),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Tanggal Pengajuan:',
-                                      style: AppText.bodySmall(color: AppColors.textSecondary),
-                                    ),
-                                    SizedBox(height: AppResponsive.h(0.5)),
-                                    Text(
-                                      controller.data['tanggal'] != null
-                                          ? controller.dateFormat.format(controller.data['tanggal'])
-                                          : "-",
-                                      style: AppText.bodyMedium(color: AppColors.text),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Keterangan:',
-                                      style: AppText.bodySmall(color: AppColors.textSecondary),
-                                    ),
-                                    SizedBox(height: AppResponsive.h(0.5)),
-                                    Text(
-                                      '${controller.data['keterangan'] ?? "-"}',
-                                      style: AppText.bodyMedium(color: AppColors.text),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                   
@@ -159,7 +131,10 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
                     itemBuilder: (context, index) {
                       final item = controller.trackingStatus[index];
                       final bool isLast = index == controller.trackingStatus.length - 1;
-                      
+                      final bool isDone = item['isDone'] == true;
+                      final bool isRejected = item['isRejected'] == true;
+                      final bool isProses = item['isProses'] == true;
+
                       return Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -167,18 +142,29 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
                           Column(
                             children: [
                               Container(
-                                width: AppResponsive.w(3),
-                                height: AppResponsive.w(3),
+                                width: AppResponsive.w(6),
+                                height: AppResponsive.w(6),
                                 decoration: BoxDecoration(
-                                  color: item['isDone'] 
-                                    ? (item['isRejected'] ?? false) 
-                                      ? AppColors.danger 
-                                      : AppColors.success
-                                    : AppColors.grey,
+                                    color: isRejected
+                                      ? AppColors.danger
+                                      : isDone
+                                          ? AppColors.lightGreen
+                                          : isProses
+                                              ? AppColors.lightBlue
+                                              : AppColors.grey,
+
+                                              
+
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: AppColors.white,
-                                    width: 3,
+                                    color: isRejected
+                                      ? AppColors.danger
+                                      : isDone
+                                          ? AppColors.lightGreen
+                                          : isProses
+                                              ? Colors.blue
+                                              : AppColors.grey,
+                                    width: 1,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
@@ -187,12 +173,38 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
                                     ),
                                   ],
                                 ),
+                                child: isRejected
+                                  ? Icon(
+                                    Icons.close,
+                                    size: 15,
+                                    color: AppColors.secondary) 
+                                    : isDone 
+                                  ? Icon(
+                                    Icons.check,
+                                    size: 15,
+                                    color: AppColors.secondary) 
+                                    : isProses 
+                                  ? Icon(
+                                    Icons.edit_document,
+                                    size: 15,
+                                    color: AppColors.secondary) 
+                                    : Padding(
+                                      padding: const EdgeInsets.all(5),
+                                      child: Container(
+                                        width: 5,
+                                        height: 5,
+                                        decoration: BoxDecoration(
+                                        color: AppColors.border,
+                                        shape: BoxShape.circle
+                                        ),
+                                      ),
+                                    ),
                               ),
                               if (!isLast)
                                 Container(
                                   width: 2,
                                   height: AppResponsive.h(10),
-                                  color: item['isDone'] ? AppColors.success : AppColors.grey.withOpacity(0.5),
+                                  color: item['isDone'] ? AppColors.success : AppColors.border.withOpacity(0.5),
                                 ),
                             ],
                           ),
@@ -217,7 +229,12 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
                                 SizedBox(height: AppResponsive.h(0.5)),
                                 if (item['date'] != null)
                                   Text(
-                                    controller.dateFormat.format(item['date']),
+                                    controller.data['created_at'] != null
+                                    ? controller.dateFormat.format(
+                                        DateTime.parse(controller.data['created_at']),
+                                      )
+                                    : '-',
+
                                     style: AppText.bodySmall(color: AppColors.textSecondary),
                                   ),
                                 SizedBox(height: AppResponsive.h(0.5)),
@@ -237,40 +254,6 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
                       );
                     },
                   ),
-                  
-                  SizedBox(height: AppResponsive.h(3)),
-                  
-                  if (controller.data['status'] == 'Ditolak')
-                    ElevatedButton.icon(
-                      onPressed: () {
-              
-                      },
-                      icon: Icon(Icons.refresh, color: AppColors.white),
-                      label: Text('Ajukan Ulang', style: AppText.button(color: AppColors.white)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        minimumSize: Size(double.infinity, AppResponsive.h(6)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    
-                  if (controller.data['status'] == 'Selesai')
-                    ElevatedButton.icon(
-                      onPressed: () {
-                     
-                      },
-                      icon: Icon(Icons.download, color: AppColors.white),
-                      label: Text('Unduh Surat', style: AppText.button(color: AppColors.white)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.success,
-                        minimumSize: Size(double.infinity, AppResponsive.h(6)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
                 ],
               ),
             )

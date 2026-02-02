@@ -4,162 +4,177 @@ import 'package:intl/intl.dart';
 
 class SuratRiwayatPengajuanDetailController extends GetxController {
   final dateFormat = DateFormat('dd MMMM yyyy');
-  
-  // Gunakan RxString dan RxMap untuk membuat variabel reaktif
+
   final RxString id = ''.obs;
   final RxMap<String, dynamic> data = <String, dynamic>{}.obs;
-  
-  // Status tracking
-  final RxList<Map<String, dynamic>> trackingStatus = <Map<String, dynamic>>[].obs;
-  
+  final RxList<Map<String, dynamic>> trackingStatus =
+      <Map<String, dynamic>>[].obs;
+
   @override
   void onInit() {
     super.onInit();
-    
-    // Dapatkan arguments dari navigasi
+
     if (Get.arguments != null) {
-      if (Get.arguments['id'] != null) {
-        id.value = Get.arguments['id'];
-      }
-      
-      if (Get.arguments['data'] != null) {
-        data.assignAll(Get.arguments['data']);
-      }
+      id.value = Get.arguments['id']?.toString() ?? '';
+      data.assignAll(Get.arguments['data'] ?? {});
     }
-    
-    // Inisialisasi data tracking (simulasi data)
+
     initTrackingData();
   }
-  
+
+  // 🔒 AMAN PARSE DATE
+  DateTime? parseDate(dynamic value) {
+    if (value == null) return null;
+    if (value is DateTime) return value;
+    if (value is String) return DateTime.tryParse(value);
+    return null;
+  }
+
   void initTrackingData() {
-    // Contoh data tracking berdasarkan status
-    switch(data['status']) {
-      case 'Selesai':
-        trackingStatus.value = [
+    final DateTime? tanggalPengajuan = parseDate(data['created_at']);
+
+    print(data['status']);
+
+    switch (data['status']?.toString()) {
+      case 'selesai':
+        trackingStatus.assignAll([
           {
-            'title': 'Pengajuan Diterima',
-            'date': data['tanggal'],
+            'title': 'Pengajuan terkirim',
+            'date': tanggalPengajuan,
             'description': 'Pengajuan surat telah diterima oleh sistem',
-            'isDone': true
+            'isDone': true,
           },
           {
-            'title': 'Verifikasi Data',
-            'date': DateTime.now().subtract(Duration(days: 3)),
+            'title': 'Verifikasi Admin',
+            'date': DateTime.now().subtract(const Duration(days: 3)),
             'description': 'Data sedang diverifikasi oleh admin',
-            'isDone': true
+            'isDone': true,
           },
           {
-            'title': 'Pemrosesan Surat',
-            'date': DateTime.now().subtract(Duration(days: 2)),
+            'title': 'Tanda Tangan Kepala Desa',
+            'date': DateTime.now().subtract(const Duration(days: 2)),
             'description': 'Surat sedang dalam proses pembuatan',
-            'isDone': true
+            'isDone': true,
           },
           {
-            'title': 'Surat Selesai',
-            'date': DateTime.now().subtract(Duration(days: 1)),
+            'title': 'Selesai',
+            'date': DateTime.now().subtract(const Duration(days: 1)),
             'description': 'Surat telah selesai dan siap diambil',
-            'isDone': true
-          }
-        ];
+            'isDone': true,
+          },
+        ]);
         break;
-        
-      case 'Diproses':
-        trackingStatus.value = [
+
+      case 'verifikasi':
+        trackingStatus.assignAll([
           {
-            'title': 'Pengajuan Diterima',
-            'date': data['tanggal'],
+            'title': 'Pengajuan terkirim',
+            'date': tanggalPengajuan,
             'description': 'Pengajuan surat telah diterima oleh sistem',
-            'isDone': true
+            'isDone': true,
           },
           {
-            'title': 'Verifikasi Data',
-            'date': DateTime.now().subtract(Duration(days: 1)),
+            'title': 'Verifikasi Admin',
+            'date': DateTime.now().subtract(const Duration(days: 1)),
             'description': 'Data sedang diverifikasi oleh admin',
-            'isDone': true
+            'isProses' : true,
+            'isDone': false,
           },
           {
-            'title': 'Pemrosesan Surat',
+            'title': 'Tanda Tangan Kepala Desa',
             'date': DateTime.now(),
             'description': 'Surat sedang dalam proses pembuatan',
-            'isDone': false
+            'isDone': false,
           },
           {
-            'title': 'Surat Selesai',
+            'title': 'Selesai',
             'date': null,
             'description': 'Surat telah selesai dan siap diambil',
-            'isDone': false
-          }
-        ];
+            'isDone': false,
+          },
+        ]);
         break;
-        
-      case 'Ditolak':
-        trackingStatus.value = [
+      case 'diproses':
+        trackingStatus.assignAll([
           {
-            'title': 'Pengajuan Diterima',
-            'date': data['tanggal'],
+            'title': 'Pengajuan terkirim',
+            'date': tanggalPengajuan,
             'description': 'Pengajuan surat telah diterima oleh sistem',
-            'isDone': true
+            'isDone': true,
           },
           {
-            'title': 'Verifikasi Data',
-            'date': DateTime.now().subtract(Duration(days: 1)),
+            'title': 'Verifikasi Admin',
+            'date': DateTime.now().subtract(const Duration(days: 1)),
             'description': 'Data sedang diverifikasi oleh admin',
-            'isDone': true
+            'isDone': false,
+          },
+          {
+            'title': 'Tanda Tangan Kepala Desa',
+            'date': DateTime.now(),
+            'description': 'Surat sedang dalam proses pembuatan',
+            'isProses': true,
+            'isDone': false,
+          },
+          {
+            'title': 'Selesai',
+            'date': null,
+            'description': 'Surat telah selesai dan siap diambil',
+            'isDone': false,
+          },
+        ]);
+        break;
+
+      case 'ditolak':
+        trackingStatus.assignAll([
+          {
+            'title': 'Pengajuan terkirim',
+            'date': tanggalPengajuan,
+            'description': 'Pengajuan surat telah diterima oleh sistem',
+            'isDone': true,
+          },
+          {
+            'title': 'Verifikasi Admin',
+            'date': DateTime.now().subtract(const Duration(days: 1)),
+            'description': 'Data sedang diverifikasi oleh admin',
+            'isDone': true,
           },
           {
             'title': 'Pengajuan Ditolak',
             'date': DateTime.now(),
-            'description': data['keterangan'],
+            'description': data['keterangan']?.toString() ?? '-',
+            'isRejected': true,
             'isDone': true,
-            'isRejected': true
-          }
-        ];
+          },
+        ]);
         break;
-        
-      case 'Menunggu':
+
       default:
-        trackingStatus.value = [
+        trackingStatus.assignAll([
           {
-            'title': 'Pengajuan Diterima',
-            'date': data['tanggal'],
+            'title': 'Pengajuan terkirim',
+            'date': tanggalPengajuan,
             'description': 'Pengajuan surat telah diterima oleh sistem',
-            'isDone': true
+            'isDone': false,
           },
           {
-            'title': 'Verifikasi Data',
+            'title': 'Verifikasi Admin',
             'date': null,
             'description': 'Data sedang diverifikasi oleh admin',
-            'isDone': false
+            'isDone': false,
           },
           {
-            'title': 'Pemrosesan Surat',
+            'title': 'Tanda Tangan Kepala Desa',
             'date': null,
             'description': 'Surat sedang dalam proses pembuatan',
-            'isDone': false
+            'isDone': false,
           },
           {
-            'title': 'Surat Selesai',
+            'title': 'Selesai',
             'date': null,
             'description': 'Surat telah selesai dan siap diambil',
-            'isDone': false
-          }
-        ];
-        break;
-    }
-  }
-  
-  Color getStatusColor(String status) {
-    switch (status) {
-      case 'Diproses':
-        return Colors.blue;
-      case 'Ditolak':
-        return Colors.red;
-      case 'Selesai':
-        return Colors.green;
-      case 'Menunggu':
-        return Colors.orange;
-      default:
-        return Colors.grey;
+            'isDone': false,
+          },
+        ]);
     }
   }
 }

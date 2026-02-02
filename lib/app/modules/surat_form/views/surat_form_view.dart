@@ -2,6 +2,7 @@ import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:get/get.dart';
 import '../controllers/surat_form_controller.dart';
 
@@ -45,70 +46,146 @@ class SuratFormView extends GetView<SuratFormController> {
             ),
           ],
         ),
-        child: ElevatedButton(
-          onPressed: () => controller.submitForm(),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: Text(
-            'Ajukan Surat',
-            style: AppText.button(color: AppColors.white),
+        child: Obx(() => ElevatedButton(
+        onPressed: controller.isSubmitting.value
+            ? null
+            : () => controller.submitForm(),
+
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
           ),
         ),
+
+        child: controller.isSubmitting.value
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : Text(
+                'Ajukan Surat',
+                style: AppText.button(color: AppColors.white),
+              ),
+      ))
+
       ),
     );
   }
 
   Widget _buildDynamicForm() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Informasi Surat
-          _buildInfoCard(),
+  return SingleChildScrollView(
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ======================
+        // INFO SURAT
+        // ======================
+        _buildInfoCard(),
 
-          const SizedBox(height: 24),
-          Text('Data Pemohon', style: AppText.h5(color: AppColors.dark)),
-          const SizedBox(height: 16),
+        // ======================
+        // SECTION FORM DINAMIS
+        // ======================
+        ...controller.formSections.map((section) {
+          final sectionTitle = section['section'] ?? '';
+          final fields = section['fields'] as List<dynamic>? ?? [];
 
-          // Form fields dinamis
-          ...controller.formFields.map((field) {
-            final name = field['name'];
-            final label = field['label'] ?? '';
-            final hint = field['hint'] ?? '';
-            final required = field['required'] ?? false;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 24),
 
-            switch (field['type']) {
-              case 'text':
-              case 'textarea':
-                final multiline = field['type'] == 'textarea';
-                return _buildTextField(name, label, hint, required, multiline);
-              case 'number':
-                return _buildNumberField(name, label, hint, required);
-              case 'date':
-                return _buildDateField(name, label, hint, required);
-              case 'select':
-                return _buildDropdownField(
-                    name, label, hint, field['options'] ?? [], required);
-              case 'checkbox':
-                return _buildCheckboxField(name, label);
-              case 'file':
-                return _buildFileField(name, label, required);
-              default:
-                return const SizedBox.shrink();
-            }
-          }).toList(),
+              // Judul Section
+              Text(
+                sectionTitle,
+                style: AppText.h5(color: AppColors.dark),
+              ),
 
-          const SizedBox(height: 100),
-        ],
-      ),
-    );
-  }
+              const SizedBox(height: 16),
+
+              // Field di dalam section
+              ...fields.map((field) {
+                final name = field['name'];
+                final label = field['label'] ?? '';
+                final hint = field['hint'] ?? '';
+                final required = field['required'] ?? false;
+                final type = field['type'];
+
+                switch (type) {
+                  case 'text':
+                  case 'textarea':
+                    return _buildTextField(
+                      name,
+                      label,
+                      hint,
+                      required,
+                      type == 'textarea',
+                    );
+
+                  case 'number':
+                    return _buildNumberField(
+                      name,
+                      label,
+                      hint,
+                      required,
+                    );
+
+                  case 'date':
+                    return _buildDateField(
+                      name,
+                      label,
+                      hint,
+                      required,
+                    );
+
+                  case 'select':
+                    return _buildDropdownField(
+                      name,
+                      label,
+                      hint,
+                      field['options'] ?? [],
+                      required,
+                    );
+
+                  case 'checkbox':
+                    return _buildCheckboxField(
+                      name,
+                      label,
+                    );
+
+                  case 'file':
+                    return _buildFileField(
+                      name,
+                      label,
+                      required,
+                    );
+                  case 'time':
+                  return _buildTimeField(
+                    name,
+                    label,
+                    hint,
+                    required,
+                  );
+                  default:
+                    return const SizedBox.shrink();
+                }
+              }).toList(),
+            ],
+          );
+        }).toList(),
+
+        const SizedBox(height: 100),
+      ],
+    ),
+  );
+}
+
 
  Widget _buildInfoCard() {
   final persyaratanRaw = controller.suratData['persyaratan'];
@@ -245,6 +322,115 @@ class SuratFormView extends GetView<SuratFormController> {
       ]),
     );
   }
+
+  Widget _buildTimeField(
+    String key,
+    String label,
+    String hint,
+    bool required,
+) {
+  // pastikan controller untuk key ini sudah ada
+  final textController = controller.getTimeController(key);
+
+  return Container(
+    margin: const EdgeInsets.only(bottom: 16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(text: label, style: AppText.bodyMedium(color: AppColors.dark)),
+              if (required)
+                TextSpan(text: ' *', style: AppText.bodyMedium(color: AppColors.danger)),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: textController,
+          readOnly: true, // bisa diketik manual
+          keyboardType: TextInputType.datetime,
+          onTap: () {showDialog(
+                  context: Get.context!,
+                  builder: (_) => Dialog(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text("Pilih Waktu", style: AppText.h5()),
+                          const SizedBox(height: 8),
+                          TimePickerSpinner(
+                            is24HourMode: true,
+                            normalTextStyle: TextStyle(
+                              fontSize: 30,
+                              color: Colors.grey[400], 
+                              fontWeight: FontWeight.w500,
+                            ),
+                            highlightedTextStyle: TextStyle(
+                              fontSize: 35,
+                              color: AppColors.text,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            spacing: 60,
+                            itemHeight: 50,
+                            isForce2Digits: true,
+                            onTimeChange: (time) {
+                              final formatted =
+                                  "${time.hour.toString().padLeft(2,'0')}:${time.minute.toString().padLeft(2,'0')}";
+                              textController.text = formatted;
+                            },
+                          ),
+
+                          SizedBox(height: AppResponsive.h(1)),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: AppResponsive.padding(horizontal: 14),
+                                  child: ElevatedButton(
+                                    onPressed: () => Navigator.pop(Get.context!),
+                                    child: Text("OK",
+                                    style: AppText.bodyMedium(color: AppColors.text),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.border,
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+                },
+          decoration: InputDecoration(
+            hintText: hint,
+            filled: true,
+            fillColor: AppColors.white,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColors.dark.withOpacity(0.2)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColors.primary),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildDropdownField(
       String key, String label, String hint, List<dynamic> options, bool required) {

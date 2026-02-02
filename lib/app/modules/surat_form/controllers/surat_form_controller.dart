@@ -1,96 +1,126 @@
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/services/dio_services.dart';
+import 'package:desago/app/utils/app_colors.dart';
+import 'package:desago/app/utils/app_text.dart';
+import 'package:dio/dio.dart' as dio;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:desago/app/utils/app_colors.dart';
-import 'package:desago/app/utils/app_text.dart';
 
 class SuratFormController extends GetxController {
+  /// =========================
+  /// STATE UMUM
+  /// =========================
   final isLoading = true.obs;
+  final isSubmitting = false.obs;
 
-  // Info surat
   final suratId = ''.obs;
   final suratTitle = ''.obs;
   final RxMap suratData = {}.obs;
+  final Map<String, Rx<String?>> timeValues = {};
 
-  // Form dynamic fields
-  late List<Map<String, dynamic>> formFields;
 
-  // Controllers / state for each field
+  /// =========================
+  /// FORM SECTION
+  /// =========================
+  RxList<Map<String, dynamic>> formSections = <Map<String, dynamic>>[].obs;
+
+  /// =========================
+  /// FIELD STATE
+  /// =========================
   final Map<String, TextEditingController> textControllers = {};
   final Map<String, RxString> dropdownValues = {};
   final Map<String, Rx<String?>> dateValues = {};
   final Map<String, Rx<File?>> fileValues = {};
   final Map<String, RxBool> checkboxValues = {};
+  final Map<String, TextEditingController> timeControllers = {};
 
+
+  /// =========================
+  /// INIT
+  /// =========================
   @override
   void onInit() {
     super.onInit();
+
     if (Get.arguments != null) {
       suratId.value = Get.arguments['suratId'] ?? '';
       suratTitle.value = Get.arguments['suratTitle'] ?? 'Form Surat';
       suratData.assignAll(Get.arguments['suratData'] ?? {});
     }
 
-    // Load form schema dari API
     setupFormSchema();
     isLoading.value = false;
   }
-
   /// =========================
-  /// Setup Form dari API
+  /// SETUP FORM SCHEMA
   /// =========================
   void setupFormSchema() {
-    if (suratData['form_schema'] == null) {
-      formFields = [];
-      return;
-    }
+    if (suratData['form_schema'] == null) return;
 
-    List<dynamic> rawFields;
+    List<dynamic> rawSections;
+
     if (suratData['form_schema'] is String) {
-      rawFields = jsonDecode(suratData['form_schema']);
-    } else if (suratData['form_schema'] is List) {
-      rawFields = suratData['form_schema'];
+      rawSections = jsonDecode(suratData['form_schema']);
     } else {
-      rawFields = [];
+      rawSections = suratData['form_schema'];
     }
 
-    formFields = rawFields.map((e) => Map<String, dynamic>.from(e)).toList();
+    formSections.value =
+        rawSections.map((e) => Map<String, dynamic>.from(e)).toList();
 
-    // Init controllers
-    for (var field in formFields) {
-      final key = field['name'];
-      switch (field['type']) {
-        case 'text':
-        case 'number':
-        case 'textarea':
-          textControllers[key] = TextEditingController();
+    /// init controller tiap field
+    for (var section in formSections) {
+      final fields = section['fields'] as List<dynamic>? ?? [];
+
+      for (var field in fields) {
+        final key = field['name'];
+
+        switch (field['type']) {
+          case 'text':
+          case 'number':
+          case 'textarea':
+            textControllers[key] = TextEditingController();
+            break;
+
+          case 'time':
+            timeValues[key] = Rx<String?>(null);
           break;
-        case 'select':
-          dropdownValues[key] = ''.obs;
-          break;
-        case 'date':
-          dateValues[key] = Rx<String?>(null);
-          break;
-        case 'file':
-          fileValues[key] = Rx<File?>(null);
-          break;
-        case 'checkbox':
-          checkboxValues[key] = false.obs;
-          break;
+
+          case 'select':
+            dropdownValues[key] = ''.obs;
+            break;
+
+          case 'date':
+            dateValues[key] = Rx<String?>(null);
+            break;
+
+          case 'file':
+            fileValues[key] = Rx<File?>(null);
+            break;
+
+          case 'checkbox':
+            checkboxValues[key] = false.obs;
+            break;
+        }
       }
     }
   }
 
   /// =========================
-  /// Helpers
+  /// GETTER / SETTER
   /// =========================
-  TextEditingController getTextController(String key) => textControllers[key]!;
+  TextEditingController getTextController(String key) =>
+      textControllers[key]!;
 
   String? getDropdownValue(String key) =>
-      dropdownValues[key]?.value.isEmpty == true ? null : dropdownValues[key]?.value;
+      dropdownValues[key]?.value.isEmpty == true
+          ? null
+          : dropdownValues[key]?.value;
 
   void setDropdownValue(String key, String? value) {
     if (value != null) dropdownValues[key]?.value = value;
@@ -104,90 +134,175 @@ class SuratFormController extends GetxController {
       initialDate: DateTime.now(),
       firstDate: DateTime(1900),
       lastDate: DateTime(2100),
-      builder: (context, child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: AppColors.primary,
-            colorScheme: ColorScheme.light(primary: AppColors.primary),
-          ),
-          child: child!,
-        );
-      },
     );
-    if (picked != null) dateValues[key]?.value = DateFormat('dd/MM/yyyy').format(picked);
+
+    if (picked != null) {
+      dateValues[key]?.value =
+          DateFormat('dd/MM/yyyy').format(picked);
+    }
   }
 
   File? getFileValue(String key) => fileValues[key]?.value;
 
   void pickFile(String key) async {
     final result = await FilePicker.platform.pickFiles();
-    if (result != null) fileValues[key]?.value = File(result.files.single.path!);
+    if (result != null) {
+      fileValues[key]?.value = File(result.files.single.path!);
+    }
   }
 
-  bool getCheckboxValue(String key) => checkboxValues[key]?.value ?? false;
+  bool getCheckboxValue(String key) =>
+      checkboxValues[key]?.value ?? false;
 
-  void setCheckboxValue(String key, bool value) => checkboxValues[key]?.value = value;
+  void setCheckboxValue(String key, bool value) =>
+      checkboxValues[key]?.value = value;
 
   /// =========================
-  /// Validasi & Submit
+  /// VALIDASI
   /// =========================
   bool validateForm() {
-    bool isValid = true;
-    for (var field in formFields) {
-      if (field['required'] == true) {
+    for (var section in formSections) {
+      final fields = section['fields'] as List<dynamic>? ?? [];
+
+      for (var field in fields) {
+        if (field['required'] == true) {
+          final key = field['name'];
+
+          switch (field['type']) {
+            case 'text':
+            case 'number':
+            case 'textarea':
+              if (textControllers[key]?.text.isEmpty ?? true) return false;
+              break;
+
+            case 'select':
+              if (dropdownValues[key]?.value.isEmpty ?? true) return false;
+              break;
+
+            case 'time':
+              if (timeValues[key]?.value == null) return false;
+              break;
+
+            case 'date':
+              if (dateValues[key]?.value == null) return false;
+              break;
+
+            case 'file':
+              if (fileValues[key]?.value == null) return false;
+              break;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  /// =========================
+  /// SUBMIT
+  /// =========================
+  Future<void> submitForm() async {
+    if (isSubmitting.value) return;
+    isSubmitting.value = true;
+
+    if (!validateForm()) {
+      isSubmitting.value = false;
+      Get.snackbar(
+        'Validasi Gagal',
+        'Mohon lengkapi semua field wajib',
+        backgroundColor: AppColors.danger,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    final Map<String, dynamic> dataForm = {};
+
+    for (var section in formSections) {
+      final fields = section['fields'] as List<dynamic>? ?? [];
+
+      for (var field in fields) {
         final key = field['name'];
+
         switch (field['type']) {
           case 'text':
           case 'number':
           case 'textarea':
-            if ((textControllers[key]?.text.isEmpty ?? true)) isValid = false;
+            dataForm[key] = textControllers[key]?.text;
             break;
+
           case 'select':
-            if ((dropdownValues[key]?.value.isEmpty ?? true)) isValid = false;
+            dataForm[key] = dropdownValues[key]?.value;
             break;
+
           case 'date':
-            if ((dateValues[key]?.value == null)) isValid = false;
+            dataForm[key] = dateValues[key]?.value;
             break;
-          case 'file':
-            if ((fileValues[key]?.value == null)) isValid = false;
+
+          case 'checkbox':
+            dataForm[key] = checkboxValues[key]?.value ?? false;
             break;
         }
       }
     }
-    return isValid;
+
+    final formData = dio.FormData.fromMap({
+      'jenis_surat_id': suratData['id'],
+      'subdomain': ApiConstant.desa,
+      'status': 'menunggu',
+      'created_by': 1,
+      'data_form': dataForm,
+    });
+
+    try {
+      final response = await DioService.instance.post(
+        ApiConstant.tambahSurat,
+        data: formData,
+        options: dio.Options(contentType: 'multipart/form-data'),
+      );
+
+      if (response.statusCode == 201) {
+        Get.snackbar(
+          'Sukses',
+          'Surat berhasil diajukan',
+          backgroundColor: AppColors.bottonGreen,
+          colorText: Colors.white,
+        );
+        Navigator.of(Get.context!).pop();
+      }
+    } catch (e) {
+      isSubmitting.value = false;
+      Get.snackbar(
+        'Error',
+        'Gagal mengajukan surat',
+        backgroundColor: AppColors.danger,
+        colorText: Colors.white,
+      );
+    }
   }
 
-  void submitForm() {
-    if (!validateForm()) {
-      Get.snackbar('Validasi Gagal', 'Mohon lengkapi semua field yang wajib diisi',
-          backgroundColor: AppColors.danger.withOpacity(0.9),
-          colorText: AppColors.white,
-          snackPosition: SnackPosition.BOTTOM);
-      return;
-    }
+  void selectTime(BuildContext context, String key) async {
+  final picked = await showTimePicker(
+    context: context,
+    initialTime: TimeOfDay.now(),
+  );
 
-    // Simulasi submit
-    print('Submit data:');
-    final Map<String, dynamic> payload = {};
-    for (var field in formFields) {
-      final key = field['name'];
-      switch (field['type']) {
-        case 'text':
-        case 'number':
-        case 'textarea':
-          payload[key] = textControllers[key]?.text;
-          break;
-        case 'select':
-          payload[key] = dropdownValues[key]?.value;
-          break;
-        case 'date':
-          payload[key] = dateValues[key]?.value;
-          break;
-        case 'file':
-          payload[key] = fileValues[key]?.value?.path;
-          break;
-      }
-    }
-    print(payload);
+  if (picked != null) {
+    timeValues[key]?.value = picked.format(context);
   }
 }
+
+  void initTimeController(String key) {
+    if (!timeControllers.containsKey(key)) {
+      timeControllers[key] = TextEditingController();
+    }
+  }
+
+  TextEditingController getTimeController(String key) {
+    initTimeController(key);
+    return timeControllers[key]!;
+  }
+  
+String? getTimeValue(String key) => timeValues[key]?.value;
+
+}
+

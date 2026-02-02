@@ -25,6 +25,7 @@ void main() async {
 
   final appLinks = AppLinks();
   final Uri? initialUri = await appLinks.getInitialLink();
+  
 
   String initialRoute = AppPages.getInitialRoute();
   Map<String, String>? initialParams;

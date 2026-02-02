@@ -11,7 +11,13 @@ class AppColors {
   static const Color danger = Color(0xFFFF0000);
 
   static const Color border = Color(0xFFE0E0E0);
+  static const Color borderAgenda = Color(0xFFCCCCCC);
   static const Color borderDana = Color(0xFFDBDBDB);
+
+  static const Color detailSuccess = Color(0xFFDCFCE7);
+  static const Color detailSuccessBorder = Color(0xFF76F5A2);
+  static const Color detailSuccessIcon = Color(0xFF00A83E);
+
 
   static const Color divider = Color(0xFFB6B6B6);
 

@@ -30,7 +30,6 @@ class SuratListController extends GetxController {
           listData = raw['data'];
         } 
         else if (raw['data'] is String) {
-          // 🔥 INI KASUS KAMU
           listData = jsonDecode(raw['data']);
         }
       }
