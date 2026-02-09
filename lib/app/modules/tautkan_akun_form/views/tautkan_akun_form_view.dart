@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:desago/app/models/AkunDesarMode.dart';
+import 'package:desago/app/models/AkunDesaMode.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';

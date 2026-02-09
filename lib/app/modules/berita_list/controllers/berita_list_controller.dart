@@ -1,11 +1,16 @@
+import 'dart:convert';
+
 import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/models/BeritaModel.dart';
 import 'package:desago/app/routes/app_pages.dart';
 import 'package:desago/app/services/dio_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 class BeritaListController extends GetxController {
   final TextEditingController searchController = TextEditingController();
+  final box = GetStorage();
 
   final RxList<String> categories = [
     'Semua',
@@ -17,64 +22,107 @@ class BeritaListController extends GetxController {
 
   final RxString selectedCategory = 'Semua'.obs;
 
-  final RxList<Map<String, dynamic>> beritas = <Map<String, dynamic>>[].obs;
-  final RxList<Map<String, dynamic>> filteredBeritas = <Map<String, dynamic>>[].obs;
+  final RxList<BeritaModel> beritas = <BeritaModel>[].obs;
+  final RxList<BeritaModel> filteredBeritas = <BeritaModel>[].obs;
 
-  var isLoading = true.obs;
+  final isLoading = true.obs;
+
+  static const _cacheKey = 'cache_berita_desa';
+  static const _cacheTimeKey = 'cache_berita_desa_time';
+  static const Duration _cacheTTL = Duration(hours: 1);
 
   @override
   void onInit() {
     super.onInit();
-    fetchBerita();
 
-    // Listener search
     searchController.addListener(() {
       filterBerita(searchController.text);
     });
+
+    _loadFromCache();
+    fetchBerita();
   }
+
+  // ================= CACHE =================
+
+  void _loadFromCache() {
+    final cachedTime = box.read(_cacheTimeKey);
+
+    if (cachedTime != null) {
+      final cacheDate = DateTime.parse(cachedTime);
+      final isExpired =
+          DateTime.now().difference(cacheDate) > _cacheTTL;
+
+      if (!isExpired) {
+        final cachedData = box.read(_cacheKey);
+        if (cachedData != null) {
+          final List listData = jsonDecode(cachedData);
+
+          final data = listData
+              .map((e) => BeritaModel.fromJson(e))
+              .toList();
+
+          beritas.assignAll(data);
+          filteredBeritas.assignAll(data);
+
+          debugPrint('🟡 Berita loaded from cache (${data.length})');
+          isLoading.value = false;
+        }
+      }
+    }
+  }
+
+  Future<void> _saveToCache(List<BeritaModel> data) async {
+    final jsonData = jsonEncode(data.map((e) => e.toJson()).toList());
+    await box.write(_cacheKey, jsonData);
+    await box.write(_cacheTimeKey, DateTime.now().toIso8601String());
+  }
+
+  // ================= API =================
 
   Future<void> fetchBerita() async {
-  try {
-    isLoading.value = true;
-    final res = await DioService.instance.get(ApiConstant.beritaDesa);
+    try {
+      isLoading.value = beritas.isEmpty;
 
-    List<Map<String, dynamic>> data =
-        List<Map<String, dynamic>>.from(res.data).map((berita) {
-      return {
-        "image": berita['gambar'] ?? '',
-        "title": berita['judul'] ?? '-',
-        "excerpt": (berita['isi'] ?? '').replaceAll(RegExp(r'<[^>]*>'), '').substring(0, 100),
-        "category": berita['kategori'] ?? 'Umum',
-        "date": berita['tgl']?.split(' ')?.first ?? '-',
-        "raw": berita,
-      };
-    }).toList();
+      final res = await DioService.instance.get(ApiConstant.beritaDesa);
 
-    beritas.value = data;
-    filteredBeritas.value = data;
-  } catch (e) {
-    beritas.value = [];
-    filteredBeritas.value = [];
-    print("Error fetchBerita: $e");
-  } finally {
-    isLoading.value = false;
+      final List listData = res.data is List
+          ? res.data
+          : (res.data['data'] ?? []);
+
+      final data = listData
+          .map<BeritaModel>((json) => BeritaModel.fromJson(json))
+          .toList();
+
+      beritas.assignAll(data);
+      filteredBeritas.assignAll(data);
+
+      await _saveToCache(data);
+
+      debugPrint('🟢 Berita loaded from API (${data.length})');
+    } catch (e) {
+      debugPrint('🔴 Error fetchBerita: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
-}
 
+  // ================= FILTER =================
 
   void filterBerita(String keyword) {
-    List<Map<String, dynamic>> temp = beritas.where((berita) {
-      final matchesCategory = selectedCategory.value == 'Semua' ||
-          berita['category'] == selectedCategory.value;
-      final matchesKeyword = keyword.isEmpty ||
-          berita['title']
-              .toString()
-              .toLowerCase()
-              .contains(keyword.toLowerCase());
-      return matchesCategory && matchesKeyword;
-    }).toList();
+    filteredBeritas.assignAll(
+      beritas.where((berita) {
+        final matchesCategory =
+            selectedCategory.value == 'Semua' ||
+            berita.kategori == selectedCategory.value;
 
-    filteredBeritas.value = temp;
+        final matchesKeyword =
+            keyword.isEmpty ||
+            berita.judul.toLowerCase().contains(keyword.toLowerCase());
+
+        return matchesCategory && matchesKeyword;
+      }).toList(),
+    );
   }
 
   void setSelectedCategory(String category) {
@@ -82,8 +130,32 @@ class BeritaListController extends GetxController {
     filterBerita(searchController.text);
   }
 
-  void bacaBeritaLengkap(Map<String, dynamic> berita) {
-  Get.toNamed(Routes.BERITA_DETAIL, arguments: berita['raw']);
-}
+  // ================= NAV =================
 
+  void bacaBeritaLengkap(BeritaModel berita) {
+    Get.toNamed(
+      Routes.BERITA_DETAIL,
+      arguments: berita,
+    );
+  }
+
+  // ================= REFRESH =================
+
+  Future<void> refreshBerita() async {
+    clearCache();
+    await fetchBerita();
+  }
+
+  // ================= MANUAL INVALIDATE =================
+
+  void clearCache() {
+    box.remove(_cacheKey);
+    box.remove(_cacheTimeKey);
+  }
+
+  @override
+  void onClose() {
+    searchController.dispose();
+    super.onClose();
+  }
 }

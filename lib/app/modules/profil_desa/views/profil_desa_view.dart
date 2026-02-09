@@ -1,4 +1,5 @@
 import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/models/VisiMisiModel.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
@@ -23,13 +24,14 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         title: Obx((){
+          final desa = controller.desa.value;
           if (controller.isLoading.value) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
           return Text(
-          'Profil Desa ${controller.profile["informasi_desa"]?["nama"]}',
+          "Profil Desa ${desa?.nama ?? '' }",
           style: AppText.h5(color: AppColors.white),
         );
         }),        
@@ -75,11 +77,26 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
             child: TabBarView(
               controller: controller.tabController,
               children: [
-                // Tab Profil
-                _buildProfilTab(context),
+                RefreshIndicator(
+                    onRefresh: controller.refreshProfile,
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        _buildProfilTab(context),
+                      ],
+                    ),
+                  ),
 
-                // Tab Perangkat
-                _buildPerangkatTab(context),
+                  // ===== TAB PERANGKAT =====
+                  RefreshIndicator(
+                    onRefresh: controller.refreshProfile,
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        _buildPerangkatTab(context),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),
@@ -97,129 +114,113 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
         children: [
           Center(
             child: Obx(() {
-              
               if (controller.isLoading.value) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-              final html = controller.profile['isi'];
-              final List misiList = controller.profile["informasi_desa"]?["misi"] ?? [];
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final desa = controller.desa.value;
+              if (desa == null) return const SizedBox();
+
               return Column(
                 children: [
                   Text(
-                    controller.profile["profile"] ?? "",
-                    style: 
-                    AppText.h5(color: AppColors.dark),
+                    '',
+                    style: AppText.h5(color: AppColors.dark),
                   ),
                   const SizedBox(height: 12),
-                    ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network("${ApiConstant.pictureUrl}${controller.profile['gambar']}" ?? "",
-                            width: 147,
-                              height: 203,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  width: 120,
-                                  height: 160,
-                                  color: AppColors.muted,
-                                  child: Icon(
-                                    Icons.person,
-                                    size: 60,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                );})
-                          ),
-                          const SizedBox(height: 18),
-                          Text(
-                                  controller.profile['kepala_desa']?['nama'] ?? '',
-                                  style: AppText.h4(color: AppColors.text),
-                                ),
-                          const SizedBox(height: 18),
-                               Html(
-                                  data: html,
-                                  style: {
-                                    "body": Style(
-                                      margin: Margins.zero,
-                                      padding: HtmlPaddings.zero,
-                                      fontSize: FontSize(14),
-                                      textAlign: TextAlign.justify,
-                                      color: AppColors.text,
-                                    ),
-                                    "p": Style(
-                                      margin: Margins.only(bottom: 12),
-                                    ),
-                                  },
-                                ),
-                                 const SizedBox(height: 16),
+
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: (desa.kepalaDesa?.gambar != null && desa.kepalaDesa!.gambar!.isNotEmpty)
+                      ? Image.network(
+                          desa.kepalaDesa!.gambar!,
+                          width: 147,
+                          height: 203,
+                          fit: BoxFit.cover,
+                        )
+                        : null
+                  ),
+                  const SizedBox(height: 18),
+
+                  Text(
+                    desa.kepalaDesa?.nama ?? '',
+                    style: AppText.h4(color: AppColors.text),
+                  ),
+                  SizedBox(height: AppResponsive.h(4)),
+                  Html(
+                    data: desa.sambutan,
+                    style: {
+                      "body": Style(
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.zero,
+                        fontSize: FontSize(16),
+                        textAlign: TextAlign.justify,
+                        color: AppColors.text,
+                      ),
+                    },
+                  ),
+                  SizedBox(height: AppResponsive.h(2)),
+                  
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Informasi Desa', style: AppText.h5(color: AppColors.dark)),
+                      SizedBox(height: AppResponsive.h(1)),
+                      _buildInfoItem('Nama Desa', desa.nama ?? ''),
+                      _buildInfoItem('Kecamatan', desa.kecamatan ?? ''),
+                      _buildInfoItem('Kabupaten', desa.kabupaten ?? ''),
+                      _buildInfoItem('Provinsi', desa.provinsi ?? ''),
+                      _buildInfoItem('Kode Pos', desa.kodePos ?? ''),
+                      _buildInfoItem('Luas Wilayah', desa.luasWilayah ?? ''),
+                      _buildInfoItem('Jumlah Penduduk', desa.jumlahPenduduk?.toString() ?? ''),
+                      _buildInfoItem('Jumlah KK', desa.jumlahKk?.toString() ?? ''),
+                      _buildInfoItem('Batas Utara', desa.batasUtara ?? ''),
+                      _buildInfoItem('Batas Selatan', desa.batasSelatan ?? ''),
+                      _buildInfoItem('Batas Timur', desa.batasTimur ?? ''),
+                      _buildInfoItem('Batas Barat', desa.batasBarat ?? ''),
+                    ],
+                  ),
+
+                  SizedBox(height: AppResponsive.h(2)),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Visi & Misi', style: AppText.h5(color: AppColors.dark)),
+                      SizedBox(height: AppResponsive.h(1)),
+
+                      // ===== VISI =====
+                      Text('Visi', style: AppText.h6(color: AppColors.text)),
+                      const SizedBox(height: 8),
+                      Text(
+                        desa.visi?.content ?? '-',
+                        style: AppText.bodyMedium(color: AppColors.text),
+                        textAlign: TextAlign.justify,
+                      ),
+
+                      SizedBox(height: AppResponsive.h(1)),
+
+                      // ===== MISI =====
+                      if ((desa.misi ?? []).isNotEmpty) ...[
+                        Text('Misi', style: AppText.h6(color: AppColors.text)),
+                        const SizedBox(height: 8),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Informasi Desa',
-                              style: AppText.h5(color: AppColors.dark),
-                            ),
-                            const SizedBox(height: 16),
-                      
-                            _buildInfoItem('Nama Desa', 'Desa ${controller.profile["informasi_desa"]?["nama"]}'),
-                            _buildInfoItem('Kecamatan', controller.profile["informasi_desa"]?["kecamatan"]),
-                            _buildInfoItem('Kabupaten', controller.profile["informasi_desa"]?["kabupaten"]),
-                            _buildInfoItem('Provinsi', controller.profile["informasi_desa"]?["provinsi"]),
-                            _buildInfoItem('Kode Pos', controller.profile["informasi_desa"]?["kodepos"]),
-                            _buildInfoItem('Luas Wilayah', controller.profile["informasi_desa"]?["luas_wilayah"]),
-                            _buildInfoItem('Jumlah Penduduk', controller.profile["informasi_desa"]?["jumlah_penduduk"]),
-                            _buildInfoItem('Jumlah KK', controller.profile["informasi_desa"]?["jumlah_kk"]),
-                            _buildInfoItem('Batas Utara', controller.profile["informasi_desa"]?["batas_utara"]),
-                            _buildInfoItem('Batas Selatan', controller.profile["informasi_desa"]?["batas_selatan"]),
-                            _buildInfoItem('Batas Timur', controller.profile["informasi_desa"]?["batas_timur"]),
-                            _buildInfoItem('Batas Barat', controller.profile["informasi_desa"]?["batas_barat"]),
-                          ],
+                          children: (desa.misi ?? [])
+                              .asMap()
+                              .entries
+                              .map((entry) => _buildMisiItem(
+                                    entry.value,
+                                    index: entry.key + 1,
+                                  ))
+                              .toList(),
                         ),
-                        const SizedBox(height: 16),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Visi & Misi',
-                              style: AppText.h5(color: AppColors.dark),
-                            ),
-                            const SizedBox(height: 16),
-                        
-                            // Visi
-                            Text(
-                              'Visi',
-                              style: AppText.h6(color: AppColors.text),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              controller.profile["informasi_desa"]?["visi"],
-                              style: AppText.bodyMedium(color: AppColors.text),
-                              textAlign: TextAlign.justify,
-                            ),
-                        
-                            const SizedBox(height: 16),
-                        
-                            // Misi
-                            Text(
-                              'Misi',
-                              style: AppText.h6(color: AppColors.text),
-                            ),
-                            const SizedBox(height: 8),
-
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: misiList
-                                  .map((e) => _buildMisiItem(e))
-                                  .toList(),
-                            )
-
-                          ],
-                        ),
-                            
-                        ],
-                      );
+                      ],
+                    ],
+                  ),
+                ],
+              );
             }),
+
           ),
           ],
       ),
@@ -246,7 +247,7 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
                   'Struktur Perangkat Desa',
                   style: AppText.h5(color: AppColors.dark),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: AppResponsive.h(1)),
 
                 ListView.builder(
                   shrinkWrap: true,
@@ -268,8 +269,8 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
                             CircleAvatar(
                                 radius: 30,
                                 backgroundColor: AppColors.muted,
-                                backgroundImage: item.image != null && item.image!.isNotEmpty
-                                  ? NetworkImage(item.image!)
+                                backgroundImage: item.gambar != null && item.gambar!.isNotEmpty
+                                  ? NetworkImage(item.gambar!)
                                   : const AssetImage('assets/img/kepala_desa.jpg') as ImageProvider,
                                 onBackgroundImageError: (exception, stackTrace) {},
                               ),
@@ -298,7 +299,7 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
             ),
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: AppResponsive.h(1)),
 
           // Card BPD
           Padding(
@@ -310,7 +311,7 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
                   'Badan Permusyawaratan Desa (BPD)',
                   style: AppText.h5(color: AppColors.dark),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: AppResponsive.h(1)),
 
                 // List anggota BPD
                 ListView.builder(
@@ -331,8 +332,8 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
                           child: CircleAvatar(
                                 radius: 30,
                                 backgroundColor: AppColors.muted,
-                                backgroundImage: item.image != null && item.image!.isNotEmpty
-                                  ? NetworkImage(item.image!)
+                                backgroundImage: item.gambar != null && item.gambar!.isNotEmpty
+                                  ? NetworkImage(item.gambar!)
                                   : const AssetImage('assets/img/kepala_desa.jpg') as ImageProvider,
                                 onBackgroundImageError: (exception, stackTrace) {},
                               ),
@@ -366,7 +367,6 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
     });
   }
 
-  // Widget untuk item informasi desa
   Widget _buildInfoItem(String label, dynamic value) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 8.0),
@@ -384,7 +384,7 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
         Expanded(
           child: Text(
             value?.toString() ?? '-',
-            style: AppText.bodyMedium(color: AppColors.text),
+            style: AppText.bodyMediumBold(color: AppColors.text),
           ),
         ),
       ],
@@ -393,17 +393,16 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
 }
 
 
-  // Widget untuk item misi
-  Widget _buildMisiItem(dynamic text) {
+  Widget _buildMisiItem(VisiMisiModel e, {required int index}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('• ', style: AppText.h6(color: AppColors.text)),
+          Text('$index. ', style: AppText.bodyMedium(color: AppColors.text)),
           Expanded(
             child: Text(
-              text,
+              e.content ?? '-',
               style: AppText.bodyMedium(color: AppColors.text),
               textAlign: TextAlign.justify,
             ),

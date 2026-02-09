@@ -7,6 +7,7 @@ class StorageService {
   // Keys
   static const String _tokenKey = 'token';
   static const String _userKey = 'user';
+  static const String _verifiedKey = 'verified';
 
   // Save token
   static Future<void> saveToken(String token) async {
@@ -47,4 +48,13 @@ class StorageService {
   static bool isLoggedIn() {
     return getToken() != null && getUser() != null;
   }
+
+  static Future<void> saveVerified(String verified) async {
+    await _storage.write(_verifiedKey, verified);
+  }
+
+  static String getVerified() {
+    return _storage.read(_verifiedKey);
+  }
+
 }

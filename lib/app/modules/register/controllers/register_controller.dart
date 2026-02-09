@@ -37,32 +37,16 @@ class RegisterController extends GetxController {
       final response = await DioService.instance.post(
         ApiConstant.register,
         data: {
-          // 'name': namaLengkapController.text,
           'username': usernameController.text,
           'email': emailController.text,
-          // 'phone': phoneController.text,
           'password': passwordController.text,
-          // 'password_confirmation': confirmPassRRwordController.text,
+          'desa_id': ApiConstant.desaId
         },
       );
 
       final responseData = response.data as Map<String, dynamic>;
   
       if (response.statusCode == 200 || response.data['success'] == true) {
-        // try {
-        //   final user = UserModel.fromJson(responseData['data']['user']);
-        //   final token = responseData['data']['token'] as String;
-        //   await StorageService.saveUserData(user, token);
-        //   Get.snackbar(
-        //     'Verifikasi Email Terkirim',
-        //     'Silakan cek email Anda untuk memverifikasi akun.',
-        //     backgroundColor: AppColors.success,
-        //     colorText: AppColors.white,
-        //   );
-        //   Get.offAllNamed(Routes.SUKSES_VERIFIKASI_EMAIL);
-        // } catch (e) {
-        //   throw 'Gagal memproses data user';
-        // }
           Get.snackbar(
               'Registrasi Berhasil',
               responseData['message'] ?? 'Selamat datang! Silakan login.',
@@ -70,6 +54,7 @@ class RegisterController extends GetxController {
               colorText: AppColors.white,
           );
           Future.delayed(const Duration(seconds: 1), () {
+            Get.delete<RegisterController>();
             Get.offAllNamed(Routes.LOGIN);
           });
 

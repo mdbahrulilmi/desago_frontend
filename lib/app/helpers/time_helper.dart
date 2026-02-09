@@ -23,6 +23,10 @@ class TimeHelper {
     return '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
   }
 
+   static String formatTanggalDate(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
   static String formatJam(String? createdAt) {
     if (createdAt == null || createdAt.isEmpty) return '-';
 

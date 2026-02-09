@@ -1,4 +1,5 @@
 import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/helpers/time_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
@@ -14,158 +15,141 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
 
   @override
   Widget build(BuildContext context) {
-    
+    final berita = controller.berita;
+
     return Scaffold(
-      body: Obx(() {
-        final berita = controller.berita.value;
-        String tanggal = (berita['tgl'] ?? "").split(' ').first;
-        final html = berita['isi'];
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            automaticallyImplyLeading: false,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios, color: AppColors.white),
+              onPressed: () => Get.back(),
+            ),
+            expandedHeight: 250,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.network(
+                    "${berita.gambar}",
+                    fit: BoxFit.cover,
+                  ),
 
-        if (berita.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        return CustomScrollView(
-          slivers: [
-            // SliverAppBar dengan gambar latar
-            SliverAppBar(
-              automaticallyImplyLeading: false,
-              leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: AppColors.white),
-                onPressed: () => Get.back(),
-              ),
-              expandedHeight: 250.0,
-              floating: false,
-              pinned: true,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                     Image.network(
-                        "${ApiConstant.pictureUrl}${berita["gambar"]}",
-                        fit: BoxFit.cover,
-                      ),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.black.withOpacity(0.7),
-                            Colors.transparent,
-                            Colors.black.withOpacity(0.7),
-                          ],
-                        ),
-                      ),
-                      child: const SizedBox.expand(),
-                    ),
-
-                    // Badge Kategori
-                    Positioned(
-                      top: 240,
-                      left: 20,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          berita['category'] ?? "",
-                          style: AppText.small(color: Colors.white),
-                        ),
-                      ),
-                    ),
-
-                    // Tombol Aksi
-                    Positioned(
-                      top: 35,
-                      right: 16,
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: Colors.white.withOpacity(0.2),
-                            child: IconButton(
-                              icon: const Icon(Remix.share_line,
-                                  color: Colors.white),
-                              onPressed: () => controller.shareBerita(berita),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.7),
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.7),
                         ],
                       ),
                     ),
-                  ],
-                ),                
-              ),
-              actions: const [],
-            ),
+                    child: const SizedBox.expand(),
+                  ),
 
-            // Konten Berita
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                        berita['judul'] ?? "",
-                        style: AppText.h5(color: AppColors.text),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                  // Kategori
+                  Positioned(
+                    bottom: 16,
+                    left: 16,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(4),
                       ),
-                      SizedBox(height: 10),
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundColor: AppColors.primary.withOpacity(0.2),
-                          child: Icon(
-                            Remix.user_3_line,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                        const SizedBox(width: 8.0),
-                        Text(
-                          berita['user_desa']["nama"]?? "",
-                          style: AppText.bodyMedium(color: AppColors.text),
-                        ),
-                        SizedBox(width: 20.0),
-                        Icon(Remix.calendar_2_fill),
-                        SizedBox(width: 8.0),
-                        Text(
-                          tanggal ?? "",
-                          style:
-                              AppText.bodyMedium(color: AppColors.text),
-                        ),
-                      ],
+                      child: Text(
+                        berita.kategori,
+                        style: AppText.small(color: Colors.white),
+                      ),
                     ),
+                  ),
 
-                    const SizedBox(height: 12),
-
-                    Html(
-                      data: html,
-                      style: {
-                        "body": Style(
-                          margin: Margins.zero,
-                          padding: HtmlPaddings.zero,
-                          fontSize: FontSize(14),
-                          textAlign: TextAlign.justify,
-                          color: AppColors.text,
-                        ),
-                        "p": Style(
-                          margin: Margins.only(bottom: 12),
-                        ),
-                      },
-                    )     
-                  ],
-                ),
+                  // Share
+                  Positioned(
+                    top: 40,
+                    right: 16,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.white.withOpacity(0.2),
+                      child: IconButton(
+                        icon: const Icon(Remix.share_line,
+                            color: Colors.white),
+                        onPressed: controller.shareBerita,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        );
-      }),
+          ),
+
+          // CONTENT
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    berita.judul,
+                    style: AppText.h5(color: AppColors.text),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor:
+                            AppColors.primary.withOpacity(0.2),
+                        child: Icon(
+                          Remix.user_3_line,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        berita.author,
+                        style: AppText.bodyMedium(
+                            color: AppColors.text),
+                      ),
+                      const SizedBox(width: 16),
+                      Icon(Remix.calendar_2_fill, size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        TimeHelper.formatTanggalDate(berita.timestamp),
+                        style: AppText.bodyMedium(
+                            color: AppColors.text),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  Html(
+                    data: berita.content,
+                    style: {
+                      "body": Style(
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.zero,
+                        fontSize: FontSize(14),
+                        textAlign: TextAlign.justify,
+                        color: AppColors.text,
+                      ),
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

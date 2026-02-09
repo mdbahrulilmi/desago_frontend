@@ -41,7 +41,7 @@ class AkunEditView extends GetView<AkunEditController> {
             backgroundColor: Colors.grey[200],
             backgroundImage: file != null
                 ? FileImage(file) as ImageProvider
-                : (avatarUrl != null ? NetworkImage('https://backend.desago.id/$avatarUrl') : null),
+                : (avatarUrl != null ? NetworkImage('https://backend.desagodigital.id/$avatarUrl') : null),
             child: file == null && avatarUrl == null
                 ? Icon(
                     Remix.user_3_line,
@@ -103,6 +103,7 @@ class AkunEditView extends GetView<AkunEditController> {
             child: TextFormField(
               style: AppText.bodyMedium(color: AppColors.dark),
               controller: controller.phoneController,
+              maxLength: 15,
               decoration: InputDecoration(
                 labelText: "No Telepon",
                 border: OutlineInputBorder(

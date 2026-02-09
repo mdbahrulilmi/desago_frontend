@@ -12,6 +12,7 @@ import '../controllers/produk_detail_controller.dart';
 
 class ProdukDetailView extends GetView<ProdukDetailController> {
   const ProdukDetailView({super.key});
+
   @override
   Widget build(BuildContext context) {
     AppResponsive().init(context);
@@ -21,50 +22,52 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
       body: Column(
         children: [
           Expanded(
-            child: Obx(() => CustomScrollView(
-                  slivers: [
-                    SliverAppBar(
-                      automaticallyImplyLeading: false,
-                      expandedHeight: AppResponsive.h(40),
-                      floating: false,
-                      pinned: true,
-                      backgroundColor: Colors.black,
-                      leading: Padding(
-                        padding: EdgeInsets.all(AppResponsive.w(1.5)),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.4),
-                            shape: BoxShape.circle,
-                          ),
-                          child: IconButton(
-                            icon: const Icon(Icons.arrow_back, color: Colors.white),
-                            onPressed: () => Get.back(),
-                          ),
+            child: Obx(() {
+              final produk = controller.product.value;
+
+              return CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    automaticallyImplyLeading: false,
+                    expandedHeight: AppResponsive.h(40),
+                    floating: false,
+                    pinned: true,
+                    backgroundColor: Colors.black,
+                    leading: Padding(
+                      padding: EdgeInsets.all(AppResponsive.w(1.5)),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.4),
+                          shape: BoxShape.circle,
                         ),
-                      ),
-                      flexibleSpace: FlexibleSpaceBar(
-                        background: Stack(
-                          fit: StackFit.expand,
-                          children:[
-                            
-                          Image.network(
-                          controller.product['image']?.toString() ?? '',
-                            fit: BoxFit.cover,
-                          ),
-                          ] 
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          onPressed: () => Get.back(),
                         ),
                       ),
                     ),
-      
-                    /// Konten bawah AppBar
-                    SliverToBoxAdapter(
-                      child: _buildProductInfo(),
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: produk == null
+                          ? const SizedBox()
+                          : Image.network(
+                              produk.gambar,
+                              fit: BoxFit.cover,
+                            ),
                     ),
-                  ],
-                )),
+                  ),
+
+                  /// Konten bawah AppBar
+                  SliverToBoxAdapter(
+                    child: _buildProductInfo(),
+                  ),
+                ],
+              );
+            }),
           ),
+
+          /// ===== Bottom Button =====
           Container(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -72,18 +75,24 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
                   color: Colors.grey.withOpacity(0.2),
                   spreadRadius: 1,
                   blurRadius: 5,
-                  offset: Offset(0, -3),
+                  offset: const Offset(0, -3),
                 ),
               ],
             ),
             child: Row(
               children: [
                 Expanded(
-                  child: Container(
-                    width: 130,
+                  child: SizedBox(
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: ()=> controller.openWhatsApp(phone: controller.product['notelp_fix'], product: controller.product['title']),
+                      onPressed: () {
+                        final produk = controller.product.value;
+                        if (produk == null) return;
+
+                        controller.openWhatsApp(
+                          phone: produk.noTelepon,
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.bottonGreen,
                         shape: RoundedRectangleBorder(
@@ -97,9 +106,7 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
                           SizedBox(width: AppResponsive.w(3)),
                           Text(
                             'Pesan Sekarang',
-                            style: AppText.button(
-                              color: Colors.white,
-                            ),
+                            style: AppText.button(color: Colors.white),
                           ),
                         ],
                       ),
@@ -114,91 +121,91 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
     );
   }
 
+  // ================= INFO =================
+
   Widget _buildProductInfo() {
     return Padding(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: AppColors.categoryBackground,
-                    borderRadius: BorderRadius.circular(4)
-                  ),
-                  child: Text(
-                    "${controller.product['kategori']['name']}" ?? 'Category',
-                    style: AppText.bodyMedium(color: AppColors.category),
-                    )),
-          SizedBox(height: 8),
-          Obx(() => Text(
-                controller.product['title'] ?? 'Product Name',
-                style: AppText.h5(color: AppColors.dark),
-              )),
-              SizedBox(height: 8),
-              Obx(() => Text(
-                "Mulai Rp${controller.product['harga_mulai'] ?? 'No price range available'}",
-                style: AppText.bodyMedium(color: AppColors.textSecondary),
-                
-              )),
-          SizedBox(height: 8),
-          Obx(() => Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(4)
-                  ),
-                  child: Text(
-                    "${TimeHelper.formatTime(controller.product['buka_mulai'])} - ${TimeHelper.formatTime(controller.product['buka_sampai'])}",
-                    style: AppText.bodyMedium(color: AppColors.secondary),
-                  ),
-                ),),
-          SizedBox(height: 8),
-          Text(
-            'Description',
-            style: AppText.h6(
-              color: AppColors.dark,
-            ),
-          ),
-          SizedBox(height: 8),
-          Obx(() => Text(
-                controller.product['description'] ?? 'No description available',
-                style: AppText.bodyMedium(color: AppColors.textSecondary),
-                textAlign: TextAlign.justify,
-              )),
-          SizedBox(height: 16),
-          Row(
-            children: [
-              Icon(Icons.location_on_outlined, size: 20),
-              Text(
-                'Maps',
-                style: AppText.h6(
-                  color: AppColors.dark,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 8),
-          Obx(() => GestureDetector(
-                  onTap: () async {
-                    final url = controller.product['maps'];
-                    if (url != null && await canLaunchUrl(Uri.parse(url))) {
-                      await launchUrl(
-                        Uri.parse(url),
-                        mode: LaunchMode.externalApplication,
-                      );
-                    }
-                  },
-                  child: Text(
-                    controller.product['maps'] ?? 'No Maps available',
-                    style: AppText.bodyMedium(
-                      color: Colors.blue,
-                    ),
-                  ),
-                ))
+      padding: const EdgeInsets.all(16),
+      child: Obx(() {
+        final produk = controller.product.value;
+        if (produk == null) return const SizedBox();
 
-        ],
-      ),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+              decoration: BoxDecoration(
+                color: AppColors.categoryBackground,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                produk.kategori!.nama,
+                style: AppText.bodyMedium(color: AppColors.category),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              produk.judul,
+              style: AppText.h5(color: AppColors.dark),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Mulai Rp${produk.hargaMin}",
+              style: AppText.bodyMedium(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                "${TimeHelper.formatTime(produk.jamBuka)} - ${TimeHelper.formatTime(produk.jamTutup)}",
+                style: AppText.bodyMedium(color: AppColors.secondary),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Description',
+              style: AppText.h6(color: AppColors.dark),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              produk.deskripsi,
+              style: AppText.bodyMedium(color: AppColors.textSecondary),
+              textAlign: TextAlign.justify,
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Icon(Icons.location_on_outlined, size: 20),
+                Text(
+                  'Maps',
+                  style: AppText.h6(color: AppColors.dark),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            GestureDetector(
+              onTap: () async {
+                final url = produk.lokasiGmaps;
+                if (await canLaunchUrl(Uri.parse(url))) {
+                  await launchUrl(
+                    Uri.parse(url),
+                    mode: LaunchMode.externalApplication,
+                  );
+                }
+              },
+              child: Text(
+                produk.lokasiGmaps,
+                style: AppText.bodyMedium(color: Colors.blue),
+              ),
+            ),
+          ],
+        );
+      }),
     );
   }
 }

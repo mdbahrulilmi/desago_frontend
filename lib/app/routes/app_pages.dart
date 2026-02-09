@@ -178,7 +178,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.TAUTKAN_AKUN_FORM,
-      page: () => const TautkanAkunFormView(),
+      page: () => TautkanAkunFormView(),
       binding: TautkanAkunFormBinding(),
     ),
     GetPage(

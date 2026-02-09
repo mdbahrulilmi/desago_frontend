@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:desago/app/components/bottom_sheet.dart';
+import 'package:desago/app/helpers/empty_helper.dart';
 import 'package:desago/app/models/NomorPentingModel.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_text.dart';
@@ -14,7 +15,6 @@ class NomorPentingView extends GetView<NomorPentingController> {
 
   @override 
   Widget build(BuildContext context) {
-    // Inisialisasi AppResponsive
     final AppResponsive responsive = AppResponsive();
     responsive.init(context);
 
@@ -37,163 +37,169 @@ class NomorPentingView extends GetView<NomorPentingController> {
           },
         ),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Text(
-                  'Daftar Nomor Telp Penting',
-                  style: AppText.h5(color: AppColors.dark),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Silahkan gunakan layanan nomor telp untuk keadaan darurat dan gunakan dengan bijak',
-                  style: AppText.bodyLarge(color: AppColors.dark),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 16),
-                // Search Field
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.light,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.shadow.withOpacity(0.1),
-                        blurRadius: 5,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await controller.refreshNomorPenting();
+        },
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Text(
+                    'Daftar Nomor Telp Penting',
+                    style: AppText.h5(color: AppColors.dark),
+                    textAlign: TextAlign.center,
                   ),
-                  child: TextField(
-  controller: controller.searchController,
-  onChanged: controller.filterNomorDarurat,
-  decoration: InputDecoration(
-    contentPadding: const EdgeInsets.symmetric(vertical: 12),
-    hintText: 'Cari nomor penting...',
-    hintStyle: AppText.bodyMedium(color: AppColors.textSecondary),
-    prefixIcon: Icon(Remix.search_line, color: AppColors.iconGrey),
-
-    suffixIcon: ValueListenableBuilder<TextEditingValue>(
-      valueListenable: controller.searchController,
-      builder: (context, value, child) {
-        if (value.text.isEmpty) return const SizedBox();
-        return IconButton(
-          icon: Icon(Remix.close_line, color: AppColors.primary),
-          onPressed: () {
-            controller.searchController.clear();
-            // controller.filterNomorPenting('');
-          },
-        );
-      },
-    ),
-
-    border: InputBorder.none,
-    enabledBorder: InputBorder.none,
-    focusedBorder: InputBorder.none,
-  ),
-),
-
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Obx(() => controller.filteredNomor.isEmpty
-                ? Center(
-                    child: Text(
-                      'Nomor tidak ditemukan',
-                      style: AppText.bodyLarge(color: AppColors.textSecondary),
-                    ),
-                  )
-                : ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: controller.filteredNomor.length,
-                    itemBuilder: (context, index) {
-                      final item = controller.filteredNomor[index];
-                      return Card(
-                        color: AppColors.white,
-                        margin: EdgeInsets.only(bottom: 12),
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                  SizedBox(height: 8),
+                  Text(
+                    'Silahkan gunakan layanan nomor telp untuk keadaan darurat dan gunakan dengan bijak',
+                    style: AppText.bodyLarge(color: AppColors.dark),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 16),
+                  // Search Field
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.light,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.shadow.withOpacity(0.1),
+                          blurRadius: 5,
+                          offset: const Offset(0, 2),
                         ),
-                        child: InkWell(
-                          onTap: () => _showDetailBottomSheet(context, item),
-                          borderRadius: BorderRadius.circular(12),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primary.withOpacity(0.1),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: CircleAvatar(
-                                  radius: 30,
-                                  backgroundColor: AppColors.muted,
-                                  backgroundImage: item.image != null && item.image!.isNotEmpty
-                                  ? NetworkImage(item.image!)
-                                  : const AssetImage('assets/img/kepala_desa.jpg') as ImageProvider,
-
-                                  onBackgroundImageError: (exception, stackTrace) {},
+                      ],
+                    ),
+                    child: TextField(
+          controller: controller.searchController,
+          onChanged: controller.filterNomorDarurat,
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(vertical: 12),
+            hintText: 'Cari nomor penting...',
+            hintStyle: AppText.bodyMedium(color: AppColors.textSecondary),
+            prefixIcon: Icon(Remix.search_line, color: AppColors.iconGrey),
+        
+            suffixIcon: ValueListenableBuilder<TextEditingValue>(
+        valueListenable: controller.searchController,
+        builder: (context, value, child) {
+          if (value.text.isEmpty) return const SizedBox();
+          return IconButton(
+            icon: Icon(Remix.close_line, color: AppColors.primary),
+            onPressed: () {
+              controller.searchController.clear();
+              // controller.filterNomorPenting('');
+            },
+          );
+        },
+            ),
+        
+            border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+          ),
+        ),
+        
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+          child: Obx(() {
+            if (controller.filteredNomor.isEmpty) {
+        return const EmptyStateWidget(
+          title: 'Tidak ada nomor penting',
+          message: 'Saat ini tidak ada nomor penting',
+        );
+            }
+        
+            return ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: controller.filteredNomor.length,
+        itemBuilder: (context, index) {
+          final item = controller.filteredNomor[index];
+          return Card(
+            color: AppColors.white,
+            margin: const EdgeInsets.only(bottom: 12),
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: InkWell(
+              onTap: () => _showDetailBottomSheet(context, item),
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: CircleAvatar(
+                        radius: 30,
+                        backgroundColor: AppColors.muted,
+                        backgroundImage: item.gambar != null &&
+                                item.gambar!.isNotEmpty
+                            ? NetworkImage(item.gambar!)
+                            : const AssetImage(
+                                'assets/img/kepala_desa.jpg',
+                              ) as ImageProvider,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AutoSizeText(
+                            item.nama,
+                            style: AppText.h6(color: AppColors.dark),
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Text(
+                                item.noTelepon,
+                                style: AppText.bodyMedium(
+                                  color: AppColors.textSecondary,
                                 ),
-                                ),
-                                SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      AutoSizeText(
-                                        item.name,
-                                        style:
-                                            AppText.h6(color: AppColors.dark),
-                                      ),
-                                      SizedBox(height: 4),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            item.phone,
-                                            style: AppText.bodyMedium(
-                                                color: AppColors.textSecondary),
-                                          ),
-                                          SizedBox(width: 8),
-                                          InkWell(
-                                            onTap: () {
-                                              controller
-                                                  .copyToClipboard(item.phone);
-                                            },
-                                            child: Icon(
-                                              Remix.file_copy_line,
-                                              size: 16,
-                                              color: AppColors.info,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.info_outline,
+                              ),
+                              const SizedBox(width: 8),
+                              InkWell(
+                                onTap: () {
+                                  controller.copyToClipboard(item.noTelepon);
+                                },
+                                child: Icon(
+                                  Remix.file_copy_line,
+                                  size: 16,
                                   color: AppColors.info,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
-                      );
-                    },
-                  )),
-          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.info_outline,
+                      color: AppColors.info,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+            );
+          }),
+        ),
         ],
+        ),
       ),
     );
   }
@@ -207,8 +213,8 @@ class NomorPentingView extends GetView<NomorPentingController> {
           child: CircleAvatar(
             radius: 50,
             backgroundColor: AppColors.muted,
-            backgroundImage: item.image != null && item.image!.isNotEmpty
-            ? NetworkImage(item.image!)
+            backgroundImage: item.gambar != null && item.gambar!.isNotEmpty
+            ? NetworkImage(item.gambar!)
             : const AssetImage('assets/img/kepala_desa.jpg') as ImageProvider,
           
             onBackgroundImageError: (exception, stackTrace) {},
@@ -218,7 +224,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
 
         Center(
           child: Text(
-            item.name,
+            item.nama,
             style: AppText.h5(color: AppColors.dark),
             textAlign: TextAlign.center,
           ),
@@ -229,14 +235,14 @@ class NomorPentingView extends GetView<NomorPentingController> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              item.phone,
+              item.noTelepon,
               style: AppText.h6(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
             SizedBox(width: 8),
             InkWell(
               onTap: () {
-                controller.copyToClipboard(item.phone);
+                controller.copyToClipboard(item.noTelepon);
               },
               borderRadius: BorderRadius.circular(15),
               child: Container(
@@ -261,7 +267,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
             InkWell(
               onTap: () {
                 Get.back();
-                controller.callNumber(item.phone);
+                controller.callNumber(item.noTelepon);
               },
               borderRadius: BorderRadius.circular(10),
               child: Container(
@@ -287,7 +293,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
             InkWell(
               onTap: () {
                 Get.back();
-                controller.openWhatsApp(item.phone);
+                controller.openWhatsApp(item.noTelepon);
               },
               borderRadius: BorderRadius.circular(10),
               child: Container(

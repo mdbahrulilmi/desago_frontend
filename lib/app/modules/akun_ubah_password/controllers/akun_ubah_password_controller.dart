@@ -19,7 +19,16 @@ class AkunUbahPasswordController extends GetxController {
   final RxBool isOldPasswordVisible = false.obs;
   final RxBool isNewPasswordVisible = false.obs;
   final RxBool isConfirmPasswordVisible = false.obs;
+
+  final RxBool isOauth = false.obs;
   
+  @override
+  void onInit() {
+    getIsOauth();
+    print(isOauth);
+    super.onInit();
+  }
+
   @override
   void onClose() {
     oldPasswordController.dispose();
@@ -28,6 +37,29 @@ class AkunUbahPasswordController extends GetxController {
     super.onClose();
   }
   
+  Future<void> getIsOauth() async {
+  try {
+    final token = StorageService.getToken();
+
+    final response = await DioService.instance.get(
+      ApiConstant.isOauth,
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+
+    isOauth.value = response.data is Map<String, dynamic>
+        ? response.data['isoauth'] == true
+        : false;
+  } catch (e, s) {
+    isOauth.value = false;
+  }
+}
+
+
+
   void toggleOldPasswordVisibility() {
     isOldPasswordVisible.value = !isOldPasswordVisible.value;
   }
@@ -54,7 +86,6 @@ class AkunUbahPasswordController extends GetxController {
       return;
     }
     
-    // Validasi password baru dan konfirmasi harus sama
     if (newPasswordController.text != confirmPasswordController.text) {
       Get.snackbar(
         'Error',
@@ -72,8 +103,9 @@ class AkunUbahPasswordController extends GetxController {
       final response = await DioService.instance.post(
         ApiConstant.changePassword, 
         data: {
-          'password': oldPasswordController.text,
+          'password': oldPasswordController.text ?? '',
           'new_password': newPasswordController.text,
+          'isoauth': isOauth.value,
         },
         options: Options(
         headers: {
@@ -82,22 +114,33 @@ class AkunUbahPasswordController extends GetxController {
       ),
       );
       
-      
-      // Simulasi sukses
+    final data = response.data;
+    print("INI DATAAA $data");
+
+    if (data['success'] != true) {
+      AppDialog.error(
+        title: 'Gagal',
+        message: data['message'] ?? 'Gagal mengubah password',
+        buttonText: 'OK',
+      );
+      return;
+    }
+
       await AppDialog.success(
         title: 'Berhasil',
         message: 'Password Anda berhasil diubah',
         buttonText: 'OK',
         onConfirm: () {
           clearForm();
-          Get.back();
-        }
+          Navigator.of(Get.context!).pop();
+          Navigator.of(Get.context!).pop();
+        },
       );
     } catch (e) {
       AppDialog.error(
-        title: 'Gagal',
-        message: 'Gagal mengubah password: ${e.toString()}',
-        buttonText: 'Tutup',
+        title: 'Error',
+        message: 'Terjadi kesalahan server',
+        buttonText: 'OK',
       );
     } finally {
       isLoading.value = false;

@@ -12,7 +12,6 @@ class AkunUbahPasswordView extends GetView<AkunUbahPasswordController> {
   @override
   Widget build(BuildContext context) {
     AppResponsive().init(context);
-    
     return Scaffold(
       backgroundColor: AppColors.secondary,
       body:   Column(
@@ -26,20 +25,26 @@ class AkunUbahPasswordView extends GetView<AkunUbahPasswordController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-                  _buildPasswordField(
-                    label: "Kata sandi saat ini",
-                    controller: controller.oldPasswordController,
-                    isVisible: controller.isOldPasswordVisible,
-                    toggleVisibility: controller.toggleOldPasswordVisibility,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Password lama tidak boleh kosong';
-                      }
-                      return null;
-                    },
-                  ),
+                  Obx(() {
+                    final isOauth = controller.isOauth.value;
+
+                    return isOauth
+                        ?const SizedBox()
+                        : _buildPasswordField(
+                            label: "Kata sandi saat ini",
+                            controller: controller.oldPasswordController,
+                            isVisible: controller.isOldPasswordVisible,
+                            toggleVisibility: controller.toggleOldPasswordVisibility,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Password lama tidak boleh kosong';
+                              }
+                              return null;
+                            },
+                          );
+                  }),
+
                   SizedBox(height: AppResponsive.h(3)),
-                  
                   _buildPasswordField(
                     label: "Kata sandi baru",
                     controller: controller.newPasswordController,
@@ -206,41 +211,24 @@ class AkunUbahPasswordView extends GetView<AkunUbahPasswordController> {
               controller: controller,
               obscureText: !isVisible.value,
               validator: validator,
-              style: AppText.bodyMedium(color: AppColors.dark),
+              style: AppText.bodyMedium(color: AppColors.text),
               decoration: InputDecoration(
-                labelText: label,
-                labelStyle: AppText.bodyMedium(
-                    color: AppColors.textSecondary.withOpacity(0.7)), 
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    isVisible.value ? Remix.eye_line : Remix.eye_off_line,
-                    color: AppColors.textSecondary,
+                    label: Text("$label"),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: AppColors.muted),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: AppColors.muted),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: AppColors.primary),
+                    ),
                   ),
-                  onPressed: () => toggleVisibility(),
+                  cursorColor: AppColors.dark,
                 ),
-                filled: true,
-                fillColor: AppColors.white,
-                contentPadding:
-                    AppResponsive.padding(vertical: 1.5, horizontal: 2),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: AppColors.grey),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: AppColors.grey)
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: AppColors.primary, width: 2),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: AppColors.danger),
-                ),
-              ),
-              cursorColor: AppColors.dark,
-            ),
       )),
     ],
   );

@@ -20,9 +20,6 @@ class PasswordBaruController extends GetxController {
 
   final isLoading = false.obs;
 
-  // ===============================
-  // LIFECYCLE
-  // ===============================
   @override
   void onInit() {
     super.onInit();
@@ -39,14 +36,9 @@ class PasswordBaruController extends GetxController {
   void onReady() {
     super.onReady();
 
-    // 🔥 AMAN: navigator sudah siap
-    if (token.isEmpty) {
+    if (token.isEmpty || email.isEmpty) {
       Get.offAllNamed('/login');
-      return;
     }
-
-    // OPTIONAL (kalau mau validasi ke backend)
-    // _validateToken();
   }
 
   @override
@@ -56,38 +48,28 @@ class PasswordBaruController extends GetxController {
     super.onClose();
   }
 
-  // ===============================
-  // UI LOGIC
-  // ===============================
   void togglePasswordVisibility() {
-    isPasswordHidden.value = !isPasswordHidden.value;
+    isPasswordHidden.toggle();
   }
 
   void toggleConfirmPasswordVisibility() {
-    isConfirmPasswordHidden.value = !isConfirmPasswordHidden.value;
+    isConfirmPasswordHidden.toggle();
   }
 
   void checkPasswordStrength(String value) {
     if (value.isEmpty) {
-      passwordStrength.value = 0.0;
+      passwordStrength.value = 0;
       passwordStrengthText.value = '';
       passwordStrengthColor.value = AppColors.danger;
       return;
     }
 
-    final hasMinLength = value.length >= 8;
-    final hasUppercase = value.contains(RegExp(r'[A-Z]'));
-    final hasDigits = value.contains(RegExp(r'[0-9]'));
-    final hasLowercase = value.contains(RegExp(r'[a-z]'));
-    final hasSpecialCharacters =
-        value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
-
     int strength = 0;
-    if (hasMinLength) strength++;
-    if (hasUppercase) strength++;
-    if (hasDigits) strength++;
-    if (hasLowercase) strength++;
-    if (hasSpecialCharacters) strength++;
+    if (value.length >= 8) strength++;
+    if (value.contains(RegExp(r'[A-Z]'))) strength++;
+    if (value.contains(RegExp(r'[a-z]'))) strength++;
+    if (value.contains(RegExp(r'[0-9]'))) strength++;
+    if (value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) strength++;
 
     passwordStrength.value = strength / 5;
 
@@ -103,9 +85,6 @@ class PasswordBaruController extends GetxController {
     }
   }
 
-  // ===============================
-  // SUBMIT
-  // ===============================
   Future<void> onUpdatePassword() async {
     if (isLoading.value) return;
 
@@ -128,7 +107,7 @@ class PasswordBaruController extends GetxController {
     try {
       isLoading.value = true;
 
-      final response = await DioService.instance.post(
+      await DioService.instance.post(
         ApiConstant.newPassword,
         data: {
           'token': token,

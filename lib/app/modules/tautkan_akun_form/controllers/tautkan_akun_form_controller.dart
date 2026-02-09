@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:desago/app/components/alert.dart';
 import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/helpers/permission_helper.dart';
-import 'package:desago/app/models/AkunDesarMode.dart';
+import 'package:desago/app/models/AkunDesaMode.dart';
 import 'package:desago/app/models/KabupatenMode.dart';
 import 'package:desago/app/models/KecamatanModel.dart';
 import 'package:desago/app/models/ProfileDesa.dart';

@@ -42,7 +42,7 @@ class AkunEditController extends GetxController {
         return;
       }
 
-      avatar.value = file; // update lokal, langsung tampil di UI
+      avatar.value = file;
     } catch (e) {
       _showError('Gagal memilih foto: $e');
     }
@@ -78,55 +78,169 @@ class AkunEditController extends GetxController {
   }
 
   Future<void> updateProfile() async {
+  debugPrint('================ UPDATE PROFILE START ================');
+
   try {
     isLoading.value = true;
+
+    // =========================
+    // TOKEN
+    // =========================
     final token = StorageService.getToken()?.trim();
+    debugPrint('Token: ${token != null ? "ADA" : "NULL"}');
 
-    Map<String, dynamic> data = {
-      'email': emailController.text.trim(),
-      'phone': phoneController.text.trim(),
-    };
-
-    dio.FormData formData;
-    if (avatar.value != null) {
-      final file = avatar.value!;
-      final fileName = file.path.split('/').last;
-      formData = dio.FormData.fromMap({
-        ...data,
-        'avatar': await dio.MultipartFile.fromFile(file.path, filename: fileName),
-      });
-    } else {
-      formData = dio.FormData.fromMap(data);
+    if (token == null || token.isEmpty) {
+      debugPrint('❌ Token tidak ditemukan');
+      Get.snackbar('Error', 'Token tidak ditemukan');
+      return;
     }
 
-    final response = await DioService.instance.post(
-      ApiConstant.updateAvatar,
-      data: formData,
+    // =========================
+    // 1️⃣ UPDATE EMAIL & PHONE
+    // =========================
+    debugPrint('➡️ Hit API editProfile');
+    debugPrint('Email: ${emailController.text}');
+    debugPrint('No HP: ${phoneController.text}');
+
+    final profileResponse = await DioService.instance.post(
+      ApiConstant.editProfile,
+      data: {
+        'email': emailController.text.trim(),
+        'no_telepon': phoneController.text.trim(),
+      },
       options: dio.Options(headers: {
         'Authorization': 'Bearer $token',
         'Accept': 'application/json',
       }),
     );
 
-    if (response.statusCode == 200 && response.data['status'] == true) {
-      final updatedUser = UserModel.fromJson(response.data['data']);
+    debugPrint('⬅️ editProfile status: ${profileResponse.statusCode}');
+    debugPrint('⬅️ editProfile response: ${profileResponse.data}');
+
+    if (profileResponse.statusCode != 200 ||
+        profileResponse.data['success'] != true) {
+      debugPrint('❌ editProfile GAGAL');
+
+      Get.snackbar(
+        'Gagal',
+        profileResponse.data['message'] ?? 'Gagal update profil',
+      );
+      return;
+    }
+
+    debugPrint('✅ editProfile BERHASIL');
+
+    // =========================
+    // 2️⃣ UPDATE AVATAR (OPTIONAL)
+    // =========================
+    if (avatar.value != null) {
+      debugPrint('➡️ Masuk flow UPDATE AVATAR');
+
+      final file = avatar.value!;
+      final fileName = file.path.split('/').last;
+
+      debugPrint('Avatar path: ${file.path}');
+      debugPrint('Avatar filename: $fileName');
+      debugPrint('Avatar size: ${file.lengthSync()} bytes');
+
+      final formData = dio.FormData.fromMap({
+        'avatar': await dio.MultipartFile.fromFile(
+          file.path,
+          filename: fileName,
+        ),
+      });
+
+      debugPrint('➡️ Hit API updateAvatar');
+
+      final avatarResponse = await DioService.instance.post(
+        ApiConstant.updateAvatar,
+        data: formData,
+        options: dio.Options(headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        }),
+      );
+
+      debugPrint('⬅️ updateAvatar status: ${avatarResponse.statusCode}');
+      debugPrint('⬅️ updateAvatar response: ${avatarResponse.data}');
+
+      if (avatarResponse.statusCode != 200 ||
+          avatarResponse.data['status'] != true) {
+        debugPrint('❌ updateAvatar GAGAL');
+
+        Get.snackbar(
+          'Gagal',
+          avatarResponse.data['message'] ?? 'Gagal update avatar',
+        );
+        return;
+      }
+
+      debugPrint('✅ updateAvatar BERHASIL');
+
+      final updatedUser =
+          UserModel.fromJson(avatarResponse.data['data']);
+
+      debugPrint('➡️ Save user ke storage (dari updateAvatar)');
       await StorageService.saveUser(updatedUser);
+
       akunController.user.value = updatedUser;
       akunController.user.refresh();
 
-      avatar.value = null; // reset
-      emailController.text = updatedUser.email ?? '';
-      phoneController.text = updatedUser.phone ?? '';
-
-      Get.back();
-      Get.snackbar('Berhasil', 'Profil berhasil diperbarui', backgroundColor: Colors.green, colorText: Colors.white);
     } else {
-      Get.snackbar('Gagal', response.data['message'] ?? 'Terjadi kesalahan', backgroundColor: Colors.red, colorText: Colors.white);
+      // =========================
+      // TANPA AVATAR
+      // =========================
+      debugPrint('ℹ️ Avatar TIDAK diubah');
+
+      final updatedUser =
+          UserModel.fromJson(profileResponse.data['data']);
+
+      debugPrint('➡️ Save user ke storage (dari editProfile)');
+      await StorageService.saveUser(updatedUser);
+
+      akunController.user.value = updatedUser;
+      akunController.user.refresh();
     }
+
+    // =========================
+    // 3️⃣ FINAL UI
+    // =========================
+    debugPrint('🎉 UPDATE PROFILE SELESAI');
+
+    avatar.value = null;
+    Get.back();
+
+    Get.snackbar(
+      'Berhasil',
+      'Profil berhasil diperbarui',
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+    );
+
+  } on dio.DioException catch (e) {
+    debugPrint('🔥 DIO ERROR');
+    debugPrint('Status: ${e.response?.statusCode}');
+    debugPrint('Data: ${e.response?.data}');
+    debugPrint('Message: ${e.message}');
+
+    Get.snackbar(
+      'Error',
+      e.response?.data['message'] ?? 'Terjadi kesalahan server',
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
   } catch (e) {
-    Get.snackbar('Error', e.toString(), backgroundColor: Colors.red, colorText: Colors.white);
+    debugPrint('🔥 GENERAL ERROR: $e');
+
+    Get.snackbar(
+      'Error',
+      e.toString(),
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
   } finally {
     isLoading.value = false;
+    debugPrint('================ UPDATE PROFILE END ================');
   }
 }
 

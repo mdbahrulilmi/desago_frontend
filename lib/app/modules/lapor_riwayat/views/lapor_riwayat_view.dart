@@ -1,3 +1,4 @@
+import 'package:desago/app/helpers/empty_helper.dart';
 import 'package:desago/app/helpers/string_casing_extension.dart';
 import 'package:desago/app/helpers/time_helper.dart';
 import 'package:flutter/material.dart';
@@ -108,20 +109,7 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
               }
 
               if (controller.filteredLaporanList.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.search_off,
-                          size: AppResponsive.sp(60), color: AppColors.grey),
-                      SizedBox(height: AppResponsive.h(2)),
-                      Text(
-                        'Tidak ada laporan yang ditemukan',
-                        style: AppText.bodyLarge(color: AppColors.textSecondary),
-                      ),
-                    ],
-                  ),
-                );
+                return EmptyStateWidget(title: "Tidak ada Laporan", message: "Saat ini tidak ada laporan yang tersedia");
               }
 
               return ListView.builder(

@@ -46,7 +46,6 @@ class PasswordBaruView extends GetView<PasswordBaruController> {
 
                 SizedBox(height: AppResponsive.h(4)),
 
-                // Password Field
                 Obx(() => TextFormField(
                       controller: controller.passwordController,
                       style: AppText.bodyMedium(color: AppColors.dark),
@@ -81,7 +80,6 @@ class PasswordBaruView extends GetView<PasswordBaruController> {
 
                 SizedBox(height: AppResponsive.h(3)),
 
-                // Confirm Password Field
                 Obx(() => TextFormField(
                       controller: controller.confirmPasswordController,
                       style: AppText.bodyMedium(color: AppColors.dark),
@@ -115,7 +113,6 @@ class PasswordBaruView extends GetView<PasswordBaruController> {
 
                 SizedBox(height: AppResponsive.h(4)),
 
-                // Password Strength Indicator
                 Obx(() => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -141,7 +138,6 @@ class PasswordBaruView extends GetView<PasswordBaruController> {
 
                 SizedBox(height: AppResponsive.h(4)),
 
-                // Update Password Button
                 SizedBox(
                   width: double.infinity,
                   height: AppResponsive.h(6),

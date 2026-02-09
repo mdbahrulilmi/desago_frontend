@@ -41,7 +41,7 @@
                 <!-- Scheme HTTPS wajib untuk App Links -->
                 <data
                     android:scheme="https"
-                    android:host="londa-proinsurance-nonsalubriously.ngrok-free.dev"
+                    android:host="backend.desagodigital.id"
                     android:pathPrefix="/reset-password" />
             </intent-filter>
 

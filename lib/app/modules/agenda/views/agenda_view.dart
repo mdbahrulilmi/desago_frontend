@@ -181,11 +181,11 @@ class AgendaView extends GetView<AgendaController> {
         itemBuilder: (context, index) {
           final e = list[index];
           return _agendaCard(
-            category: e['kategori']['nama'],
-            title: e['title'],
-            time: "${TimeHelper.formatTime(e['waktu_mulai'])} - ${TimeHelper.formatTime(e['waktu_selesai'])}",
-            location: e['location'],
-            color: ColorHelper.colorFromCategoryId(e['kategori']['id']),
+            category: e.kategori.nama,
+            title: e.judul,
+            time: "${TimeHelper.formatTime(e.waktuMulai)} - ${TimeHelper.formatTime(e.waktuSelesai)}",
+            location: e.lokasi,
+            color: ColorHelper.colorFromCategoryId(e.kategoriId),
             agenda: e,
           );
         },

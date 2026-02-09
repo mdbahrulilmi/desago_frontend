@@ -3,6 +3,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:desago/app/components/custom_bottom_navigation_controller.dart';
 import 'package:desago/app/components/custom_bottom_navigation_widget.dart';
 import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/models/BeritaModel.dart';
+import 'package:desago/app/models/ProdukModel.dart';
+import 'package:desago/app/modules/berita_list/controllers/berita_list_controller.dart';
 import 'package:desago/app/routes/app_pages.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
@@ -46,7 +49,7 @@ class HomeView extends GetView<HomeController> {
                   ),
                   SizedBox(height: AppResponsive.h(2)),
                   Obx(() {
-                    if (controller.isLoading.value && controller.carousel.isEmpty) {
+                    if (controller.isLoadingCarousel.value && controller.carousel.isEmpty) {
                       return SizedBox(
                         height: AppResponsive.h(20),
                         child: const Center(child: CircularProgressIndicator()),
@@ -62,7 +65,6 @@ class HomeView extends GetView<HomeController> {
 
                     return CarouselSlider(
                       options: CarouselOptions(
-                        height: AppResponsive.h(20),
                         autoPlay: true,
                         autoPlayCurve: Curves.fastOutSlowIn,
                         autoPlayInterval: const Duration(seconds: 3),
@@ -70,7 +72,8 @@ class HomeView extends GetView<HomeController> {
                         viewportFraction: 1,
                       ),
                       items: controller.carousel.map((item) {
-                        final imageUrl = '${ApiConstant.pictureUrl}${item['gambar']}';
+                        final imageUrl = '${item.gambar}';
+                        print(imageUrl);
 
                         return Container(
                           margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -193,6 +196,7 @@ class HomeView extends GetView<HomeController> {
                             _buildMenuItem(Remix.newspaper_fill, 'Berita',
                             AppColors.secondary,
                             AppColors.primary, () {
+                              final beritaController = Get.put(BeritaListController(), permanent: true);
                               Get.toNamed(Routes.BERITA_LIST);
                             }),            
                           ],
@@ -291,103 +295,106 @@ class HomeView extends GetView<HomeController> {
 
  Widget _buildProductCard(
   BuildContext context,
-  Map<String, dynamic> product,
+  ProdukModel product,
 ) {
-  return Container(
-    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-    decoration: BoxDecoration(
-      color: AppColors.white,
-      borderRadius: BorderRadius.circular(12),
-      boxShadow: [
-        BoxShadow(
-          color: AppColors.shadow.withOpacity(0.1),
-          blurRadius: 3,
-          offset: const Offset(0, 1),
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ClipRRect(
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(12),
+  return GestureDetector(
+    onTap: () => Get.toNamed(Routes.PRODUK_DETAIL, arguments: product),
+    child: Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow.withOpacity(0.1),
+            blurRadius: 3,
+            offset: const Offset(0, 1),
           ),
-          child: AspectRatio(
-            aspectRatio: 16 / 14,
-            child: Image.network(
-              product['image']?.toString() ?? '',
-              fit: BoxFit.cover,
-              width: double.infinity,
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(12),
+            ),
+            child: AspectRatio(
+              aspectRatio: 16 / 14,
+              child: Image.network(
+                product.gambar?.toString() ?? '',
+                fit: BoxFit.cover,
+                width: double.infinity,
+              ),
             ),
           ),
-        ),
-
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-          child: Text(
-             '${product['kategori']['name']}' ?? "Makanan",
-            style: AppText.bodySmall(color: AppColors.grey),
-            textAlign: TextAlign.center,
+    
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+            child: Text(
+               '${product.kategori?.nama}' ?? "Makanan",
+              style: AppText.bodySmall(color: AppColors.grey),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+          child: AutoSizeText(
+            product.judul,
+            style: AppText.h6(color: AppColors.text),
+            textAlign: TextAlign.start,
             maxLines: 2,
+            minFontSize: 10,
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-        child: AutoSizeText(
-          product['title'],
-          style: AppText.h6(color: AppColors.text),
-          textAlign: TextAlign.start,
-          maxLines: 2,
-          minFontSize: 10,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-      Spacer(),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.bottonGreen,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+        Spacer(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.bottonGreen,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                elevation: 2,
               ),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 10,
-              ),
-              elevation: 2,
-            ),
-            child: GestureDetector(
-              onTap: () {
-                controller.openWhatsApp(phone: product['notelp_fix'], product: product['title']);
-              },
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Icon(
-                    Remix.whatsapp_line,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                  SizedBox(width: 2),
-                  Text(
-                    "Pesan Sekarang",
-                    style: TextStyle(
+              child: GestureDetector(
+                onTap: () {
+                  controller.openWhatsApp(phone: product.notelpFix, product: product.judul);
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Icon(
+                      Remix.whatsapp_line,
                       color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                      size: 16,
                     ),
-                  ),
-                ],
+                    SizedBox(width: 2),
+                    Text(
+                      "Pesan Sekarang",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-
-      ],
+    
+        ],
+      ),
     ),
   );
 }
@@ -410,7 +417,7 @@ class HomeView extends GetView<HomeController> {
       ),
       SizedBox(height: AppResponsive.h(3)),
       Obx(() {
-        if (controller.isLoading.value) {
+        if (controller.isLoadingProduk.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -444,7 +451,7 @@ class HomeView extends GetView<HomeController> {
 
 Widget _buildNewsSection(BuildContext context) {
   return Obx(() {
-    if (controller.isLoading.value) {
+    if (controller.isLoadingBerita.value) {
       return SizedBox(
         height: AppResponsive.h(30),
         child: Center(child: CircularProgressIndicator()),
@@ -487,13 +494,8 @@ Widget _buildNewsSection(BuildContext context) {
             enlargeCenterPage: false,
           ),
           items: controller.beritas.map((berita) {
-            return _buildNewsCard(
-              context,
-              berita['title'],
-              berita['image'],
-              berita['date'],
-              berita,
-            );
+            return _buildNewsCard(context, berita);
+
           }).toList(),
         ),
       ],
@@ -505,13 +507,10 @@ Widget _buildNewsSection(BuildContext context) {
 
  Widget _buildNewsCard(
   BuildContext context,
-  String title,
-  String imagePath,
-  String date,
-  dynamic raw,
+  BeritaModel berita,
 ) {
   return GestureDetector(
-    onTap: () => controller.bacaBeritaLengkap(raw),
+    onTap: () => controller.bacaBeritaLengkap(berita),
     child: Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -528,7 +527,6 @@ Widget _buildNewsSection(BuildContext context) {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 🖼 IMAGE (16:9)
           ClipRRect(
             borderRadius: const BorderRadius.vertical(
               top: Radius.circular(12),
@@ -536,28 +534,27 @@ Widget _buildNewsSection(BuildContext context) {
             child: AspectRatio(
               aspectRatio: 16 / 10,
               child: Image.network(
-                "${ApiConstant.pictureUrl}${imagePath}",
+                berita.gambar,
                 fit: BoxFit.cover,
                 width: double.infinity,
               ),
             ),
           ),
-    
-          // 📝 TEXT SECTION
+
           Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  berita.judul,
                   style: AppText.h6(color: AppColors.dark),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  date,
+                  controller.formatTanggal(berita.timestamp),
                   style: AppText.caption(color: AppColors.grey),
                 ),
               ],
@@ -568,5 +565,6 @@ Widget _buildNewsSection(BuildContext context) {
     ),
   );
 }
+
 
 }

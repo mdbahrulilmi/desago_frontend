@@ -1,4 +1,4 @@
-class SocialAccountModel {
+class OAuthAccountsModel {
   final int? id;
   final int? userId;
   final String? provider;
@@ -8,7 +8,7 @@ class SocialAccountModel {
   final String? createdAt;
   final String? updatedAt;
 
-  SocialAccountModel({
+  OAuthAccountsModel({
     this.id,
     this.userId,
     this.provider,
@@ -19,8 +19,8 @@ class SocialAccountModel {
     this.updatedAt,
   });
 
-  factory SocialAccountModel.fromJson(Map<String, dynamic> json) {
-    return SocialAccountModel(
+  factory OAuthAccountsModel.fromJson(Map<String, dynamic> json) {
+    return OAuthAccountsModel(
       id: json['id'],
       userId: json['user_id'],
       provider: json['provider'],

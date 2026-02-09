@@ -1,18 +1,16 @@
+import 'package:desago/app/models/BeritaModel.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 
 class BeritaDetailController extends GetxController {
-  final Rx<Map<String, dynamic>> berita = Rx<Map<String, dynamic>>({});
+  late final BeritaModel berita;
 
   @override
   void onInit() {
     super.onInit();
-    final arguments = Get.arguments;
-    if (arguments != null) {
-      berita.value = arguments;
-      berita.value['views'] = (berita.value['views'] ?? 0) + 1;
-    }
+    berita = Get.arguments as BeritaModel;
   }
+
 
   void toggleFavorite() {
     Get.snackbar(
@@ -22,15 +20,15 @@ class BeritaDetailController extends GetxController {
     );
   }
 
-void shareBerita(Map<String, dynamic> berita) {
-  final id = berita['no'];
-  final title = berita['judul'] ?? 'Berita Desa';
-  final fullText = berita['isi'] ?? '';
+void shareBerita() {
+  final id = berita.id;
+  final title = berita.judul ?? 'Berita Desa';
+  final fullText = berita.content ?? '';
   final maxLength = 100; 
   final excerpt = fullText.length > maxLength
     ? '${fullText.substring(0, maxLength)}...'
     : fullText;
-  final link = berita['link'] ?? 'tidak-tersedia';
+  final link = berita.link ?? 'tidak-tersedia';
 
   final text = '''
 $title
@@ -38,7 +36,7 @@ $title
 $excerpt
 
 Baca selengkapnya:
-https://desatinggo.id/berita/detail/$id/$link
+$link
 ''';
 
     Share.share(

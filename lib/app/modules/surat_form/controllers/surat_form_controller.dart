@@ -247,8 +247,7 @@ class SuratFormController extends GetxController {
 
     final formData = dio.FormData.fromMap({
       'jenis_surat_id': suratData['id'],
-      'subdomain': ApiConstant.desa,
-      'status': 'menunggu',
+      'subdomain': ApiConstant.desaId,
       'created_by': 1,
       'data_form': dataForm,
     });

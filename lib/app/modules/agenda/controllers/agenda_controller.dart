@@ -1,17 +1,15 @@
 import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/models/AgendaModel.dart';
 import 'package:desago/app/services/dio_services.dart';
 import 'package:get/get.dart';
-import 'package:desago/app/utils/app_colors.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class AgendaController extends GetxController {
-  Rx<DateTime> selectedDay = DateTime.now().obs;
-
-  final RxList<Map<String, dynamic>> agendas = <Map<String, dynamic>>[].obs;
-
-  var isLoading = true.obs;
+  final Rx<DateTime> selectedDay = DateTime.now().obs;
+  final RxList<AgendaModel> agendas = <AgendaModel>[].obs;
+  final RxBool isLoading = true.obs;
 
   @override
   void onInit() {
@@ -19,63 +17,58 @@ class AgendaController extends GetxController {
     fetchAgenda();
   }
 
+  /// ================= FETCH =================
   Future<void> fetchAgenda() async {
     try {
-    isLoading.value = true;
-    final res = await DioService.instance.get(ApiConstant.agendaDesa);
-    final data =
-            List<Map<String, dynamic>>.from(res.data);
-    agendas.value = data;
-    print(agendas);
-  } catch (e) {
-    agendas.value = [];
-    print("Error fetchAgenda: $e");
-  } finally {
-    isLoading.value = false;
+      isLoading.value = true;
+
+      final res = await DioService.instance.get(ApiConstant.agendaDesa);
+
+      final List listData =
+          res.data is List ? res.data : res.data['data'] ?? [];
+
+      agendas.assignAll(
+        listData.map((e) => AgendaModel.fromJson(e)).toList(),
+      );
+
+      print('🟢 Agenda loaded: ${agendas.length}');
+    } catch (e, stack) {
+      agendas.clear();
+      print('🔴 Error fetchAgenda: $e');
+      print(stack);
+    } finally {
+      isLoading.value = false;
+    }
   }
+
+  /// ================= FILTER BY DAY =================
+  List<AgendaModel> getAgendaByDay(DateTime day) {
+    return agendas.where((agenda) {
+      return isSameDay(agenda.tanggal, day);
+    }).toList();
   }
 
-  List<Map<String, dynamic>> getAgendaByDay(DateTime day) {
-  return agendas.where((agenda) {
-    final agendaDate = DateTime.parse(agenda['tanggal']);
-
-    return isSameDay(agendaDate, day);
-  }).toList();
-}
-
-
-  List<Map<String, dynamic>> get agendaByDate =>
+  List<AgendaModel> get agendaByDate =>
       getAgendaByDay(selectedDay.value);
 
+  /// ================= SHARE =================
+  void shareAgenda(AgendaModel agenda) {
+    final tanggalFormatted =
+        DateFormat('dd MMMM yyyy', 'id_ID').format(agenda.tanggal);
 
-void shareAgenda(Map<String, dynamic> agenda) {
-  final judul = agenda['title'] ?? 'Agenda Desa';
-  final tanggalRaw = agenda['tanggal'];
-  final waktuMulai = agenda['waktu_mulai'] ?? '-';
-  final waktuSelesai = agenda['waktu_selesai'] ?? '-';
-  final lokasi = agenda['location'] ?? '-';
-
-  String tanggalFormatted = '';
-  if (tanggalRaw != null) {
-    final date = DateTime.parse(tanggalRaw);
-    tanggalFormatted = DateFormat('dd MMMM yyyy', 'id_ID').format(date);
-  }
-
-  final text = '''
-📌 *$judul*
+    final text = '''
+📌 *${agenda.judul}*
 
 🗓 Tanggal: $tanggalFormatted
-📍 Waktu: $waktuMulai - $waktuSelesai
-📍 Lokasi: $lokasi
+⏰ Waktu: ${agenda.waktuMulai} - ${agenda.waktuSelesai}
+📍 Lokasi: ${agenda.lokasi}
+🏷 Kategori: ${agenda.kategori.nama}
 
-Info agenda desa:
-https://desago.id
 ''';
 
-  Share.share(
-    text,
-    subject: judul,
-  );
-}
-
+    Share.share(
+      text,
+      subject: agenda.judul,
+    );
+  }
 }

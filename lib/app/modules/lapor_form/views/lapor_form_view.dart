@@ -195,7 +195,7 @@ class LaporFormView extends GetView<LaporFormController> {
                  onPressed: controller.isSubmitting.value
                   ? null
                   : ()=> controller.createLapor(
-                  subdomain: ApiConstant.desa, 
+                  subdomain: ApiConstant.desaId, 
                   title: controller.judulController.text,
                   category: controller.selectedCategoryId.value, 
                   ditujukan: controller.selectedTujuan.value,

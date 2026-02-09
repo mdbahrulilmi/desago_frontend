@@ -65,59 +65,69 @@ class AkunView extends GetView<AkunController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                InkWell(
-                  onTap: () {
-                    Get.toNamed(Routes.TAUTKAN_AKUN);
-                  },
-                  child: Container(
-                    height: AppResponsive.h(12),
-                    width: double.infinity,
-                    padding: AppResponsive.padding(vertical: 1),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        gradient: LinearGradient(
-                          colors: [
-                            AppColors.info,
-                            AppColors.lightBlue.withOpacity(1),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          tileMode: TileMode.repeated,
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Tautkan Akun Anda Dengan Desa',
-                              style: AppText.button(color: AppColors.white),
+                Obx(() {
+                return controller.verification.value == "unverified"
+                    ? InkWell(
+                        onTap: () {
+                          Get.toNamed(Routes.TAUTKAN_AKUN);
+                        },
+                        child: Container(
+                          height: AppResponsive.h(12),
+                          width: double.infinity,
+                          padding: AppResponsive.padding(vertical: 1),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppColors.info,
+                                  AppColors.lightBlue.withOpacity(1),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                tileMode: TileMode.repeated,
+                              ),
                             ),
-                            Text(
-                              'Tautkan akun anda untuk mendapatkan pelayanan maksimal',
-                              style: AppText.small(color: AppColors.white),
+                            child: Padding(
+                              padding: const EdgeInsets.all(15),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Tautkan Akun Anda Dengan Desa',
+                                    style: AppText.button(color: AppColors.white),
+                                  ),
+                                  Text(
+                                    'Tautkan akun anda untuk mendapatkan pelayanan maksimal',
+                                    style: AppText.small(color: AppColors.white),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: AppResponsive.h(1)),
+                      )
+                    : SizedBox.shrink(); // kosong kalau unverified
+              }),
+              Obx(() => Column(
+                children: [
+                  if (controller.verification.value != "unverified") ...[
+                    SizedBox(height: AppResponsive.h(1)),
                     _buildListTile(
                       Remix.id_card_line,
                       'Biodata',
-                      (){
+                      () {
                         Get.toNamed(Routes.AKUN_BIODATA);
-                      }
+                      },
                     ),
                     Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: AppColors.divider,
-                      ),
+                      height: 1,
+                      thickness: 1,
+                      color: AppColors.divider,
+                    ),
+                  ],
+                ],
+              )),
                     _buildListTile(Remix.lock_password_line, 'Ubah Password', (){
                       Get.toNamed(Routes.AKUN_UBAH_PASSWORD);
                     }),
@@ -275,7 +285,7 @@ Widget _profileCard(){
                       key: ValueKey(avatarUrl),
                       radius: AppResponsive.w(9),
                       backgroundColor: Colors.grey[200],
-                      backgroundImage: avatarUrl != null ? NetworkImage('https://backend.desago.id/${avatarUrl}') : null,
+                      backgroundImage: avatarUrl != null ? NetworkImage('https://backend.desagodigital.id/${avatarUrl}') : null,
                       child: avatarUrl == null
                           ? Icon(
                               Remix.user_3_line,

@@ -1,25 +1,26 @@
 class ApiConstant {
   // Base URL
-  static const String baseUrl = 'https://backend.desago.id/api/';
+  static const String baseUrl = 'https://backend.desagodigital.id/api/';
   static const String pictureUrl = 'https://www.desatinggo.id/upload/picture/';
 
+  static const String desaId = 'DESA_1';
+
   // Desa
-  static const String desa = 'desatinggo.id';
-  static const String carouselDesa = "/desa/${desa}/carousel";
-  static const String profilDesa = "/desa/${desa}/profil";
-  static const String beritaDesa = "/desa/${desa}/berita";
-  static const String beritaDesaCarousel = "/desa/${desa}/berita/carousel";
-  static const String danaDesa = "/desa/${desa}/dana";
-  static const String agendaDesa = "/desa/${desa}/agenda";
-  static const String produkDesa = "/desa/${desa}/umkm";
-  static const String produkDesaCarousel = "/desa/${desa}/umkm/carousel";
-  static const String nomorDarurat = "/desa/${desa}/no-darurat";
-  static const String lapor = "/desa/${desa}/lapor";
-  static const String laporKategori = "/desa/${desa}/lapor/kategori";
-  static const String laporCreate = "/desa/${desa}/lapor/create";
-  static const String jenisSurat = "/desa/${desa}/surat";
-  static const String tambahSurat = "/desa/${desa}/surat/create";
-  static const String suratRiwayat = "/desa/${desa}/surat/riwayat/1";
+  static const String carouselDesa = '/desa/${desaId}/carousel';
+  static const String profilDesa = '/desa/${desaId}/profil';
+  static const String beritaDesa = '/desa/${desaId}/berita';
+  static const String beritaDesaCarousel = '/desa/${desaId}/berita/carousel';
+  static const String danaDesa = '/desa/${desaId}/dana';
+  static const String agendaDesa = '/desa/${desaId}/agenda';
+  static const String produkDesa = '/desa/${desaId}/umkm';
+  static const String produkDesaCarousel = '/desa/${desaId}/umkm/carousel';
+  static const String nomorDarurat = '/desa/${desaId}/no-darurat';
+  static const String lapor = '/desa/${desaId}/lapor';
+  static const String laporKategori = '/desa/${desaId}/lapor/kategori';
+  static const String laporCreate = '/desa/${desaId}/lapor/create';
+  static const String jenisSurat = '/surat';
+  static const String tambahSurat = '/desa/${desaId}/surat/create';
+  static const String suratRiwayat = '/desa/${desaId}/surat/riwayat/1';
 
   // Auth Endpoints
   static const String register = '/register';
@@ -31,12 +32,14 @@ class ApiConstant {
   static const String changePassword = '/change-password';
   static const String googleLogin = '/loginGoogle';
   static const String sendLinkWa = '/sendSMS';
-  static const String tokenExpired= '/token-expired';
+  static const String tokenExpired = '/token-expired';
+  static const String verification = '/verification';
+  static const String isOauth = '/isoauth';
 
   static const String getAllDesa = '/desa';
   static const String tautkanAkunKeDesa = '/tautkan-akun';
 
   // Akun Endpoints
-  static const String updateAvatar = '/user/avatar';
-  static const String editProfile = '/edit/profile';
+  static const String updateAvatar = '/profile/avatar';
+  static const String editProfile = '/profile/edit';
 }

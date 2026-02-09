@@ -1,5 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/helpers/empty_helper.dart';
+import 'package:desago/app/helpers/time_helper.dart';
+import 'package:desago/app/models/BeritaModel.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
@@ -32,13 +35,12 @@ class BeritaListView extends GetView<BeritaListController> {
       ),
       body: Column(
         children: [
-          // Pencarian Berita
           _buildSearchBar(),
 
           Expanded(
             child: Obx(() {
               if (controller.filteredBeritas.isEmpty) {
-                return _buildEmptyState();
+                return EmptyStateWidget(title: "Tidak ada berita", message: "Saat ini tidak ada berita yang tersedia");
               }
 
               return _buildBeritaList();
@@ -49,7 +51,6 @@ class BeritaListView extends GetView<BeritaListController> {
     );
   }
 
-  // Widget Pencarian Berita
   Widget _buildSearchBar() {
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -58,7 +59,7 @@ class BeritaListView extends GetView<BeritaListController> {
       ),
       child: TextField(
         controller: controller.searchController,
-        // onChanged: (value) => controller.filterBerita(value),
+        onChanged: (value) => controller.filterBerita(value),
         decoration: InputDecoration(
           hintText: 'Cari Berita',
           hintStyle: AppText.bodyMedium(color: AppColors.textSecondary),
@@ -74,30 +75,32 @@ class BeritaListView extends GetView<BeritaListController> {
     );
   }
 
-  // Daftar Berita
   Widget _buildBeritaList() {
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: controller.filteredBeritas.length,
-      itemBuilder: (context, index) {
-        final berita = controller.filteredBeritas[index];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 14.0),
-          child: _buildBeritaCard(berita),
-        );
-      },
+    return RefreshIndicator(
+       onRefresh: () async {
+          await controller.refreshBerita();
+        },
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: controller.filteredBeritas.length,
+        itemBuilder: (context, index) {
+          final berita = controller.filteredBeritas[index];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 14.0),
+            child: _buildBeritaCard(berita),
+          );
+        },
+      ),
     );
   }
 
- // Kartu Berita
-Widget _buildBeritaCard(Map<String, dynamic> berita) {
-  String? gambar = berita['image'];
+Widget _buildBeritaCard(BeritaModel berita) {
+  String? gambar = berita.gambar;
   return GestureDetector(
     onTap: () => controller.bacaBeritaLengkap(berita),
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Gambar Berita
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
@@ -117,7 +120,7 @@ Widget _buildBeritaCard(Map<String, dynamic> berita) {
               height: AppResponsive.h(16),
               child: (gambar != null && gambar.isNotEmpty)
                 ? Image.network(
-                    "${ApiConstant.pictureUrl}$gambar",
+                    "$gambar",
                     fit: BoxFit.cover,
                   )
                 : Image.asset(
@@ -141,7 +144,7 @@ Widget _buildBeritaCard(Map<String, dynamic> berita) {
               children: [
                 // Kategori
                 Text(
-                  berita['category'] ?? '-',
+                  berita.kategori ?? '-',
                   style: AppText.smallBold(
                     color: AppColors.primary,
                   ),
@@ -151,7 +154,7 @@ Widget _buildBeritaCard(Map<String, dynamic> berita) {
 
                 // Judul
                 AutoSizeText(
-                  berita['title']?.toString() ?? '-',
+                  berita.judul?.toString() ?? '-',
                   style: AppText.pSmallBold(color: AppColors.dark),
                   maxLines: 2,
                   minFontSize: 9,
@@ -163,7 +166,7 @@ Widget _buildBeritaCard(Map<String, dynamic> berita) {
 
                 // Excerpt
                 Text(
-                  berita['excerpt'] ?? '',
+                  berita.excerpt ?? '',
                   style:
                       AppText.bodySmall(color: AppColors.textSecondary),
                   maxLines: 2,
@@ -181,7 +184,7 @@ Widget _buildBeritaCard(Map<String, dynamic> berita) {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      berita['date'] ?? '-',
+                      TimeHelper.formatTanggalDate(berita.timestamp) ?? '-',
                       style: AppText.bodySmall(color: AppColors.grey),
                     ),
                   ],
@@ -193,37 +196,8 @@ Widget _buildBeritaCard(Map<String, dynamic> berita) {
       ],
     ),
   );
-  }
-
-  // State Kosong saat Tidak Ada Berita
-  Widget _buildEmptyState() {
-  return Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        // Gunakan Lottie animation dari aset lokal
-        Lottie.asset(
-          'assets/lottie/empty.json',
-          width: 250,
-          height: 250,
-          fit: BoxFit.contain,
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Tidak Ada Berita',
-          style: AppText.h5(color: AppColors.dark),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Saat ini tidak ada berita yang tersedia',
-          style: AppText.bodyMedium(color: AppColors.textSecondary),
-        ),
-      ],
-    ),
-  );
 }
 
-  // Bottom Sheet Filter
   void _showFilterBottomSheet() {
     Get.bottomSheet(
       Container(

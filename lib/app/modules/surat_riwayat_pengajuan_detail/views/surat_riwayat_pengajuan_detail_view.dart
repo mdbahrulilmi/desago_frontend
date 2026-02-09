@@ -83,9 +83,10 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
                                   SizedBox(height: AppResponsive.h(0.5)),
                                   Text(
                                     controller.data['created_at'] != null
-                                    ? controller.dateFormat.format(
-                                        DateTime.parse(controller.data['created_at']),
-                                      )
+                                    ? controller.perngajuanFormat.format(
+                                      DateTime.parse(controller.data['created_at']),
+                                    )
+
                                     : '-',
                                     style: AppText.bodyMediumBold(color: AppColors.text),
                                   ),
@@ -102,7 +103,7 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
                                   ),
                                   SizedBox(height: AppResponsive.h(0.5)),
                                   Text(
-                                    '${controller.data['pemohon'] ?? "Tolkah Mozaik"}',
+                                    '${controller.dataForm['nama'] ?? "-"}',
                                     style: AppText.bodyMediumBold(color: AppColors.text),
                                   ),
                                 ],
@@ -229,12 +230,7 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
                                 SizedBox(height: AppResponsive.h(0.5)),
                                 if (item['date'] != null)
                                   Text(
-                                    controller.data['created_at'] != null
-                                    ? controller.dateFormat.format(
-                                        DateTime.parse(controller.data['created_at']),
-                                      )
-                                    : '-',
-
+                                    item['date'],
                                     style: AppText.bodySmall(color: AppColors.textSecondary),
                                   ),
                                 SizedBox(height: AppResponsive.h(0.5)),
