@@ -10,17 +10,19 @@ class ApiConstant {
   static const String profilDesa = '/desa/${desaId}/profil';
   static const String beritaDesa = '/desa/${desaId}/berita';
   static const String beritaDesaCarousel = '/desa/${desaId}/berita/carousel';
-  static const String danaDesa = '/desa/${desaId}/dana';
+  static const String anggaran = '/desa/${desaId}/anggaran';
+  static const String anggaranKategori = '/desa/${desaId}/anggaran/kategori';
   static const String agendaDesa = '/desa/${desaId}/agenda';
   static const String produkDesa = '/desa/${desaId}/umkm';
   static const String produkDesaCarousel = '/desa/${desaId}/umkm/carousel';
   static const String nomorDarurat = '/desa/${desaId}/no-darurat';
   static const String lapor = '/desa/${desaId}/lapor';
-  static const String laporKategori = '/desa/${desaId}/lapor/kategori';
+  static const String laporKategori = '/lapor/kategori';
   static const String laporCreate = '/desa/${desaId}/lapor/create';
   static const String jenisSurat = '/surat';
   static const String tambahSurat = '/desa/${desaId}/surat/create';
-  static const String suratRiwayat = '/desa/${desaId}/surat/riwayat/1';
+  static const String suratRiwayat = '/desa/${desaId}/surat';
+  static const String aktivitas = '/desa/${desaId}/aktivitas';
 
   // Auth Endpoints
   static const String register = '/register';

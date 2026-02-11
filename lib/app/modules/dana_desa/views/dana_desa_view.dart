@@ -1,8 +1,6 @@
-import 'dart:ui';
-
+import 'package:desago/app/models/AnggaranModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
@@ -11,32 +9,343 @@ import '../controllers/dana_desa_controller.dart';
 
 class DanaDesaView extends GetView<DanaDesaController> {
   const DanaDesaView({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     AppResponsive().init(context);
+
     return Scaffold(
       backgroundColor: AppColors.backgroundScaffold,
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(),
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  _totalPengeluaran(),
-                  SizedBox(height: AppResponsive.h(3)),
-                  _dividerTitle('Rincian Pendapatan'),
-                  SizedBox(height: AppResponsive.h(3)),
-                  _rincianPendapatan(),
-                  SizedBox(height: AppResponsive.h(3)),
-                  _dividerTitle('Rincian Belanja'),
-                  SizedBox(height: AppResponsive.h(3)),
-                  _rincianPengeluaran()
+                  _totalPendapatan(),
+                  SizedBox(height: AppResponsive.h(2)),
+                  _totalBelanja(),
                 ],
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ================= HEADER =================
+
+  Widget _buildHeader() {
+    return Container(
+      height: 280,
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFE00004), Color(0xFFB80003), Color(0xFFE00004)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(40)),
+      ),
+      child: SafeArea(
+        child: Stack(
+          children: [
+            Positioned(
+              left: 16,
+              top: 16,
+              child: _circleButton(
+                icon: Icons.arrow_back_ios_new,
+                onTap: () => Get.back(),
+              ),
+            ),
+            Positioned(
+              right: 16,
+              top: 16,
+              child: _pdfButton(),
+            ),
+            Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.account_balance, color: Colors.white, size: 48),
+                const SizedBox(height: 12),
+                const Text('Pemerintah Desa', style: TextStyle(color: Colors.white70)),
+                const SizedBox(height: 6),
+                
+                Obx(() => Text(
+                      'Desa ${controller.desaNama.value}',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold),
+                    )),
+                
+                const SizedBox(height: 8),
+                const Text(
+                  'Tahun Anggaran 2025',
+                  style: TextStyle(color: Colors.white70),
+                ),
+              ],
+            ),
+          )
+],
+        ),
+      ),
+    );
+  }
+
+  // ================= TOTAL =================
+
+  Widget _totalPendapatan() {
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const CircularProgressIndicator();
+      }
+
+      return Column(
+        children: [
+          GestureDetector(
+            onTap: controller.togglePendapatan,
+            child: _danaDesaCard(
+              title: "Jumlah Pendapatan",
+              nominal:
+                  controller.formatRupiah(controller.totalPendapatan),
+              icon: controller.showPendapatan.value
+                  ? Icons.keyboard_arrow_up
+                  : Icons.keyboard_arrow_down,
+              profit: true,
+            ),
+          ),
+          AnimatedCrossFade(
+            duration: const Duration(milliseconds: 250),
+            crossFadeState: controller.showPendapatan.value
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
+            firstChild: _rincianPendapatan(),
+            secondChild: const SizedBox(),
+          ),
+        ],
+      );
+    });
+  }
+
+  Widget _totalBelanja() {
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const CircularProgressIndicator();
+      }
+
+      return Column(
+        children: [
+          GestureDetector(
+            onTap: controller.toggleBelanja,
+            child: _danaDesaCard(
+              title: "Jumlah Belanja",
+              nominal: controller.formatRupiah(controller.totalBelanja),
+              icon: controller.showBelanja.value
+                  ? Icons.keyboard_arrow_up
+                  : Icons.keyboard_arrow_down,
+              profit: false,
+            ),
+          ),
+          AnimatedCrossFade(
+            duration: const Duration(milliseconds: 250),
+            crossFadeState: controller.showBelanja.value
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
+            firstChild: _rincianBelanja(),
+            secondChild: const SizedBox(),
+          ),
+        ],
+      );
+    });
+  }
+
+  // ================= RINCIAN =================
+
+  Widget _rincianPendapatan() {
+  return Obx(() {
+    return Column(
+      children: controller.pendapatan.map<Widget>((item) {
+        final level = _kategoriLevel(item);
+
+        debugPrint(
+          'PENDAPATAN | kategori: ${item.kategori?.nama} | level: $level | parent: ${item.kategori?.parentId}',
+        );
+
+        return Padding(
+          padding: EdgeInsets.only(top: AppResponsive.h(1)),
+          child: _danaDesaCard(
+            title: item.kategori?.nama ?? '-',
+            nominal: controller.formatRupiah(item.anggaran),
+            icon: Icons.subdirectory_arrow_right,
+            profit: true,
+            level: level,
+          ),
+        );
+      }).toList(),
+    );
+  });
+}
+
+
+  Widget _rincianBelanja() {
+  return Obx(() {
+    return Column(
+      children: controller.belanja.map<Widget>((item) {
+        final level = _kategoriLevel(item);
+
+        debugPrint(
+          'BELANJA | kategori: ${item.kategori?.nama} | level: $level | parent: ${item.kategori?.parentId}',
+        );
+
+        return Padding(
+          padding: EdgeInsets.only(top: AppResponsive.h(1)),
+          child: _danaDesaCard(
+            title: item.kategori?.nama ?? '-',
+            nominal: controller.formatRupiah(item.anggaran),
+            icon: Icons.subdirectory_arrow_right,
+            profit: false,
+            level: level,
+          ),
+        );
+      }).toList(),
+    );
+  });
+}
+
+
+  // ================= COMPONENT =================
+
+  Widget _circleButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withOpacity(0.2),
+        ),
+        child: Icon(icon, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _pdfButton() {
+  return GestureDetector(
+    onTap: () {
+      controller.generatePdf();
+    },
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.download, color: Colors.white, size: 16),
+          SizedBox(width: 6),
+          Text('PDF', style: TextStyle(color: Colors.white)),
+        ],
+      ),
+    ),
+  );
+}
+
+
+  Widget _danaDesaCard({
+    required String title,
+    required String nominal,
+    required IconData icon,
+    required bool profit,
+    int level = 0,
+  }) {
+    final double indent = level * 24.0;
+    final double screenWidth = Get.width;
+    final double cardWidth = screenWidth - 40 - indent;
+
+    final double fontScale = (1 - (level * 0.1)).clamp(0.7, 1.0);
+    final double horizontalPadding = (14.0 - level).clamp(8.0, 14.0);
+    final double verticalPadding = (12.0 - level).clamp(6.0, 12.0);
+    final double radius = (14.0 - level).clamp(8.0, 14.0);
+    final double bgOpacity =
+        (level == 0 ? 0.22 : 0.16 - (level * 0.02)).clamp(0.08, 0.22);
+
+    return Padding(
+      padding: EdgeInsets.only(left: indent),
+      child: Container(
+        width: cardWidth,
+        padding: EdgeInsets.symmetric(
+          horizontal: horizontalPadding,
+          vertical: verticalPadding,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(bgOpacity),
+          borderRadius: BorderRadius.circular(radius),
+          border: Border.all(
+            color: AppColors.borderDana.withOpacity(
+              level == 0 ? 0.4 : 0.25,
+            ),
+          ),
+        ),
+        child: Row(
+          children: [
+            if (level > 0)
+              Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: Icon(
+                  Icons.subdirectory_arrow_right,
+                  size: (16.0 - level).clamp(10, 16),
+                  color: AppColors.grey,
+                ),
+              ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppText.bodyMedium().copyWith(
+                      fontSize: 14 * fontScale,
+                      color: AppColors.dark
+                          .withOpacity(level == 0 ? 1 : 0.8),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    nominal,
+                    style: AppText.h5().copyWith(
+                      fontSize: 18 * fontScale,
+                      fontWeight: level == 0
+                          ? FontWeight.bold
+                          : FontWeight.w500,
+                    ),
+                  ),
+                 Container(
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: profit ? AppColors.darkGreen : AppColors.primary,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Icon(
+              icon,
+              size: (22.0 - (level * 2)).clamp(14, 22),
+              color:
+                  profit ? AppColors.darkGreen : AppColors.primary,
             ),
             
           ],
@@ -44,341 +353,9 @@ class DanaDesaView extends GetView<DanaDesaController> {
       ),
     );
   }
-  
-  // Widget untuk header
-  Widget _buildHeader() {
-  return Container(
-    width: double.infinity,
-    height: 280,
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        colors: [
-          Color(0xFFE00004),
-          Color(0xFFB80003),
-          Color(0xFFE00004),
-        ],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
-      borderRadius: BorderRadius.vertical(
-        bottom: Radius.circular(40),
-      ),
-    ),
-    child: SafeArea(
-      child: Stack(
-        children: [
-          // Back Button
-          Positioned(
-            left: 16,
-            top: 16,
-            child: _circleButton(
-              icon: Icons.arrow_back_ios_new,
-              onTap: () => Get.back(),
-            ),
-          ),
 
-          // PDF Button
-          Positioned(
-            right: 16,
-            top: 16,
-            child: _pdfButton(),
-          ),
-
-          // Content Tengah
-          Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Icon Pemerintah
-                Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.15),
-                  ),
-                  child: Icon(
-                    Icons.account_balance,
-                    color: Colors.white,
-                    size: 36,
-                  ),
-                ),
-
-                SizedBox(height: 12),
-
-                Text(
-                  'Pemerintah Desa',
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
-                ),
-
-                SizedBox(height: 6),
-
-                Text(
-                  'Desa Jaya Raya',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                SizedBox(height: 8),
-
-                Text(
-                  'Kec. Bungursari, Kab. Temanggung, Prov. Jawa Tengah',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 13,
-                  ),
-                ),
-
-                SizedBox(height: 16),
-
-                // Chip Tahun Anggaran
-                Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        'Tahun Anggaran 2025',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-Widget _circleButton({
-  required IconData icon,
-  required VoidCallback onTap,
-}) {
-  return GestureDetector(
-    onTap: onTap,
-    child: Container(
-      width: 44,
-      height: 44,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withOpacity(0.2),
-      ),
-      child: Icon(icon, color: Colors.white),
-    ),
-  );
-}
-
-Widget _pdfButton() {
-  return GestureDetector(
-    onTap: () {
-      // download pdf
-    },
-    child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Colors.white.withOpacity(0.2),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.download, color: Colors.white, size: 16),
-          SizedBox(width: 6),
-          Text(
-            'PDF',
-            style: TextStyle(color: Colors.white),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-Widget _danaDesaCard({
-  required String title,
-  required String nominal,
-  required IconData icon,
-  required bool profit,
-}) {
-  return ClipRRect(
-    borderRadius: BorderRadius.circular(10),
-    child: Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15), // GLASS
-        border: Border.all(
-          color: AppColors.borderDana.withOpacity(0.4),
-          width: 2,
-        ),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: AppText.bodyMedium(),
-                ),
-                SizedBox(height: AppResponsive.h(0.5)),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      nominal,
-                      style: AppText.h5(),
-                    ),
-                    Icon(
-                      icon,
-                      color: profit ? AppColors.darkGreen : AppColors.primary,
-                    )
-                  ],
-                ),
-                SizedBox(height: AppResponsive.h(1)),
-              ],
-            ),
-          ),
-    
-          Container(
-            width: double.infinity,
-            height: 8,
-            decoration: BoxDecoration(
-              color: profit ? AppColors.darkGreen.withOpacity(0.85) : AppColors.primary.withOpacity(0.85),
-              borderRadius: BorderRadius.circular(20),
-            ),
-          )
-        ],
-      ),
-    ),
-  );
-}
-
-Widget _totalPengeluaran(){
-  return Obx((){
-    if (controller.isLoading.value) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (controller.apbn_pengeluaran.isEmpty) {
-      return const Text('Belum ada data belanja');
-    }
-    if (controller.apbn_pendapatan.isEmpty) {
-      return const Text('Belum ada data belanja');
-    }
-    return Column(
-      children: [
-      _danaDesaCard(
-        title: "Jumlah Pendapatan",
-        nominal: controller.formatRupiah(controller.totalPendapatan),
-        icon: Icons.attach_money,
-        profit: true,
-      ),
-      SizedBox(height: AppResponsive.h(1))
-      ,
-      _danaDesaCard(
-        title: "Jumlah Belanja",
-        nominal: controller.formatRupiah(controller.totalBelanja),
-        icon: Icons.shopping_basket,
-        profit: false,
-      ),
-    
-      ]
-    );  
-  });  
-}
-
-Widget _rincianPendapatan(){
-  return Obx( () {
-    if (controller.isLoading.value) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (controller.apbn_pengeluaran.isEmpty) {
-      return const Text('Belum ada data belanja');
-    }
-    return Column(
-          children: controller.apbn_pendapatan.map((item) {
-            return Padding(
-              padding: EdgeInsets.only(bottom: AppResponsive.h(1)),
-              child: _danaDesaCard(
-                title: item['description'] ?? '-',
-                nominal: controller.formatRupiah(item['anggaran'] ?? 0),
-                icon: Icons.insert_drive_file,
-                profit: true,
-              ),
-            );
-          }).toList(),
-        );
-  });  
-}
-Widget _rincianPengeluaran(){
-  return Obx( () {
-    if (controller.isLoading.value) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (controller.apbn_pengeluaran.isEmpty) {
-      return const Text('Belum ada data belanja');
-    }
-    return Column(
-          children: controller.apbn_pengeluaran.map((item) {
-            return Padding(
-              padding: EdgeInsets.only(bottom: AppResponsive.h(1)),
-              child: _danaDesaCard(
-                title: item['description'] ?? '-',
-                nominal: controller.formatRupiah(item['anggaran'] ?? 0),
-                icon: Icons.insert_drive_file,
-                profit: false,
-              ),
-            );
-          }).toList(),
-        );
-  });  
-}
-
-Widget _dividerTitle(String title) {
-  return Row(
-    children: [
-      const Expanded(child: Divider(thickness: 1)),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Text(
-          title,
-          style: AppText.bodyMedium(color: AppColors.grey),
-        ),
-      ),
-      const Expanded(child: Divider(thickness: 1)),
-    ],
-  );
-}
-
+  int _kategoriLevel(AnggaranModel item) {
+    if (item.kategori == null) return 0;
+    return controller.kategoriLevel(item.kategori!);
+  }
 }

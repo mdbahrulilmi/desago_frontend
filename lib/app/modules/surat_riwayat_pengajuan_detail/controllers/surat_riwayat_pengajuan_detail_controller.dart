@@ -75,7 +75,7 @@ class SuratRiwayatPengajuanDetailController extends GetxController {
         trackingStatus.assignAll([
           _item('Pengajuan terkirim', tanggalPengajuan,
               'Pengajuan surat telah diterima oleh sistem',
-              isDone: true),
+              isDone: true),    
           _item('Verifikasi Admin', tanggalVerification,
               'Data sedang diverifikasi oleh admin',
               isDone: true),

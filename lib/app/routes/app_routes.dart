@@ -42,10 +42,10 @@ abstract class Routes {
   static const AKUN_UBAH_PASSWORD = _Paths.AKUN_UBAH_PASSWORD;
   static const AKUN_BIODATA = _Paths.AKUN_BIODATA;
   static const MAIN = _Paths.MAIN;
-  static const AKTIVITAS = _Paths.AKTIVITAS;
   static const SURAT_LIST = _Paths.SURAT_LIST;
   static const AKUN_EDIT = _Paths.AKUN_EDIT;
   static const LAPOR_DETAIL = _Paths.LAPOR_DETAIL;
+  static const AKTIVITAS = _Paths.AKTIVITAS;
 }
 
 abstract class _Paths {
@@ -91,8 +91,8 @@ abstract class _Paths {
   static const AKUN_UBAH_PASSWORD = '/akun-ubah-password';
   static const AKUN_BIODATA = '/akun-biodata';
   static const MAIN = '/main';
-  static const AKTIVITAS = '/aktivitas';
   static const SURAT_LIST = '/surat-list';
   static const AKUN_EDIT = '/akun-edit';
   static const LAPOR_DETAIL = '/lapor-detail';
+  static const AKTIVITAS = '/aktivitas';
 }

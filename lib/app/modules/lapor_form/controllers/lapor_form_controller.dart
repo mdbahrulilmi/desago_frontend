@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'package:desago/app/components/alert.dart';
 import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/models/LaporKategoriModel.dart';
 import 'package:desago/app/modules/lapor/controllers/lapor_controller.dart';
 import 'package:desago/app/routes/app_pages.dart';
 import 'package:desago/app/services/dio_services.dart';
+import 'package:desago/app/services/storage_services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:desago/app/utils/app_colors.dart';
@@ -15,7 +18,7 @@ class LaporFormController extends GetxController {
   final TextEditingController deskripsiController = TextEditingController();
 
   final LaporController laporController = Get.find<LaporController>();
-  final RxList<Map<String, dynamic>> categories = <Map<String, dynamic>>[].obs;
+  RxList<LaporKategoriModel> categories = <LaporKategoriModel>[].obs;
 
 
   var isLoading = true.obs;
@@ -49,18 +52,23 @@ class LaporFormController extends GetxController {
   try {
     isLoading.value = true;
 
-    final res = await DioService.instance.get(ApiConstant.laporKategori);
+    final token = await StorageService.getToken();
+
+    final res = await DioService.instance.get(
+      ApiConstant.laporKategori,
+      options: dio.Options(
+        headers: {
+          'Authorization': 'Bearer ${token}',
+        },
+      ),
+    );
+
 
     final listData = res.data is List ? res.data : (res.data['data'] ?? []);
 
     categories.assignAll(
-      listData.map<Map<String, dynamic>>((e) => {
-        'id': e['no'],
-        'name': e['name'],
-      }).toList(),
+      listData.map<LaporKategoriModel>((e) => LaporKategoriModel.fromJson(e)).toList(),
     );
-
-    print('ini kategori: $categories');
   } catch (e) {
     debugPrint(e.toString());
   } finally {
@@ -70,47 +78,90 @@ class LaporFormController extends GetxController {
 
 
 Future<void> createLapor({
-  required String subdomain,
+  required int kategoriId,
+  required String judul,
   required String ditujukan,
-  required String title,
-  required int category,
-  required String description,
-  File? image,
-  }) async {
-    if (!validateForm()) return;
-    if (isSubmitting.value) return;
-    try {
-      isSubmitting.value = true;
-      final formData = dio.FormData.fromMap({
-        'subdomain': subdomain,
-        'ditujukan': ditujukan,
-        'title': title,
-        'category': category,
-        'description': description,
-        if (image != null)
-          'image': await dio.MultipartFile.fromFile(
-            image.path,
-            filename: image.path.split('/').last,
-          ),
-      });
+  required String deskripsi,
+  File? gambar,
+}) async {
+  if (!validateForm()) return;
+  if (isSubmitting.value) return;
+  final desaId = ApiConstant.desaId;
+  final userId = await StorageService.getUser()?.id;
+  try {
+    isSubmitting.value = true;
 
-      await DioService.instance.post(
-        ApiConstant.laporCreate,
-        data: formData,
-      );
-      Get.offNamed(
-        Routes.LAPOR_RIWAYAT,
-        arguments: {'refresh': true},
-      );
+    // --- Debug: tampilkan form data ---
+    print('=== DEBUG: createLapor form data ===');
+    print({
+      'desa_id': desaId,
+      'kategori_id': kategoriId,
+      'user_id': userId,
+      'judul': judul,
+      'ditujukan': ditujukan,
+      'deskripsi': deskripsi,
+      'gambar': gambar?.path,
+    });
 
-    } catch (e) {
-      // Jika gagal, tampilkan error
-      AppDialog.error(
-        title: 'Gagal',
-        message: 'Terjadi kesalahan saat mengirim laporan.',
-      );
-    }
+    // FormData sesuai backend
+    final formData = dio.FormData.fromMap({
+      'desa_id': desaId,
+      'kategori_id': kategoriId,
+      'user_id': userId,
+      'judul': judul,
+      'ditujukan': ditujukan,
+      'deskripsi': deskripsi,
+      if (gambar != null)
+        'gambar': await dio.MultipartFile.fromFile(
+          gambar.path,
+          filename: gambar.path.split('/').last,
+        ),
+    });
+
+    final token = await StorageService.getToken();
+
+    final response = await DioService.instance.post(
+      ApiConstant.laporCreate,
+      data: formData,
+      options: dio.Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+
+    // --- Debug: tampilkan response ---
+    print('=== DEBUG: createLapor response ===');
+    print(response.statusCode);
+    print(response.data);
+
+    Get.offNamed(
+      Routes.LAPOR_RIWAYAT,
+      arguments: {'refresh': true},
+    );
+  } on dio.DioException catch (e) {
+    print('=== DEBUG: DioException ===');
+    print('Message: ${e.message}');
+    print('Response: ${e.response?.statusCode}');
+    print('Data: ${e.response?.data}');
+    AppDialog.error(
+      title: 'Gagal',
+      message: 'Terjadi kesalahan saat mengirim laporan.\n${e.response?.data ?? e.message}',
+    );
+  } catch (e, st) {
+    print('=== DEBUG: Exception ===');
+    print(e);
+    print(st);
+    AppDialog.error(
+      title: 'Gagal',
+      message: 'Terjadi kesalahan saat mengirim laporan.\n$e',
+    );
+  } finally {
+    isSubmitting.value = false;
   }
+}
+
+
 
   bool validateForm() {
     if (judulController.text.trim().isEmpty) {

@@ -10,9 +10,9 @@ import '../controllers/lapor_detail_controller.dart';
 
 class LaporDetailView extends GetView<LaporDetailController> {
   const LaporDetailView({super.key});
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.primary,
@@ -26,15 +26,20 @@ class LaporDetailView extends GetView<LaporDetailController> {
           onPressed: Get.back,
         ),
       ),
-      body: Expanded(
-        child: SingleChildScrollView(
-          child: Container(
-            padding: AppResponsive.padding(horizontal:  5, vertical: 2),
+      body: Obx(() {
+        final laporan = controller.laporan.value;
+
+        if (laporan == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return SingleChildScrollView(
+          child: Padding(
+            padding: AppResponsive.padding(horizontal: 5, vertical: 2),
             child: Column(
               children: [
                 Card(
                   color: AppColors.white,
-                  margin: AppResponsive.margin(bottom: 1.5),
                   elevation: 2,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -42,129 +47,144 @@ class LaporDetailView extends GetView<LaporDetailController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Stack(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(12),
-                              topRight: Radius.circular(12),
-                            ),
-                            child: Image.network(
-                              "https://backend.desago.id/uploads/lapor/${controller.laporan['image']}",
-                              width: double.infinity,
-                              height: AppResponsive.h(24),
-                              fit: BoxFit.cover,
-                            ),
-                          )],
-                      ),
+                      /// IMAGE
+                      if (laporan.gambar != null && laporan.gambar!.isNotEmpty)
+                        ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(12),
+                          ),
+                          child: Image.network(
+                            "https://backend.desagodigital.id/uploads/lapor/${laporan.gambar}",
+                            width: double.infinity,
+                            height: AppResponsive.h(24),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+
                       Padding(
                         padding: AppResponsive.padding(vertical: 2, horizontal: 5),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                                controller.laporan['title'],
-                                style: AppText.h6(color: AppColors.text),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                              laporan.judul,
+                              style: AppText.h6(color: AppColors.text),
+                            ),
+
+                            _space(),
+
+                            _label("Status"),
+                            Text(
+                              laporan.status,
+                              style: AppText.bodyMedium(
+                                color: AppColors.textSecondary,
                               ),
-                            SizedBox(height: AppResponsive.h(1)),
-                            Text(
-                              "Status",
-                              style:AppText.bodyMediumBold(color: AppColors.text)),
-                              SizedBox(height: AppResponsive.h(0.5)),
-                            Text(
-                              controller.laporan['status'],
-                              style: AppText.bodyMedium(color: AppColors.textSecondary),
                             ),
-                            SizedBox(height: AppResponsive.h(1)),
+
+                            _space(),
+
+                            _label("Ditujukan ke"),
                             Text(
-                              "Ditujukan ke",
-                              style:AppText.bodyMediumBold(color: AppColors.text)),
-                              SizedBox(height: AppResponsive.h(0.5)),
-                            Text(
-                              controller.laporan['ditujukan'],
-                              style: AppText.bodyMedium(color: AppColors.textSecondary),
+                              laporan.ditujukan,
+                              style: AppText.bodyMedium(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
-                            SizedBox(height: AppResponsive.h(1)),
+
+                            _space(),
+
+                            _label("Kategori"),
                             Text(
-                              "Kategori",
-                              style:AppText.bodyMediumBold(color: AppColors.text)),
-                              SizedBox(height: AppResponsive.h(0.5)),
-                            Text(
-                              controller.laporan['kategori']['name'],
-                              style: AppText.bodyMedium(color: AppColors.textSecondary),
+                              laporan.kategori!.nama,
+                              style: AppText.bodyMedium(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
-                            SizedBox(height: AppResponsive.h(1)),
+
+                            _space(),
+
+                            _label("Waktu"),
                             Text(
-                              "Waktu",
-                              style:AppText.bodyMediumBold(color: AppColors.text)),
-                              SizedBox(height: AppResponsive.h(0.5)),
-                            Text(
-                              TimeHelper.formatJam(controller.laporan['created_at']),
-                              style: AppText.bodyMedium(color: AppColors.textSecondary),
+                              TimeHelper.formatJamDateTime(laporan.created_at),
+                              style: AppText.bodyMedium(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
-                            SizedBox(height: AppResponsive.h(1)),
+
+                            _space(),
+
+                            _label("Tanggal"),
                             Text(
-                              "Tanggal",
-                              style:AppText.bodyMediumBold(color: AppColors.text)),
-                              SizedBox(height: AppResponsive.h(0.5)),
-                            Text(
-                              TimeHelper.formatTanggalIndonesia(controller.laporan['created_at']),
-                              style: AppText.bodyMedium(color: AppColors.textSecondary),
+                              TimeHelper.formatTanggalDate(
+                                laporan.created_at,
+                              ),
+                              style: AppText.bodyMedium(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
-                            SizedBox(height: AppResponsive.h(1)),
+
+                            _space(),
+
+                            _label("Deskripsi"),
                             Text(
-                              "Deskripsi",
-                              style:AppText.bodyMediumBold(color: AppColors.text)),
-                              SizedBox(height: AppResponsive.h(0.5)),
-                            Text(
-                              controller.laporan['description'],
-                              style: AppText.bodyMedium(color: AppColors.textSecondary),
-                              textAlign: TextAlign.justify
+                              laporan.deskripsi,
+                              style: AppText.bodyMedium(
+                                color: AppColors.textSecondary,
+                              ),
+                              textAlign: TextAlign.justify,
                             ),
-                            SizedBox(height: AppResponsive.h(1)),
+
+                            _space(),
+
+                            _label("Tanggapan"),
                             Text(
-                              "Tanggapan",
-                              style:AppText.bodyMediumBold(color: AppColors.text)),
-                              SizedBox(height: AppResponsive.h(0.5)),
-                            Text(
-                              controller.laporan['tanggapan'] ?? "Malas menanggapi",
-                              style: AppText.bodyMedium(color: AppColors.textSecondary),
+                              laporan.tanggapan.isNotEmpty
+                                  ? laporan.tanggapan
+                                  : "Belum ada tanggapan",
+                              style: AppText.bodyMedium(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
-                            SizedBox(height: AppResponsive.h(1)),
                           ],
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: AppResponsive.h(1)),
-                Container(
-                  margin: AppResponsive.padding(horizontal: 5),
-                  child: SizedBox(
-                        width: double.infinity,
-                        height: AppResponsive.h(6),
-                        child: ElevatedButton(
-                          onPressed: () => {Get.back()},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Text(
-                            'Selesai',
-                            style: AppText.button(color: AppColors.white),
-                          ),
-                        ),
+
+                SizedBox(height: AppResponsive.h(2)),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: AppResponsive.h(6),
+                  child: ElevatedButton(
+                    onPressed: Get.back,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
+                    ),
+                    child: Text(
+                      'Selesai',
+                      style: AppText.button(color: AppColors.white),
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
+
+  Widget _label(String text) {
+    return Text(
+      text,
+      style: AppText.bodyMediumBold(color: AppColors.text),
+    );
+  }
+
+  Widget _space() => SizedBox(height: AppResponsive.h(1));
 }

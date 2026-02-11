@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/models/SuratModel.dart';
 import 'package:desago/app/services/dio_services.dart';
+import 'package:desago/app/services/storage_services.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_text.dart';
 import 'package:dio/dio.dart' as dio;
@@ -197,89 +199,133 @@ class SuratFormController extends GetxController {
     return true;
   }
 
-  /// =========================
-  /// SUBMIT
-  /// =========================
-  Future<void> submitForm() async {
-    if (isSubmitting.value) return;
-    isSubmitting.value = true;
+ Future<void> submitForm() async {
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
 
+  try {
     if (!validateForm()) {
-      isSubmitting.value = false;
+      final empty = getEmptyFields();
       Get.snackbar(
         'Validasi Gagal',
-        'Mohon lengkapi semua field wajib',
+        'Field wajib belum diisi: ${empty.values.join(', ')}',
         backgroundColor: AppColors.danger,
         colorText: Colors.white,
       );
       return;
     }
 
-    final Map<String, dynamic> dataForm = {};
-
+    // ======================
+    // COLLECT FORM DATA
+    // ======================
+    final Map<String, dynamic> collectedData = {};
     for (var section in formSections) {
       final fields = section['fields'] as List<dynamic>? ?? [];
-
       for (var field in fields) {
         final key = field['name'];
-
         switch (field['type']) {
           case 'text':
           case 'number':
           case 'textarea':
-            dataForm[key] = textControllers[key]?.text;
+            collectedData[key] = textControllers[key]?.text;
             break;
-
           case 'select':
-            dataForm[key] = dropdownValues[key]?.value;
+            collectedData[key] = dropdownValues[key]?.value;
             break;
-
           case 'date':
-            dataForm[key] = dateValues[key]?.value;
+            collectedData[key] = dateValues[key]?.value;
             break;
-
+          case 'time':
+            collectedData[key] = timeValues[key]?.value;
+            break;
           case 'checkbox':
-            dataForm[key] = checkboxValues[key]?.value ?? false;
+            collectedData[key] = checkboxValues[key]?.value ?? false;
             break;
         }
       }
     }
 
-    final formData = dio.FormData.fromMap({
+    final user = await StorageService.getUser();
+    final token = await StorageService.getToken();
+
+    // ======================
+    // BUILD FORMDATA MAP
+    // ======================
+    final Map<String, dynamic> formDataMap = {
+      'desa_id': ApiConstant.desaId,
       'jenis_surat_id': suratData['id'],
-      'subdomain': ApiConstant.desaId,
-      'created_by': 1,
-      'data_form': dataForm,
-    });
+      'data_form': jsonEncode(collectedData),
+      'status': 'verifikasi',
+      'created_by': int.parse(user!.id.toString()),
+    };
 
-    try {
-      final response = await DioService.instance.post(
-        ApiConstant.tambahSurat,
-        data: formData,
-        options: dio.Options(contentType: 'multipart/form-data'),
-      );
+    // ======================
+    // MULTI FILE
+    // ======================
+    final List<dio.MultipartFile> files = [];
 
-      if (response.statusCode == 201) {
-        Get.snackbar(
-          'Sukses',
-          'Surat berhasil diajukan',
-          backgroundColor: AppColors.bottonGreen,
-          colorText: Colors.white,
+    for (var entry in fileValues.entries) {
+      final file = entry.value.value;
+      if (file != null) {
+        files.add(
+          await dio.MultipartFile.fromFile(
+            file.path,
+            filename: file.path.split('/').last,
+          ),
         );
-        Navigator.of(Get.context!).pop();
       }
-    } catch (e) {
-      isSubmitting.value = false;
+    }
+
+    if (files.isNotEmpty) {
+      formDataMap['file_surat[]'] = files;
+    }
+
+    final dio.FormData formData = dio.FormData.fromMap(formDataMap);
+
+    // ======================
+    // SEND REQUEST
+    // ======================
+    final response = await DioService.instance.post(
+      ApiConstant.tambahSurat,
+      data: formData,
+      options: dio.Options(
+        contentType: 'multipart/form-data',
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+
+    if (response.statusCode == 201) {
       Get.snackbar(
-        'Error',
-        'Gagal mengajukan surat',
+        'Sukses',
+        'Surat berhasil diajukan',
+        backgroundColor: AppColors.bottonGreen,
+        colorText: Colors.white,
+      );
+      Navigator.of(Get.context!).pop();
+    } else {
+      Get.snackbar(
+        'Gagal',
+        'Status code: ${response.statusCode}',
         backgroundColor: AppColors.danger,
         colorText: Colors.white,
       );
     }
+  } catch (e) {
+    Get.snackbar(
+      'Error',
+      e.toString(),
+      backgroundColor: AppColors.danger,
+      colorText: Colors.white,
+    );
+  } finally {
+    isSubmitting.value = false;
   }
+}
 
-  void selectTime(BuildContext context, String key) async {
+
+ void selectTime(BuildContext context, String key) async {
   final picked = await showTimePicker(
     context: context,
     initialTime: TimeOfDay.now(),
@@ -302,6 +348,61 @@ class SuratFormController extends GetxController {
   }
   
 String? getTimeValue(String key) => timeValues[key]?.value;
+
+/// =========================
+/// CEK FIELD KOSONG
+/// =========================
+  Map<String, String> getEmptyFields() {
+    final Map<String, String> emptyFields = {};
+
+    for (var section in formSections) {
+      final fields = section['fields'] as List<dynamic>? ?? [];
+
+      for (var field in fields) {
+        final key = field['name'];
+        final label = field['label'] ?? key;
+        final required = field['required'] ?? false;
+        final type = field['type'];
+
+        if (!required) continue;
+
+        dynamic value;
+        switch (type) {
+          case 'text':
+          case 'number':
+          case 'textarea':
+            value = textControllers[key]?.text;
+            break;
+
+          case 'select':
+            value = dropdownValues[key]?.value;
+            break;
+
+          case 'date':
+            value = dateValues[key]?.value;
+            break;
+
+          case 'time':
+            value = timeValues[key]?.value;
+            break;
+
+          case 'checkbox':
+            value = checkboxValues[key]?.value;
+            break;
+
+          case 'file':
+            value = fileValues[key]?.value;
+            break;
+        }
+
+        if (value == null || (value is String && value.trim().isEmpty)) {
+          emptyFields[key] = label;
+        }
+      }
+    }
+
+    return emptyFields;
+  }
 
 }
 

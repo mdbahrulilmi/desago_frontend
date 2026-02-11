@@ -2,8 +2,12 @@ import 'dart:convert';
 
 import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/services/dio_services.dart';
+import 'package:desago/app/services/storage_services.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_cli/common/utils/json_serialize/json_ast/tokenize.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 
 class SuratRiwayatPengajuanController extends GetxController {
@@ -45,9 +49,22 @@ class SuratRiwayatPengajuanController extends GetxController {
   Future<void> fetchData() async {
     try {
       isLoading.value = true;
+      final user = await StorageService.getUser();
+      final token = await StorageService.getToken();
 
-      final response =
-          await DioService.instance.get(ApiConstant.suratRiwayat);
+      final response = await DioService.instance.post(
+          ApiConstant.suratRiwayat,
+          data: {
+            'id': user?.id,
+          },
+          options: Options(
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+          ),
+        );
+
 
       dynamic raw = response.data;
       List listData = [];

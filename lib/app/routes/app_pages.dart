@@ -297,11 +297,6 @@ class AppPages {
       binding: MainBinding(),
     ),
     GetPage(
-      name: _Paths.AKTIVITAS,
-      page: () => const AktivitasView(),
-      binding: AktivitasBinding(),
-    ),
-    GetPage(
       name: _Paths.SURAT_LIST,
       page: () => const SuratListView(),
       binding: SuratListBinding(),
@@ -315,6 +310,11 @@ class AppPages {
       name: _Paths.LAPOR_DETAIL,
       page: () => const LaporDetailView(),
       binding: LaporDetailBinding(),
+    ),
+    GetPage(
+      name: _Paths.AKTIVITAS,
+      page: () => const AktivitasView(),
+      binding: AktivitasBinding(),
     ),
   ];
 }

@@ -1,4 +1,5 @@
 import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/services/storage_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:desago/app/utils/app_colors.dart';
@@ -152,15 +153,15 @@ class LaporFormView extends GetView<LaporFormController> {
                 ),
                 items: controller.categories.map((e) {
                   return DropdownMenuItem<int>(
-                    value: e['id'],
-                    child: Text(e['name'], style: AppText.bodyMedium()),
+                    value: e.id,
+                    child: Text(e.nama, style: AppText.bodyMedium()),
                   );
                 }).toList(),
                 onChanged: (int? val) {
                   if (val != null) {
                     controller.selectedCategoryId.value = val;
                     controller.selectedCategoryName.value =
-                        controller.categories.firstWhere((e) => e['id'] == val)['name'];
+                        controller.categories.firstWhere((e) => e.id == val).nama;
                   }
                 },
                 isExpanded: true,
@@ -195,12 +196,11 @@ class LaporFormView extends GetView<LaporFormController> {
                  onPressed: controller.isSubmitting.value
                   ? null
                   : ()=> controller.createLapor(
-                  subdomain: ApiConstant.desaId, 
-                  title: controller.judulController.text,
-                  category: controller.selectedCategoryId.value, 
+                  judul: controller.judulController.text,
+                  kategoriId: controller.selectedCategoryId.value,  
                   ditujukan: controller.selectedTujuan.value,
-                  description: controller.deskripsiController.text,
-                  image: controller.laporController.imageFile.value,
+                  deskripsi: controller.deskripsiController.text,
+                  gambar: controller.laporController.imageFile.value,
                   ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,

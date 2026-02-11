@@ -12,12 +12,10 @@ class LaporController extends GetxController {
 
   @override
   void onClose() {
-    // Bersihkan gambar saat controller ditutup
     imageFile.value = null;
     super.onClose();
   }
 
-  // Metode untuk memeriksa dan meminta izin kamera
   Future<bool> _checkAndRequestCameraPermissions() async {
     var status = await Permission.camera.status;
     

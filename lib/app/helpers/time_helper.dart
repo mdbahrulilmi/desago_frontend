@@ -33,4 +33,12 @@ class TimeHelper {
     final dateTime = DateTime.parse(createdAt);
     return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
+
+  static String formatJamDateTime(DateTime date) {
+    return DateFormat('HH:mm').format(date);
+  }
+  
+  static String formatTanggalDateTime(DateTime date) {
+    return DateFormat('dd MMMM yyyy', 'id_ID').format(date);
+  }
 }

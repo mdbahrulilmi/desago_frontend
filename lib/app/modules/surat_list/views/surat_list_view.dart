@@ -86,6 +86,7 @@ class SuratListView extends StatelessWidget {
   Widget _buildHeader(SuratListController controller) {
     return Column(
       children: [
+        SizedBox(height: AppResponsive.h(2)),
         Container(
           margin: AppResponsive.margin(horizontal: 4),
           width: double.infinity,

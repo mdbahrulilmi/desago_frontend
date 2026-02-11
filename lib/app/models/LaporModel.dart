@@ -1,40 +1,55 @@
+import 'package:desago/app/models/LaporKategoriModel.dart';
+
 class LaporModel {
-  final int no;
-  final String subdomain;
+  final int id;
+  final String desaId;
+  final int kategoriId;
+  final LaporKategoriModel? kategori;
+  final int userId;
+  final String judul;
   final String ditujukan;
-  final String title;
-  final String? image;
-  final int category;
-  final String description;
+  final String deskripsi;
+  final String? gambar;
   final String status;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final String tanggapan;
+  final DateTime created_at;
+  final DateTime updated_at;
 
   LaporModel({
-    required this.no,
-    required this.subdomain,
+    required this.id,
+    required this.desaId,
+    required this.kategoriId,
+    this.kategori,
+    required this.userId,
+    required this.judul,
     required this.ditujukan,
-    required this.title,
-    this.image,
-    required this.category,
-    required this.description,
+    required this.deskripsi,
+    this.gambar,
     required this.status,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.tanggapan,
+    required this.created_at,
+    required this.updated_at,
   });
 
   factory LaporModel.fromJson(Map<String, dynamic> json) {
     return LaporModel(
-      no: json['no'],
-      subdomain: json['subdomain'],
-      ditujukan: json['ditujukan'],
-      title: json['title'],
-      image: json['image'],
-      category: json['category'],
-      description: json['description'],
-      status: json['status'],
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
+      id: json['id'] ?? 0,
+      desaId: json['desa_id'] ?? '',
+      kategoriId: json['kategori_id'] ?? 0,
+      kategori: json['kategori'] != null
+          ? LaporKategoriModel.fromJson(json['kategori'])
+          : null,
+      userId: json['user_id'] ?? 0,
+      judul: json['judul'] ?? '',
+      ditujukan: json['ditujukan'] ?? '',
+      deskripsi: json['deskripsi'] ?? '',
+      gambar: json['gambar'],
+      status: (json['status'] ?? '').toString(),
+      tanggapan: (json['tanggapan'] ?? '').toString(),
+      created_at:
+          DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
+      updated_at:
+          DateTime.tryParse(json['updated_at'] ?? '') ?? DateTime.now(),
     );
   }
 }

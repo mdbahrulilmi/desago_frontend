@@ -6,10 +6,9 @@ class BottomNavigationController extends GetxController {
 
   final RxInt selectedIndex = 0.obs;
 
-  /// WAJIB 1–1 dengan urutan bottom nav
   final List<String> indexToRoute = [
     Routes.HOME,
-    Routes.BERITA_LIST,
+    Routes.SURAT_FORM,
     Routes.AKTIVITAS,
     Routes.AKUN,
   ];

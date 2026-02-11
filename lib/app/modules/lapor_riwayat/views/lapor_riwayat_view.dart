@@ -1,6 +1,7 @@
 import 'package:desago/app/helpers/empty_helper.dart';
 import 'package:desago/app/helpers/string_casing_extension.dart';
 import 'package:desago/app/helpers/time_helper.dart';
+import 'package:desago/app/models/LaporModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -109,7 +110,10 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
               }
 
               if (controller.filteredLaporanList.isEmpty) {
-                return EmptyStateWidget(title: "Tidak ada Laporan", message: "Saat ini tidak ada laporan yang tersedia");
+                return EmptyStateWidget(
+                  title: "Tidak ada Laporan",
+                  message: "Saat ini tidak ada laporan yang tersedia",
+                );
               }
 
               return ListView.builder(
@@ -127,7 +131,7 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
     );
   }
 
-  Widget _buildLaporanCard(Map<String, dynamic> laporan) {
+  Widget _buildLaporanCard(LaporModel laporan) {
     return InkWell(
       onTap: () => controller.viewDetail(laporan),
       child: Card(
@@ -147,12 +151,19 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
                     topLeft: Radius.circular(12),
                     topRight: Radius.circular(12),
                   ),
-                  child: Image.network(
-                    "https://backend.desago.id/uploads/lapor/${laporan['image']}",
-                    width: double.infinity,
-                    height: AppResponsive.h(18),
-                    fit: BoxFit.cover,
-                  ),
+                  child: laporan.gambar != null
+                      ? Image.network(
+                          "https://backend.desagodigital.id/uploads/lapor/${laporan.gambar}",
+                          width: double.infinity,
+                          height: AppResponsive.h(18),
+                          fit: BoxFit.cover,
+                        )
+                      : Container(
+                          width: double.infinity,
+                          height: AppResponsive.h(18),
+                          color: AppColors.grey.withOpacity(0.2),
+                          child: Icon(Icons.image, size: 50, color: AppColors.grey),
+                        ),
                 ),
                 Positioned(
                   top: AppResponsive.h(1),
@@ -163,12 +174,9 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
                       color: AppColors.secondary,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(width: AppResponsive.w(0.5)),
-                        Text("${laporan['kategori']['name']}", style: AppText.small(color: AppColors.text)),
-                      ],
+                    child: Text(
+                      "Kategori: ${laporan.kategori?.nama}", // kalau backend kasih name kategori, ganti di sini
+                      style: AppText.small(color: AppColors.text),
                     ),
                   ),
                 ),
@@ -178,67 +186,53 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
                   child: Container(
                     padding: AppResponsive.padding(horizontal: 1.5, vertical: 0.5),
                     decoration: BoxDecoration(
-                      color: controller.getStatusColor(laporan['status'].toString().capitalizeEachWord()),
+                      color: controller.getStatusColor(laporan.status),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      laporan['status'].toString().capitalizeEachWord(),
-                      style: AppText.small(
-                          color: AppColors.secondary),
+                      laporan.status.capitalizeEachWord(),
+                      style: AppText.small(color: AppColors.secondary),
                     ),
                   ),
                 ),
-                 ],
+              ],
             ),
             Padding(
               padding: AppResponsive.padding(vertical: 2, horizontal: 3),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text('ID: ${laporan['no']}',
-                          style: AppText.bodySmall(color: AppColors.textSecondary)),
-                      SizedBox(width: AppResponsive.w(1)),
-                      Expanded(
-                        child: Text(
-                          "${TimeHelper.formatTanggalIndonesia(laporan['created_at'])}, ${TimeHelper.formatJam(laporan['created_at'])}" ,
-                          style: AppText.bodySmall(color: AppColors.textSecondary),
-                          textAlign: TextAlign.right,
-                        ),
-                      ),
-                    ],
+                  Text('ID: ${laporan.id}',
+                      style: AppText.bodySmall(color: AppColors.textSecondary)),
+                  SizedBox(height: AppResponsive.h(1)),
+                  Text(
+                    laporan.judul,
+                    style: AppText.h6(color: AppColors.text),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: AppResponsive.h(1)),
                   Text(
-                      laporan['title'],
-                      style: AppText.h6(color: AppColors.text),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  SizedBox(height: AppResponsive.h(1)),
-                  Text(
-                    laporan['description'],
+                    laporan.deskripsi,
                     style: AppText.bodyMedium(color: AppColors.textSecondary),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: AppResponsive.h(1)),
-                  if (laporan['status'] != null)
-                    Container(
-                      width: double.infinity,
-                      padding: AppResponsive.padding(vertical: 1.5, horizontal: 3),
-                      decoration: BoxDecoration(
-                        color: AppColors.muted,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        laporan['tanggapan'] ?? "Malas menanggapi",
-                        style: AppText.bodySmall(color: AppColors.textSecondary),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                  Container(
+                    width: double.infinity,
+                    padding: AppResponsive.padding(vertical: 1.5, horizontal: 3),
+                    decoration: BoxDecoration(
+                      color: AppColors.muted,
+                      borderRadius: BorderRadius.circular(8),
                     ),
+                    child: Text(
+                      "Tanggapan belum tersedia",
+                      style: AppText.bodySmall(color: AppColors.textSecondary),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ],
               ),
             ),
