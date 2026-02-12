@@ -1,3 +1,4 @@
+import 'package:desago/app/modules/password_baru/controllers/password_baru_controller.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -79,8 +80,6 @@ import '../modules/tautkan_akun/bindings/tautkan_akun_binding.dart';
 import '../modules/tautkan_akun/views/tautkan_akun_view.dart';
 import '../modules/tautkan_akun_form/bindings/tautkan_akun_form_binding.dart';
 import '../modules/tautkan_akun_form/views/tautkan_akun_form_view.dart';
-import '../modules/toko/bindings/toko_binding.dart';
-import '../modules/toko/views/toko_view.dart';
 import '../modules/ui/sukses_reset_password/bindings/sukses_reset_password_binding.dart';
 import '../modules/ui/sukses_reset_password/views/sukses_reset_password_view.dart';
 import '../modules/ui/sukses_verifikasi_email/bindings/sukses_verifikasi_email_binding.dart';
@@ -126,10 +125,14 @@ class AppPages {
       page: () => const LupaPasswordView(),
       binding: LupaPasswordBinding(),
     ),
-    GetPage(
-      name: _Paths.PASSWORD_BARU,
-      page: () => const PasswordBaruView(),
-      binding: PasswordBaruBinding(),
+     GetPage(
+      name: '/password-baru',
+      page: () => PasswordBaruView(),
+      binding: BindingsBuilder(() {
+        if (!Get.isRegistered<PasswordBaruController>()) {
+          Get.lazyPut(() => PasswordBaruController());
+        }
+      }),
     ),
     GetPage(
       name: _Paths.SUKSES_RESET_PASSWORD,
@@ -155,11 +158,6 @@ class AppPages {
       name: _Paths.LAYANAN,
       page: () => const LayananView(),
       binding: LayananBinding(),
-    ),
-    GetPage(
-      name: _Paths.TOKO,
-      page: () => const TokoView(),
-      binding: TokoBinding(),
     ),
     GetPage(
       name: _Paths.AKUN_PENGATURAN,

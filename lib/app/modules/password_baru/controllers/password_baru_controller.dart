@@ -1,8 +1,9 @@
-import 'package:desago/app/constant/api_constant.dart';
-import 'package:desago/app/services/dio_services.dart';
-import 'package:desago/app/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:desago/app/utils/app_colors.dart';
+import 'package:desago/app/services/dio_services.dart';
+import 'package:desago/app/constant/api_constant.dart';
+import 'package:dio/dio.dart';
 
 class PasswordBaruController extends GetxController {
   final passwordController = TextEditingController();
@@ -24,21 +25,21 @@ class PasswordBaruController extends GetxController {
   void onInit() {
     super.onInit();
 
-    token = Get.parameters['token'] ?? '';
-    email = Get.parameters['email'] ?? '';
+    final args = Get.arguments as Map<String, String>?;
+
+    token = args?['token'] ?? Get.parameters['token'] ?? '';
+    email = args?['email'] ?? Get.parameters['email'] ?? '';
+
+    print('>>> PasswordBaruController initialized: token=$token, email=$email');
+
+    if (token.isEmpty || email.isEmpty) {
+      print('>>> Token/email kosong, redirect ke login');
+      Future.microtask(() => Get.offAllNamed('/login'));
+    }
 
     passwordController.addListener(() {
       checkPasswordStrength(passwordController.text);
     });
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-
-    if (token.isEmpty || email.isEmpty) {
-      Get.offAllNamed('/login');
-    }
   }
 
   @override
@@ -48,13 +49,8 @@ class PasswordBaruController extends GetxController {
     super.onClose();
   }
 
-  void togglePasswordVisibility() {
-    isPasswordHidden.toggle();
-  }
-
-  void toggleConfirmPasswordVisibility() {
-    isConfirmPasswordHidden.toggle();
-  }
+  void togglePasswordVisibility() => isPasswordHidden.toggle();
+  void toggleConfirmPasswordVisibility() => isConfirmPasswordHidden.toggle();
 
   void checkPasswordStrength(String value) {
     if (value.isEmpty) {
@@ -85,53 +81,67 @@ class PasswordBaruController extends GetxController {
     }
   }
 
-  Future<void> onUpdatePassword() async {
-    if (isLoading.value) return;
+ Future<void> onUpdatePassword() async {
+  if (isLoading.value) return;
 
-    if (passwordController.text.isEmpty ||
-        confirmPasswordController.text.isEmpty) {
-      _error('Mohon lengkapi semua field');
-      return;
-    }
+  print('=== RESET PASSWORD START ===');
+  print('Token: $token');
+  print('Email: $email');
+  print('Password: ${passwordController.text}');
 
-    if (passwordController.text != confirmPasswordController.text) {
-      _error('Konfirmasi kata sandi tidak cocok');
-      return;
-    }
-
-    if (passwordStrength.value < 0.6) {
-      _error('Kata sandi terlalu lemah');
-      return;
-    }
-
-    try {
-      isLoading.value = true;
-
-      await DioService.instance.post(
-        ApiConstant.newPassword,
-        data: {
-          'token': token,
-          'email': email,
-          'password': passwordController.text,
-        },
-      );
-
-      Get.snackbar(
-        'Berhasil',
-        'Kata sandi berhasil diperbarui',
-        backgroundColor: AppColors.success,
-        colorText: AppColors.white,
-      );
-
-      Get.offAllNamed('/login');
-    } catch (_) {
-      _error('Link reset sudah tidak berlaku');
-    } finally {
-      isLoading.value = false;
-    }
+  if (passwordController.text.isEmpty ||
+      confirmPasswordController.text.isEmpty) {
+    _error('Mohon lengkapi semua field');
+    return;
   }
 
-  void _error(String msg) {
+  if (passwordController.text != confirmPasswordController.text) {
+    _error('Konfirmasi kata sandi tidak cocok');
+    return;
+  }
+
+  try {
+    isLoading.value = true;
+
+    final response = await DioService.instance.post(
+      ApiConstant.newPassword,
+      data: {
+        'token': token,
+        'email': email,
+        'password': passwordController.text,
+      },
+    );
+
+    print('=== RESPONSE SUCCESS ===');
+    print(response.data);
+
+    Get.snackbar(
+      'Berhasil',
+      'Kata sandi berhasil diperbarui',
+      backgroundColor: AppColors.success,
+      colorText: AppColors.white,
+    );
+
+    Get.offAllNamed('/login');
+
+  } catch (e) {
+
+    print('=== RESPONSE ERROR ===');
+    print(e.toString());
+
+    if (e is DioException) {
+      print('Status Code: ${e.response?.statusCode}');
+      print('Response Data: ${e.response?.data}');
+    }
+
+    _error('Reset gagal');
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+void _error(String msg) {
+    print('>>> ERROR: $msg');
     Get.snackbar(
       'Error',
       msg,

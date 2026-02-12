@@ -90,20 +90,6 @@ class LoginView extends GetView<LoginController> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // Row(
-                    //   children: [
-                    //     Obx(() => Checkbox(
-                    //           value: controller.rememberMe.value,
-                    //           onChanged: (value) =>
-                    //               controller.toggleRememberMe(),
-                    //           activeColor: AppColors.primary,
-                    //         )),
-                    //     Text(
-                    //       'Ingat saya',
-                    //       style: AppText.small(color: AppColors.textSecondary),
-                    //     ),
-                    //   ],
-                    // ),
                     TextButton(
                       onPressed: () => controller.onForgotPassword(),
                       child: Text(
@@ -120,6 +106,7 @@ class LoginView extends GetView<LoginController> {
                       child: ElevatedButton(
                         onPressed: controller.isLoading.value
                             ? null
+                            // onPressed: () => Get.toNamed('password-baru'),
                             : () => controller.onLogin(),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,

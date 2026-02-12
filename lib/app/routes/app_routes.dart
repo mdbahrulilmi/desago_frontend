@@ -13,7 +13,6 @@ abstract class Routes {
   static const SUKSES_VERIFIKASI_EMAIL = _Paths.SUKSES_VERIFIKASI_EMAIL;
   static const AKUN = _Paths.AKUN;
   static const LAYANAN = _Paths.LAYANAN;
-  static const TOKO = _Paths.TOKO;
   static const AKUN_PENGATURAN = _Paths.AKUN_PENGATURAN;
   static const NOMOR_PENTING = _Paths.NOMOR_PENTING;
   static const TAUTKAN_AKUN = _Paths.TAUTKAN_AKUN;
@@ -62,7 +61,6 @@ abstract class _Paths {
   static const SUKSES_VERIFIKASI_EMAIL = '/sukses-verifikasi-email';
   static const AKUN = '/akun';
   static const LAYANAN = '/layanan';
-  static const TOKO = '/toko';
   static const AKUN_PENGATURAN = '/akun-pengaturan';
   static const NOMOR_PENTING = '/nomor-penting';
   static const TAUTKAN_AKUN = '/tautkan-akun';
