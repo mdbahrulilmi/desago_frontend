@@ -37,6 +37,7 @@ class ApiConstant {
   static const String tokenExpired = '/token-expired';
   static const String verification = '/verification';
   static const String isOauth = '/isoauth';
+  static const String biodataStore = '/biodata/store';
 
   static const String getAllDesa = '/desa';
   static const String tautkanAkunKeDesa = '/tautkan-akun';

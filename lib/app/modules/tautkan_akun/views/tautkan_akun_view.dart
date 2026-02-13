@@ -149,33 +149,33 @@ class TautkanAkunView extends GetView<TautkanAkunController> {
                           height: AppResponsive.h(3),
                         ),
                         InkWell(
-                          onTap: () {
-                            Get.toNamed(Routes.TAUTKAN_AKUN_FORM);
-                          },
-                          child: Container(
-                            height: AppResponsive.h(8),
-                            width: double.infinity,
-                            padding: AppResponsive.padding(vertical: 1),
+                            onTap: () async {
+                              await controller.scanKTP();
+                            },
                             child: Container(
-                              decoration: BoxDecoration(
+                              height: AppResponsive.h(8),
+                              width: double.infinity,
+                              padding: AppResponsive.padding(vertical: 1),
+                              child: Container(
+                                decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
-                                  color: AppColors.light),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
+                                  color: AppColors.light,
+                                ),
+                                child: Center(
+                                  child: Obx(() {
+                                    if (controller.isLoading.value) {
+                                      return CircularProgressIndicator();
+                                    }
+                                    return Text(
                                       'Tautkan',
-                                      style: AppText.button(
-                                          color: AppColors.primary),
-                                    ),
-                                  ],
+                                      style: AppText.button(color: AppColors.primary),
+                                    );
+                                  }),
                                 ),
                               ),
                             ),
                           ),
-                        ),
+
                       ],
                     ),
                   ),

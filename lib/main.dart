@@ -23,7 +23,7 @@ Future<void> main() async {
   // 🔥 APP LINKS (DEEP LINK)
   // ============================
   final appLinks = AppLinks();
-  String initialRoute = AppPages.getInitialRoute(); // default login
+  String initialRoute = AppPages.getInitialRoute();
   Map<String, String>? initialArgs;
 
   // Cold start deep link
