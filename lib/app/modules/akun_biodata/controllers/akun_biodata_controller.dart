@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:desago/app/components/alert.dart';
 import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/models/BiodataModel.dart';
@@ -5,54 +7,65 @@ import 'package:desago/app/services/dio_services.dart';
 import 'package:desago/app/services/storage_services.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 class AkunBiodataController extends GetxController {
-
   final Rxn<BiodataModel> user = Rxn<BiodataModel>();
   final RxBool isLoading = false.obs;
 
-  @override
-    void onInit() {
-      print("ON INIT KE PANGGIL");
-      super.onInit();
-      fetchUserData();
-    }
+  final box = GetStorage();
+  final String _cacheKey = "cached_biodata";
 
-  // ================= FETCH USER =================
+  @override
+  void onInit() {
+    super.onInit();
+    isLoading.value = true;
+    final hasCache = _loadFromCache();
+    if (!hasCache) {
+      fetchUserData();
+    } else {
+      isLoading.value = false;
+    }
+  }
+
+  bool _loadFromCache() {
+    final cached = box.read(_cacheKey);
+    if (cached == null) return false;
+
+    try {
+      user.value = BiodataModel.fromJson(
+        cached is String ? jsonDecode(cached) : cached,
+      );
+      debugPrint('🟡 PROFIL DESA: loaded from cache');
+      return true;
+    } catch (e) {
+      debugPrint('🔴 Cache error: $e');
+      return false;
+    }
+  }
 
   Future<void> fetchUserData() async {
-    print("FETCH KE PANGGIL");
     try {
       isLoading.value = true;
 
       final token = StorageService.getToken();
-
-      if (token == null) {
-        Get.snackbar("Error", "Token tidak ditemukan");
-        return;
-      }
+      if (token == null) return;
 
       final response = await DioService.instance.get(
         ApiConstant.biodata,
         options: dio.Options(
-          headers: {
-            "Authorization": "Bearer $token",
-            "Accept": "application/json",
-          },
+          headers: {"Authorization": "Bearer $token"},
         ),
       );
 
-      user.value = BiodataModel.fromJson(response.data);
+      if (response.data != null) {
+        user.value = BiodataModel.fromJson(response.data);
+        box.write(_cacheKey, response.data);
+        debugPrint('🟢 PROFIL DESA: saved to cache');
+      }
 
-    } on dio.DioException catch (e) {
-      Get.snackbar(
-        'Error',
-        e.response?.data["message"] ?? "Gagal memuat data",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.danger,
-        colorText: AppColors.white,
-      );
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -65,8 +78,6 @@ class AkunBiodataController extends GetxController {
       isLoading.value = false;
     }
   }
-
-  // ================= VERIFICATION =================
 
   Future<void> requestVerification() async {
     try {
@@ -123,5 +134,5 @@ class AkunBiodataController extends GetxController {
   String get avatar => user.value?.avatar ?? "-";
   String get jenisKelamin => user.value?.jenisKelamin ?? "-";
 
-  bool get isVerified => user.value?.verification == "";
+  bool get isVerified => user.value?.verification == "verified";
 }

@@ -23,24 +23,29 @@ Widget build(BuildContext context) {
         );
       }
 
-      return SingleChildScrollView(
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Column(
-              children: [
-                _buildHeader(),
-            SizedBox(height: AppResponsive.h(1)),
-            _buildBiodataCard(),
-              ],
-            ),
-            Positioned(
-              top: 250,
-              left: 0,
-              right: 0,
-              child: Center(child: _verificationCard()),
-            ),
-          ],
+      return RefreshIndicator(
+        onRefresh: () async {
+            await controller.fetchUserData();
+          },
+        child: SingleChildScrollView(
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Column(
+                children: [
+                  _buildHeader(),
+              SizedBox(height: AppResponsive.h(1)),
+              _buildBiodataCard(),
+                ],
+              ),
+              Positioned(
+                top: 250,
+                left: 0,
+                right: 0,
+                child: Center(child: _verificationCard()),
+              ),
+            ],
+          ),
         ),
       );
 }),

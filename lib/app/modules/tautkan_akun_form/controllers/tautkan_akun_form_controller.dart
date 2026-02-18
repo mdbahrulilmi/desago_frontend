@@ -100,7 +100,7 @@ class TautkanAkunFormController extends GetxController {
 
       print("📎 KTP Path: ${ktpImage.value!.path}");
       print("📎 KK Path: ${kkImage.value!.path}");
-      print('ktp : ${ktpFileName.value}');
+      
       dio.FormData formData = dio.FormData.fromMap({
         "nik": nikController.text,
         "nama_lengkap": namaController.text,

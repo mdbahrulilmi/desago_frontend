@@ -7,6 +7,7 @@ import 'package:desago/app/models/ProdukModel.dart';
   import 'package:desago/app/routes/app_pages.dart';
   import 'package:desago/app/services/dio_services.dart';
   import 'package:desago/app/services/storage_services.dart';
+import 'package:dio/dio.dart';
   import 'package:flutter/material.dart';
   import 'package:get/get.dart';
   import 'package:url_launcher/url_launcher.dart';
@@ -24,6 +25,7 @@ import 'package:desago/app/models/ProdukModel.dart';
     var isLoadingCarousel = true.obs;
     var isLoadingBerita = true.obs;
     var isLoadingProduk = true.obs;
+    final verification = "".obs;
 
     final box = GetStorage();
 
@@ -35,6 +37,30 @@ import 'package:desago/app/models/ProdukModel.dart';
     fetchCarousel();
     fetchBerita();
     fetchProduct();
+    loadVerification();
+  }
+
+  Future<String> getVerification({ required String token }) async {
+    final res = await DioService.instance.get(
+      ApiConstant.verification,
+      options: Options(headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      }),
+    );
+    return res.data['verification'];
+  }
+
+  Future<void> loadVerification() async {
+    final token = await StorageService.getToken();
+    if (token == null) return;
+
+    try {
+      final status = await getVerification(token: token);
+      verification.value = status;
+      await StorageService.saveVerified(status);
+    } catch (e) {
+    }
   }
 
     void _loadCarouselCache() {
@@ -146,6 +172,7 @@ import 'package:desago/app/models/ProdukModel.dart';
       fetchCarousel();
       fetchBerita();
       fetchProduct();
+      loadVerification();
     } 
 
     // Data produk

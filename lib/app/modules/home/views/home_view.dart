@@ -92,46 +92,54 @@ class HomeView extends GetView<HomeController> {
                     );
                   }),
                   SizedBox(height: AppResponsive.h(2)),
-                  InkWell(
-                    onTap: () {
-                      Get.toNamed(Routes.TAUTKAN_AKUN);
-                    },
-                    child: Container(
-                      height: AppResponsive.h(12),
-                      width: double.infinity,
-                      padding: AppResponsive.padding(vertical: 1),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.info,
-                              AppColors.lightBlue.withOpacity(1),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            tileMode: TileMode.repeated,
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(15),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Tautkan Akun Anda Dengan Desa',
-                                style: AppText.button(color: AppColors.white),
+                  Obx(() {
+                      return controller.verification.value == "unverified"
+                          ? InkWell(
+                              onTap: () {
+                                Get.toNamed(Routes.TAUTKAN_AKUN);
+                              },
+                              child: Container(
+                                height: AppResponsive.h(12),
+                                width: double.infinity,
+                                padding:
+                                    AppResponsive.padding(vertical: 1),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(10),
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        AppColors.info,
+                                        AppColors.lightBlue,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.all(15),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Tautkan Akun Anda Dengan Desa',
+                                          style: AppText.button(
+                                              color: AppColors.white),
+                                        ),
+                                        Text(
+                                          'Tautkan akun anda untuk mendapatkan pelayanan maksimal',
+                                          style: AppText.small(
+                                              color: AppColors.white),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
-                              Text(
-                                'Tautkan akun anda untuk mendapatkan pelayanan maksimal',
-                                style: AppText.small(color: AppColors.white),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                            )
+                          : const SizedBox.shrink();
+                    }),
+
                 
                   SizedBox(height: AppResponsive.h(2)),
                   
