@@ -1,5 +1,4 @@
 import 'package:desago/app/models/PemdesAparaturModel.dart';
-import 'package:desago/app/models/VisiMisiModel.dart';
 
 class ProfilDesaModel {
   final String? id;
@@ -18,8 +17,8 @@ class ProfilDesaModel {
   final int? jumlahPenduduk;
   final String? luasWilayah;
   final PemdesAparaturModel? kepalaDesa;
-  final VisiMisiModel? visi;
-  final List<VisiMisiModel>? misi;
+  final String? visi;
+  final String? misi;
   final List<PemdesAparaturModel>? perangkatDesa;
   final List<PemdesAparaturModel>? bpd;
 
@@ -49,12 +48,6 @@ class ProfilDesaModel {
   });
 
   factory ProfilDesaModel.fromJson(Map<String, dynamic> json) {
-     final List<VisiMisiModel> visiMisiList =
-      json['visi_misi'] != null
-          ? (json['visi_misi'] as List)
-              .map((e) => VisiMisiModel.fromJson(e))
-              .toList()
-          : [];
     final List<PemdesAparaturModel> aparaturList =
       json['pemdes_aparatur'] != null
           ? (json['pemdes_aparatur'] as List)
@@ -88,10 +81,8 @@ class ProfilDesaModel {
       jumlahPenduduk: json['jumlah_penduduk'] != null ? int.tryParse(json['jumlah_penduduk'].toString()) : null,
       luasWilayah: json['luas_wilayah'] as String?,
       kepalaDesa: kepalaDesaAparatur,
-      visi: visiMisiList.where((e) => e.isVisi == true).isNotEmpty
-        ? visiMisiList.firstWhere((e) => e.isVisi == true)
-        : null,
-      misi: visiMisiList.where((e) => e.isVisi == false).toList(),
+      visi: json['visi'],
+      misi: json['misi'],
       perangkatDesa: aparaturList.where((e) => e.isPemdes).toList(),
       bpd: aparaturList.where((e) => e.isBpdMember).toList(), 
     );
@@ -115,14 +106,12 @@ class ProfilDesaModel {
       'jumlah_penduduk': jumlahPenduduk,
       'luas_wilayah': luasWilayah,
       'kepala_desa' : kepalaDesa?.toJson(),
-      'visi_misi': [
-      if (visi != null) visi!.toJson(),
-      ...?misi?.map((e) => e.toJson()),
-    ],
-    'pemdes_aparatur': [
-      ...?perangkatDesa?.map((e) => e.toJson()),
-      ...?bpd?.map((e) => e.toJson()),
-    ],
+      'visi' : visi,
+      'misi' : misi,
+      'pemdes_aparatur': [
+        ...?perangkatDesa?.map((e) => e.toJson()),
+        ...?bpd?.map((e) => e.toJson()),
+      ],
     };
   }
 }

@@ -1,5 +1,4 @@
 import 'package:desago/app/constant/api_constant.dart';
-import 'package:desago/app/models/VisiMisiModel.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
@@ -192,7 +191,7 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
                       Text('Visi', style: AppText.h6(color: AppColors.text)),
                       const SizedBox(height: 8),
                       Text(
-                        desa.visi?.content ?? '-',
+                        desa.visi ?? '-',
                         style: AppText.bodyMedium(color: AppColors.text),
                         textAlign: TextAlign.justify,
                       ),
@@ -200,21 +199,14 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
                       SizedBox(height: AppResponsive.h(1)),
 
                       // ===== MISI =====
-                      if ((desa.misi ?? []).isNotEmpty) ...[
-                        Text('Misi', style: AppText.h6(color: AppColors.text)),
-                        const SizedBox(height: 8),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: (desa.misi ?? [])
-                              .asMap()
-                              .entries
-                              .map((entry) => _buildMisiItem(
-                                    entry.value,
-                                    index: entry.key + 1,
-                                  ))
-                              .toList(),
-                        ),
-                      ],
+                      // ===== VISI =====
+                      Text('Visi', style: AppText.h6(color: AppColors.text)),
+                      const SizedBox(height: 8),
+                      Text(
+                        desa.misi ?? '-',
+                        style: AppText.bodyMedium(color: AppColors.text),
+                        textAlign: TextAlign.justify,
+                      ),
                     ],
                   ),
                 ],
@@ -393,7 +385,7 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
 }
 
 
-  Widget _buildMisiItem(VisiMisiModel e, {required int index}) {
+  Widget _buildMisiItem(String e, {required int index}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
@@ -402,7 +394,7 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
           Text('$index. ', style: AppText.bodyMedium(color: AppColors.text)),
           Expanded(
             child: Text(
-              e.content ?? '-',
+              e ?? '-',
               style: AppText.bodyMedium(color: AppColors.text),
               textAlign: TextAlign.justify,
             ),

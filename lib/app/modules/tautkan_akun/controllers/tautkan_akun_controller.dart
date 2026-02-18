@@ -83,6 +83,7 @@ class TautkanAkunController extends GetxController {
       "golongan_darah": "",
       "tanggal_lahir": "",
       "tempat_lahir": "",
+      "jenis_kelamin": "",
     };
 
     final lines = text
@@ -109,6 +110,18 @@ class TautkanAkunController extends GetxController {
           result["tempat_lahir"] = parts[0].replaceAll(":", "").trim();
           result["tanggal_lahir"] = parts[1].replaceAll(":", "").trim();
         }
+        continue;
+      }
+
+      String upperLine = line.toUpperCase().replaceAll(":", "").trim();
+
+      if (upperLine.contains("PEREMPUAN")) {
+        result["jenis_kelamin"] = "PEREMPUAN";
+        continue;
+      }
+
+      if (upperLine.contains("LAKI")) {
+        result["jenis_kelamin"] = "LAKI-LAKI";
         continue;
       }
 

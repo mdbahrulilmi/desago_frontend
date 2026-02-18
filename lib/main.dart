@@ -73,7 +73,7 @@ class MyApp extends StatelessWidget {
       }),
       unknownRoute: GetPage(
         name: '/notfound',
-        page: () => Scaffold(
+        page: () => Scaffold  (
           body: Center(child: Text('Halaman tidak ditemukan')),
         ),
       ),

@@ -10,8 +10,7 @@ import '../controllers/akun_biodata_controller.dart';
 
 class AkunBiodataView extends GetView<AkunBiodataController> {
   const AkunBiodataView({super.key});
-   @override
-  @override
+@override
 Widget build(BuildContext context) {
   AppResponsive().init(context);
 
@@ -117,63 +116,63 @@ Widget build(BuildContext context) {
             children: [
               _buildBiodataItem(
                 title: 'Nama Lengkap',
-                value: controller.nama.value,
+                value: controller.nama,
                 icon: Remix.user_3_line,
               ),
               _buildBiodataItem(
                 title: 'NIK',
-                value: controller.nik.value,
+                value: controller.nik,
                 icon: Remix.id_card_line,
               ),
               _buildBiodataItem(
                 title: 'Tempat Lahir',
-                value: controller.tempatLahir.value,
+                value: controller.tempatLahir,
                 icon: Remix.map_pin_line,
               ),
               _buildBiodataItem(
                 title: 'Tanggal Lahir',
-                value: controller.tanggalLahir.value,
+                value: controller.tanggalLahir,
                 icon: Remix.calendar_line,
               ),
               _buildBiodataItem(
                 title: 'Jenis Kelamin',
-                value: controller.jenisKelamin.value,
+                value: controller.jenisKelamin,
                 icon: Remix.men_line,
               ),
               _buildBiodataItem(
                 title: 'Golongan Darah',
-                value: controller.golonganDarah.value,
+                value: controller.golonganDarah,
                 icon: Remix.heart_pulse_line,
               ),
               _buildBiodataItem(
                 title: 'Alamat',
-                value: controller.alamat.value,
+                value: controller.alamat,
                 icon: Remix.home_4_line,
                 isMultiline: true,
               ),
               _buildBiodataItem(
                 title: 'Agama',
-                value: controller.agama.value,
+                value: controller.agama,
                 icon: Remix.book_open_line,
               ),
               _buildBiodataItem(
                 title: 'Status Perkawinan',
-                value: controller.statusPerkawinan.value,
+                value: controller.statusPerkawinan,
                 icon: Remix.heart_2_line,
               ),
               _buildBiodataItem(
                 title: 'Pekerjaan',
-                value: controller.pekerjaan.value,
+                value: controller.pekerjaan,
                 icon: Remix.briefcase_4_line,
               ),
               _buildBiodataItem(
                 title: 'Kewarganegaraan',
-                value: controller.kewarganegaraan.value,
+                value: controller.kewarganegaraan,
                 icon: Remix.global_line,
               ),
               _buildBiodataItem(
                 title: 'Berlaku Hingga',
-                value: controller.berlakuHingga.value,
+                value: controller.berlakuHingga,
                 icon: Remix.timer_line,
                 isLast: true,
               ),
@@ -293,8 +292,8 @@ Widget _buildHeader() {
                                     color: AppColors.primary,
                                   ),
                                   child: ClipOval(
-                                    child: Image.asset(
-                                      'assets/img/kepala_desa.jpg',
+                                    child: Image.network(
+                                      "https://backend.desagodigital.id/${controller.avatar}",
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -327,62 +326,65 @@ Widget _buildHeader() {
             );
 }
 
-Widget _verificationCard(){
-  return Container(
-        width: AppResponsive.w(90),
-        height: 80,
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 1,
-                    blurRadius: 10,
-                    offset: Offset(0, 0),
-                  ),
-          ]
-        ),
-        padding: AppResponsive.padding(all: 1),
-        child: Expanded(
-          child: Padding(
-            padding: AppResponsive.padding(horizontal: 6),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+Widget _verificationCard() {
+  return Obx(() {
+    return Container(
+      width: AppResponsive.w(90),
+      height: 80,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 10,
+            offset: const Offset(0, 0),
+          ),
+        ],
+      ),
+      padding: AppResponsive.padding(all: 1),
+      child: Padding(
+        padding: AppResponsive.padding(horizontal: 6),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Status Kependudukan',
+              style: AppText.bodyMedium(color: AppColors.textSecondary),
+            ),
+            SizedBox(height: AppResponsive.h(0.1)),
+            Row(
               children: [
-                Text(
-                  'Status Kependudukan',
-                  style: AppText.bodyMedium(color: AppColors.textSecondary),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: controller.isVerified
+                        ? AppColors.bottonGreen
+                        : AppColors.warning,
+                  ),
                 ),
-                SizedBox(height: AppResponsive.h(0.1)),
-                Row(
-                  children: [
-                    Container(
-                          width: 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.bottonGreen,
-                          ),
-                    ),
-                    SizedBox(width: AppResponsive.w(2)),
-                    Text(
-                      'Aktif/Terverifikasi',
-                      style: AppText.bodyMediumBold(
-                        color: AppColors.text,
-                      ),
-                    ),
-                  ],
+                SizedBox(width: AppResponsive.w(2)),
+                Text(
+                  controller.isVerified
+                      ? 'Aktif/Terverifikasi'
+                      : 'Belum Terverifikasi',
+                  style: AppText.bodyMediumBold(
+                    color: AppColors.text,
+                  ),
                 ),
               ],
             ),
-          ),
-        )
-  );
+          ],
+        ),
+      ),
+    );
+  });
 }
+
 Widget _circleButton({
   required IconData icon,
   required VoidCallback onTap,

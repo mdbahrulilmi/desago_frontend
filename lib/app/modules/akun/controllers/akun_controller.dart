@@ -118,4 +118,22 @@ Future<void> logout() async {
     );
   }
 }
+
+    Future<void> onRefresh() async {
+    try {
+      final token = await StorageService.getToken();
+      if (token == null) return;
+
+      await fetchUserData();
+
+      final status = await getVerification(token: token);
+      verification.value = status;
+
+      await StorageService.saveVerified(status);
+
+    } catch (e) {
+      debugPrint("Error refresh akun: $e");
+    }
+  }
+
 }

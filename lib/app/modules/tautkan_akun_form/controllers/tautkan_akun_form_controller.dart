@@ -19,11 +19,11 @@ class TautkanAkunFormController extends GetxController {
   final pekerjaanController = TextEditingController();
   final berlakuHinggaController = TextEditingController();
   final nokkController = TextEditingController();
-
+  final jenisKelaminController = TextEditingController();
+  final golonganDarahController = TextEditingController();
+  final kewarganegaraanController = TextEditingController();
   final ktpImage = Rx<File?>(null);
   final kkImage = Rx<File?>(null);
-  final ktpFileName = ''.obs;
-  final kkFileName = ''.obs;
 
   final isLoading = false.obs;
 
@@ -45,10 +45,8 @@ class TautkanAkunFormController extends GetxController {
 
     if (isKTP) {
       ktpImage.value = File(image.path);
-      ktpFileName.value = image.name;
     } else {
       kkImage.value = File(image.path);
-      kkFileName.value = image.name;
     }
   }
 
@@ -96,15 +94,21 @@ class TautkanAkunFormController extends GetxController {
       print("Pekerjaan: ${pekerjaanController.text}");
       print("Berlaku Hingga: ${berlakuHinggaController.text}");
       print("No KK: ${nokkController.text}");
+      print("Gol Darah: ${golonganDarahController.text}");
+      print("Jenis Kelamin: ${jenisKelaminController.text}");
+      print("Kewarganegaraan: ${kewarganegaraanController.text}");
 
       print("📎 KTP Path: ${ktpImage.value!.path}");
       print("📎 KK Path: ${kkImage.value!.path}");
-
+      print('ktp : ${ktpFileName.value}');
       dio.FormData formData = dio.FormData.fromMap({
         "nik": nikController.text,
         "nama_lengkap": namaController.text,
         "tanggal_lahir": tanggalLahirController.text,
         "tempat_lahir": tempatLahirController.text,
+        "kewarganegaraan": kewarganegaraanController.text,
+        "jenis_kelamin": jenisKelaminController.text,
+        "golongan_darah": golonganDarahController.text,
         "status_perkawinan": statusPerkawinanController.text,
         "agama": agamaController.text,
         "alamat": alamatController.text,
@@ -114,12 +118,12 @@ class TautkanAkunFormController extends GetxController {
 
         "ktp_file": await dio.MultipartFile.fromFile(
           ktpImage.value!.path,
-          filename: ktpFileName.value,
+          filename: ktpImage.value!.path.split('/').last,
         ),
 
         "kk_file": await dio.MultipartFile.fromFile(
           kkImage.value!.path,
-          filename: kkFileName.value,
+          filename: kkImage.value!.path.split('/').last,
         ),
       });
 
@@ -129,7 +133,6 @@ class TautkanAkunFormController extends GetxController {
         ApiConstant.biodataStore,
         data: formData,
         options: dio.Options(
-          contentType: "multipart/form-data",
           headers: {
             "Authorization": "Bearer $token",
             "Accept": "application/json",
@@ -192,6 +195,9 @@ class TautkanAkunFormController extends GetxController {
     namaController.text = ktpData["nama_lengkap"] ?? '';
     tanggalLahirController.text = ktpData["tanggal_lahir"] ?? '';
     tempatLahirController.text = ktpData["tempat_lahir"] ?? '';
+    jenisKelaminController.text = ktpData["jenis_kelamin"] ?? '';
+    golonganDarahController.text = ktpData["golongan_darah"] ?? '';
+    kewarganegaraanController.text = ktpData["kewarganegaraan"] ?? '';
     statusPerkawinanController.text = ktpData["status_perkawinan"] ?? '';
     agamaController.text = ktpData["agama"] ?? '';
     alamatController.text = ktpData["alamat"] ?? '';
