@@ -28,7 +28,6 @@ class AkunView extends GetView<AkunController> {
           child: Column(
             children: [
 
-              /// ================= HEADER =================
               SizedBox(
                 height: 230,
                 child: Stack(
@@ -69,7 +68,6 @@ class AkunView extends GetView<AkunController> {
                 ),
               ),
 
-              /// ================= CONTENT =================
               Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: AppResponsive.w(5),
@@ -270,7 +268,6 @@ class AkunView extends GetView<AkunController> {
     );
   }
 
-  /// ================= PROFILE CARD =================
   Widget _profileCard() {
     return Container(
       width: AppResponsive.w(90),
@@ -289,24 +286,55 @@ class AkunView extends GetView<AkunController> {
       child: Row(
         children: [
           Obx(() {
-            final avatarUrl =
-                controller.user.value?.getAvatar;
-            return CircleAvatar(
-              key: ValueKey(avatarUrl),
-              radius: AppResponsive.w(9),
-              backgroundColor: Colors.grey[200],
-              backgroundImage: avatarUrl != null
-                  ? NetworkImage(
-                      'https://backend.desagodigital.id/$avatarUrl')
-                  : null,
-              child: avatarUrl == null
-                  ? Icon(
-                      Remix.user_3_line,
-                      size: AppResponsive.w(9),
-                    )
-                  : null,
-            );
-          }),
+          final avatarUrl = controller.user.value?.getAvatar;
+
+          return GestureDetector(
+            onTap: () => Get.toNamed('/akun-edit'),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                CircleAvatar(
+                  key: ValueKey(avatarUrl),
+                  radius: AppResponsive.w(9),
+                  backgroundColor: Colors.grey[200],
+                  backgroundImage: avatarUrl != null
+                      ? NetworkImage(
+                          'https://backend.desagodigital.id/$avatarUrl')
+                      : null,
+                  child: avatarUrl == null
+                      ? Icon(
+                          Remix.user_3_line,
+                          color: Colors.black,
+                          size: AppResponsive.w(9),
+                        )
+                      : null,
+                ),
+
+                Positioned(
+                  bottom: -2,
+                  right: -2,
+                  child: Container(
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppColors.white,
+                        width: 2,
+                      ),
+                    ),
+                    child: Icon(
+                      Remix.pencil_line,
+                      size: AppResponsive.w(4),
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+
           SizedBox(width: AppResponsive.w(3)),
           Obx(() => Column(
                 crossAxisAlignment:

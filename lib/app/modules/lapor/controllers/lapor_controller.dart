@@ -31,9 +31,7 @@ class LaporController extends GetxController {
     return status.isGranted;
   }
 
-  // Metode untuk mengambil foto laporan
   Future<void> captureLaporImage() async {
-    // Periksa izin kamera
     bool hasPermission = await _checkAndRequestCameraPermissions();
     if (!hasPermission) return;
 
@@ -47,16 +45,13 @@ class LaporController extends GetxController {
         final File file = File(pickedFile.path);
         final int fileSize = await file.length();
         
-        // Validasi ukuran file
         if (fileSize > 2 * 1024 * 1024) {
           _showError('Ukuran file melebihi batas 2MB');
           return;
         }
 
-        // Simpan file
         imageFile.value = file;
 
-        // Navigasi ke form laporan
         Get.toNamed(Routes.LAPOR_FORM);
       }
     } catch (e) {

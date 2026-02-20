@@ -314,7 +314,9 @@ Widget _buildHeader() {
                                     shape: BoxShape.circle,
                                     color: AppColors.secondary,
                                     border: Border.all(
-                                      color: AppColors.bottonGreen,
+                                      color:  controller.isVerified
+                                          ? AppColors.bottonGreen
+                                          : AppColors.amber,
                                       width: 4,
                                     ),
                                   ),
@@ -369,7 +371,7 @@ Widget _verificationCard() {
                     shape: BoxShape.circle,
                     color: controller.isVerified
                         ? AppColors.bottonGreen
-                        : AppColors.warning,
+                        : AppColors.amber,
                   ),
                 ),
                 SizedBox(width: AppResponsive.w(2)),

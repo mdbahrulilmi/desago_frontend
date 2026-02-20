@@ -115,7 +115,6 @@ class CustomBottomNavigationBar
     });
   }
 
-  /// ICON HANDLER (AMAN & BERSIH)
   Widget _navIcon(int index, bool isActive) {
     switch (index) {
       case 0:

@@ -11,22 +11,16 @@ import 'app/routes/app_pages.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Init storage & Firebase
   await GetStorage.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await initializeDateFormatting('id_ID', null);
 
-  // Inject global controller
   Get.put(BottomNavigationController());
 
-  // ============================
-  // 🔥 APP LINKS (DEEP LINK)
-  // ============================
   final appLinks = AppLinks();
   String initialRoute = AppPages.getInitialRoute();
   Map<String, String>? initialArgs;
 
-  // Cold start deep link
   final initialUri = await appLinks.getInitialLink();
   if (initialUri != null && initialUri.path == '/reset-password') {
     initialRoute = '/password-baru';
@@ -34,7 +28,6 @@ Future<void> main() async {
       'token': initialUri.queryParameters['token'] ?? '',
       'email': initialUri.queryParameters['email'] ?? '',
     };
-    print('>>> Cold start deep link detected: $initialArgs');
   }
 
   runApp(MyApp(

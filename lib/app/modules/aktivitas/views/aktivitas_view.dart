@@ -35,14 +35,11 @@ class AktivitasView extends GetView<AktivitasController> {
         }
 
        return RefreshIndicator(
-  onRefresh: () => controller.refreshAktivitas(),
-  child: ListView(
-    padding: const EdgeInsets.symmetric(vertical: 8),
-    children: [
+    onRefresh: () => controller.refreshAktivitas(),
+    child: ListView(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      children: [
 
-      /// =====================
-      /// LIST DATA
-      /// =====================
       ...controller.aktivitas.map((item) {
 
         final isLapor = item['tipe'] == 'lapor';
@@ -62,10 +59,7 @@ class AktivitasView extends GetView<AktivitasController> {
           onPressed: () {},
         );
       }).toList(),
-
-      /// =====================
-        /// NUMBER PAGINATION
-        /// =====================
+      
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 16),
           child: Row(
@@ -98,19 +92,6 @@ class AktivitasView extends GetView<AktivitasController> {
                 ),
               );
             }),
-          ),
-        ),
-      /// =====================
-      /// END OF DATA
-      /// =====================
-      if (controller.currentPage >= controller.lastPage)
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 16),
-          child: Center(
-            child: Text(
-              "Tidak ada data lagi",
-              style: TextStyle(color: Colors.grey),
-            ),
           ),
         ),
     ],

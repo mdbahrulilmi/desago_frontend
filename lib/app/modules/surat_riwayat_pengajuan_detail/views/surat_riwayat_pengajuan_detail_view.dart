@@ -62,7 +62,7 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
                                 ),
                                 SizedBox(height: AppResponsive.h(0.5)),
                                 Text(
-                                  'No. Reg: 2026/SKCK/${controller.data['id'] ?? "-"}',
+                                  'No. Reg: ${controller.data['reg'] ?? "-"}',
                                   style: AppText.bodyMedium(color: AppColors.text),
                                 ),
                               ],

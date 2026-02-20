@@ -187,8 +187,8 @@ import 'package:dio/dio.dart';
   }) async {
     final text = message ??
         '''Halo kak 😊
-  Aku lihat $product, mau nanya detailnya dong.
-  ''';
+Aku lihat $product, mau nanya detailnya dong.
+''';
 
     final url = Uri.parse(
       'https://wa.me/$phone?text=${Uri.encodeComponent(text)}',

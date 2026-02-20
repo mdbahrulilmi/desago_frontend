@@ -32,14 +32,12 @@ class ProdukDetailController extends GetxController {
 
   Future<void> openWhatsApp({
     required String phone,
+    required String product,
     String? message,
   }) async {
-    if (product.value == null) return;
-
     final text = message ??
         '''Halo kak 😊
-Saya tertarik dengan produk "${product.value!.judul}".
-Boleh minta detailnya?
+Aku lihat $product, mau nanya detailnya dong.
 ''';
 
     final url = Uri.parse(
@@ -52,10 +50,7 @@ Boleh minta detailnya?
         mode: LaunchMode.externalApplication,
       );
     } else {
-      Get.snackbar(
-        'Error',
-        'Tidak bisa membuka WhatsApp',
-      );
+      throw 'Tidak bisa membuka WhatsApp';
     }
   }
 }

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/models/BeritaModel.dart';
 import 'package:desago/app/routes/app_pages.dart';
@@ -27,6 +26,13 @@ class BeritaListController extends GetxController {
 
   final isLoading = true.obs;
 
+  // ================= PAGINATION =================
+  final ScrollController scrollController = ScrollController();
+  final RxBool isLoadMore = false.obs;
+  final RxInt currentPage = 1.obs;
+  final RxBool hasMore = true.obs;
+  static const int _limit = 10;
+
   static const _cacheKey = 'cache_berita_desa';
   static const _cacheTimeKey = 'cache_berita_desa_time';
   static const Duration _cacheTTL = Duration(hours: 1);
@@ -39,43 +45,24 @@ class BeritaListController extends GetxController {
       filterBerita(searchController.text);
     });
 
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+              scrollController.position.maxScrollExtent - 200 &&
+          !isLoadMore.value &&
+          hasMore.value) {
+        loadMoreBerita();
+      }
+    });
+
     _loadFromCache();
     fetchBerita();
   }
 
-  // ================= CACHE =================
-
-  void _loadFromCache() {
-    final cachedTime = box.read(_cacheTimeKey);
-
-    if (cachedTime != null) {
-      final cacheDate = DateTime.parse(cachedTime);
-      final isExpired =
-          DateTime.now().difference(cacheDate) > _cacheTTL;
-
-      if (!isExpired) {
-        final cachedData = box.read(_cacheKey);
-        if (cachedData != null) {
-          final List listData = jsonDecode(cachedData);
-
-          final data = listData
-              .map((e) => BeritaModel.fromJson(e))
-              .toList();
-
-          beritas.assignAll(data);
-          filteredBeritas.assignAll(data);
-
-          debugPrint('🟡 Berita loaded from cache (${data.length})');
-          isLoading.value = false;
-        }
-      }
-    }
-  }
-
-  Future<void> _saveToCache(List<BeritaModel> data) async {
-    final jsonData = jsonEncode(data.map((e) => e.toJson()).toList());
-    await box.write(_cacheKey, jsonData);
-    await box.write(_cacheTimeKey, DateTime.now().toIso8601String());
+  @override
+  void onClose() {
+    searchController.dispose();
+    scrollController.dispose();
+    super.onClose();
   }
 
   // ================= API =================
@@ -83,8 +70,12 @@ class BeritaListController extends GetxController {
   Future<void> fetchBerita() async {
     try {
       isLoading.value = beritas.isEmpty;
+      currentPage.value = 1;
+      hasMore.value = true;
 
-      final res = await DioService.instance.get(ApiConstant.beritaDesa);
+      final res = await DioService.instance.get(
+        "${ApiConstant.beritaDesa}?page=1&limit=$_limit",
+      );
 
       final List listData = res.data is List
           ? res.data
@@ -97,13 +88,49 @@ class BeritaListController extends GetxController {
       beritas.assignAll(data);
       filteredBeritas.assignAll(data);
 
-      await _saveToCache(data);
+      if (data.length < _limit) {
+        hasMore.value = false;
+      }
 
-      debugPrint('🟢 Berita loaded from API (${data.length})');
+      await _saveToCache(data);
     } catch (e) {
       debugPrint('🔴 Error fetchBerita: $e');
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> loadMoreBerita() async {
+    try {
+      isLoadMore.value = true;
+      currentPage.value++;
+
+      final res = await DioService.instance.get(
+        "${ApiConstant.beritaDesa}?page=${currentPage.value}&limit=$_limit",
+      );
+
+      final List listData = res.data is List
+          ? res.data
+          : (res.data['data'] ?? []);
+
+      final data = listData
+          .map<BeritaModel>((json) => BeritaModel.fromJson(json))
+          .toList();
+
+      if (data.isEmpty) {
+        hasMore.value = false;
+      } else {
+        beritas.addAll(data);
+        filterBerita(searchController.text);
+
+        if (data.length < _limit) {
+          hasMore.value = false;
+        }
+      }
+    } catch (e) {
+      debugPrint('🔴 Error loadMoreBerita: $e');
+    } finally {
+      isLoadMore.value = false;
     }
   }
 
@@ -130,32 +157,27 @@ class BeritaListController extends GetxController {
     filterBerita(searchController.text);
   }
 
-  // ================= NAV =================
-
   void bacaBeritaLengkap(BeritaModel berita) {
-    Get.toNamed(
-      Routes.BERITA_DETAIL,
-      arguments: berita,
-    );
+    Get.toNamed(Routes.BERITA_DETAIL, arguments: berita);
   }
-
-  // ================= REFRESH =================
 
   Future<void> refreshBerita() async {
     clearCache();
     await fetchBerita();
   }
 
-  // ================= MANUAL INVALIDATE =================
-
   void clearCache() {
     box.remove(_cacheKey);
     box.remove(_cacheTimeKey);
   }
 
-  @override
-  void onClose() {
-    searchController.dispose();
-    super.onClose();
+  // ================= CACHE =================
+
+  void _loadFromCache() {}
+
+  Future<void> _saveToCache(List<BeritaModel> data) async {
+    final jsonData = jsonEncode(data.map((e) => e.toJson()).toList());
+    await box.write(_cacheKey, jsonData);
+    await box.write(_cacheTimeKey, DateTime.now().toIso8601String());
   }
 }

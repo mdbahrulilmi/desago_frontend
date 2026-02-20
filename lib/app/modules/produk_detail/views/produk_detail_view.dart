@@ -90,7 +90,8 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
                         if (produk == null) return;
 
                         controller.openWhatsApp(
-                          phone: produk.noTelepon,
+                          phone: produk.notelpFix,
+                          product: produk.judul
                         );
                       },
                       style: ElevatedButton.styleFrom(

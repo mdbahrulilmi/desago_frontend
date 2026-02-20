@@ -23,9 +23,6 @@ class AktivitasController extends GetxController {
     scrollController.addListener(_scrollListener);
   }
 
-  /// ===============================
-  /// SCROLL LISTENER (INFINITE SCROLL)
-  /// ===============================
   void _scrollListener() {
     if (scrollController.position.pixels >=
             scrollController.position.maxScrollExtent - 200 &&
@@ -119,8 +116,6 @@ Future<void> goToPage(int page) async {
   }
 }
 
-
-
   Future<void> loadMore() async {
   if (currentPage >= lastPage) return;
 
@@ -159,10 +154,6 @@ Future<void> goToPage(int page) async {
   }
 }
 
-
-  /// ===============================
-  /// REFRESH
-  /// ===============================
   Future<void> refreshAktivitas() async {
     await fetchAktivitas(isRefresh: true);
   }

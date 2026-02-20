@@ -3,6 +3,7 @@ import 'package:desago/app/models/OAuthAccountsModel.dart';
 class UserModel {
   final String? id;
   final String? username;
+  final String? nama_lengkap;
   final String? email;
   final String? phone;
   final String? avatar;
@@ -12,6 +13,7 @@ class UserModel {
   UserModel({
     this.id,
     this.username,
+    this.nama_lengkap,
     this.email,
     this.phone,
     this.avatar,
@@ -29,6 +31,7 @@ class UserModel {
     return UserModel(
       id: json['id']?.toString(),
       username: json['username'],
+      nama_lengkap: json['nama_lengkap'],
       email: json['email'],
       phone: json['no_telepon'],
       avatar: json['avatar'],
@@ -51,6 +54,7 @@ class UserModel {
     return {
       'id': id,
       'username': username,
+      'nama_lengkap': nama_lengkap,
       'email': email,
       'no_telepon': phone,
       'avatar': avatar,
@@ -63,6 +67,7 @@ class UserModel {
     String? email,
     String? phone,
     String? username,
+    String? nama_lengkap,
     String? avatar,
     String? verified
   }) {
@@ -70,6 +75,7 @@ class UserModel {
       email: email ?? this.email,
       phone: phone ?? this.phone,
       username: username ?? this.username,
+      nama_lengkap: nama_lengkap ?? this.nama_lengkap,
       avatar: avatar ?? this.avatar,
       verified: verified ?? this.verified,
     );

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/models/ProdukModel.dart';
 import 'package:desago/app/services/dio_services.dart';
@@ -17,6 +16,15 @@ class ProdukListSemuaController extends GetxController {
   final RxString selectedCategory = 'Semua'.obs;
   final RxBool isLoading = true.obs;
 
+  // =======================
+  // PAGINATION
+  // =======================
+  final ScrollController scrollController = ScrollController();
+  final RxBool isLoadMore = false.obs;
+  final RxInt currentPage = 1.obs;
+  final RxBool hasMore = true.obs;
+  static const int _limit = 10;
+
   static const _cacheKey = 'cache_produk_desa';
   static const _cacheTimeKey = 'cache_produk_desa_time';
   static const Duration _cacheTTL = Duration(hours: 12);
@@ -29,6 +37,15 @@ class ProdukListSemuaController extends GetxController {
       filterProducts(searchController.text);
     });
 
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+              scrollController.position.maxScrollExtent - 200 &&
+          !isLoadMore.value &&
+          hasMore.value) {
+        loadMoreProduct();
+      }
+    });
+
     _loadFromCache();
     fetchProduct();
   }
@@ -36,9 +53,10 @@ class ProdukListSemuaController extends GetxController {
   @override
   void onClose() {
     searchController.dispose();
+    scrollController.dispose();
     super.onClose();
   }
-  
+
   void _loadFromCache() {
     final cachedTime = box.read(_cacheTimeKey);
 
@@ -75,8 +93,13 @@ class ProdukListSemuaController extends GetxController {
   Future<void> fetchProduct() async {
     try {
       isLoading.value = products.isEmpty;
+      currentPage.value = 1;
+      hasMore.value = true;
 
-      final res = await DioService.instance.get(ApiConstant.produkDesa);
+      final res = await DioService.instance.get(
+        "${ApiConstant.produkDesa}?page=1&limit=$_limit",
+      );
+
       final List listData =
           res.data is List ? res.data : res.data['data'] ?? [];
 
@@ -87,6 +110,10 @@ class ProdukListSemuaController extends GetxController {
       products.assignAll(data);
       filteredProducts.assignAll(data);
 
+      if (data.length < _limit) {
+        hasMore.value = false;
+      }
+
       await _saveToCache(data);
 
       debugPrint('🟢 Produk loaded from API (${products.length})');
@@ -94,6 +121,39 @@ class ProdukListSemuaController extends GetxController {
       debugPrint('🔴 Error fetchProduct: $e');
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> loadMoreProduct() async {
+    try {
+      isLoadMore.value = true;
+      currentPage.value++;
+
+      final res = await DioService.instance.get(
+        "${ApiConstant.produkDesa}?page=${currentPage.value}&limit=$_limit",
+      );
+
+      final List listData =
+          res.data is List ? res.data : res.data['data'] ?? [];
+
+      final data = listData
+          .map((e) => ProdukModel.fromJson(e))
+          .toList();
+
+      if (data.isEmpty) {
+        hasMore.value = false;
+      } else {
+        products.addAll(data);
+        filteredProducts.addAll(data);
+
+        if (data.length < _limit) {
+          hasMore.value = false;
+        }
+      }
+    } catch (e) {
+      debugPrint('🔴 Error loadMoreProduct: $e');
+    } finally {
+      isLoadMore.value = false;
     }
   }
 
@@ -117,6 +177,7 @@ class ProdukListSemuaController extends GetxController {
   Future<void> refreshUMKM() async {
     await fetchProduct();
   }
+
   void clearCache() {
     box.remove(_cacheKey);
     box.remove(_cacheTimeKey);

@@ -76,23 +76,34 @@ class BeritaListView extends GetView<BeritaListController> {
   }
 
   Widget _buildBeritaList() {
-    return RefreshIndicator(
-       onRefresh: () async {
-          await controller.refreshBerita();
-        },
-      child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: controller.filteredBeritas.length,
-        itemBuilder: (context, index) {
+  return RefreshIndicator(
+    onRefresh: () async {
+      await controller.refreshBerita();
+    },
+    child: ListView.builder(
+      controller: controller.scrollController,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: controller.filteredBeritas.length +
+          (controller.isLoadMore.value ? 1 : 0),
+      itemBuilder: (context, index) {
+        if (index < controller.filteredBeritas.length) {
           final berita = controller.filteredBeritas[index];
           return Padding(
             padding: const EdgeInsets.only(bottom: 14.0),
             child: _buildBeritaCard(berita),
           );
-        },
-      ),
-    );
-  }
+        } else {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+      },
+    ),
+  );
+}
 
 Widget _buildBeritaCard(BeritaModel berita) {
   String? gambar = berita.gambar;

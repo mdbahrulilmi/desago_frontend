@@ -101,7 +101,7 @@ class AkunBiodataController extends GetxController {
         buttonText: 'OK',
       );
 
-      await fetchUserData(); // refresh data
+      await fetchUserData();
 
     } catch (e) {
       AppDialog.error(
@@ -113,13 +113,7 @@ class AkunBiodataController extends GetxController {
       isLoading.value = false;
     }
   }
-
-  void editData() {
-    Get.toNamed('/edit-biodata');
-  }
-
-  // ================= GETTER UNTUK VIEW =================
-
+  
   String get nik => user.value?.nik ?? "-";
   String get nama => user.value?.namaLengkap ?? "-";
   String get tempatLahir => user.value?.tempatLahir ?? "-";

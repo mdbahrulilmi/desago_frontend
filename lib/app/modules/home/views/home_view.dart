@@ -170,21 +170,46 @@ class HomeView extends GetView<HomeController> {
                                 AppColors.secondary, () {
                               Get.toNamed(Routes.PROFIL_DESA);
                             }),
-                            _buildMenuItem(Remix.alarm_warning_line, 'Lapor',
-                                AppColors.primary,
-                                AppColors.secondary, () {
-                              Get.toNamed(Routes.LAPOR);
-                            }),
+                           Obx(() {
+                            return controller.verification.value == "verified"
+                                ? _buildMenuItem(
+                                    Remix.alarm_warning_line,
+                                    'Lapor',
+                                    AppColors.primary,
+                                    AppColors.secondary,
+                                    () {
+                                      Get.toNamed(Routes.LAPOR);
+                                    },
+                                  )
+                                : _buildMenuItem(
+                                    Remix.alarm_warning_line,
+                                    'Lapor',
+                                    AppColors.grey,
+                                    AppColors.secondary,
+                                    (){
+                                      Get.toNamed(Routes.TAUTKAN_AKUN);
+                                    },
+                                  );
+                          }),
                             _buildMenuItem(null, 'No Darurat',
                                 AppColors.primary,
                                 AppColors.secondary, () {
                               Get.toNamed(Routes.NOMOR_PENTING);
                             }),
-                            _buildMenuItem(Remix.mail_fill, 'Surat',
+                            Obx(() {
+                            return controller.verification.value == "verified"
+                                ? _buildMenuItem(Remix.mail_fill, 'Surat',
                                 AppColors.primary,
                                 AppColors.secondary, () {
                                  Get.toNamed(Routes.SURAT_LIST);
-                                }),                            
+                                })
+                                : _buildMenuItem(Remix.mail_fill, 'Surat',
+                                AppColors.grey,
+                                AppColors.secondary, () {
+                                 Get.toNamed(Routes.TAUTKAN_AKUN);
+                                });
+                          }),
+                                                        
                             _buildMenuItem(Remix.file_chart_fill, 'Dana Desa',
                                 AppColors.secondary,
                                 AppColors.primary, () {

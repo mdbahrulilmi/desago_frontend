@@ -227,7 +227,7 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      "Tanggapan belum tersedia",
+                      laporan.tanggapan.length > 1 ? laporan.tanggapan: "Tanggapan belum tersedia",
                       style: AppText.bodySmall(color: AppColors.textSecondary),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

@@ -14,9 +14,6 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class SuratFormController extends GetxController {
-  /// =========================
-  /// STATE UMUM
-  /// =========================
   final isLoading = true.obs;
   final isSubmitting = false.obs;
 
@@ -26,14 +23,8 @@ class SuratFormController extends GetxController {
   final Map<String, Rx<String?>> timeValues = {};
 
 
-  /// =========================
-  /// FORM SECTION
-  /// =========================
   RxList<Map<String, dynamic>> formSections = <Map<String, dynamic>>[].obs;
 
-  /// =========================
-  /// FIELD STATE
-  /// =========================
   final Map<String, TextEditingController> textControllers = {};
   final Map<String, RxString> dropdownValues = {};
   final Map<String, Rx<String?>> dateValues = {};
@@ -42,13 +33,9 @@ class SuratFormController extends GetxController {
   final Map<String, TextEditingController> timeControllers = {};
 
 
-  /// =========================
-  /// INIT
-  /// =========================
   @override
   void onInit() {
     super.onInit();
-
     if (Get.arguments != null) {
       suratId.value = Get.arguments['suratId'] ?? '';
       suratTitle.value = Get.arguments['suratTitle'] ?? 'Form Surat';
@@ -58,9 +45,7 @@ class SuratFormController extends GetxController {
     setupFormSchema();
     isLoading.value = false;
   }
-  /// =========================
-  /// SETUP FORM SCHEMA
-  /// =========================
+
   void setupFormSchema() {
     if (suratData['form_schema'] == null) return;
 
@@ -113,9 +98,6 @@ class SuratFormController extends GetxController {
     }
   }
 
-  /// =========================
-  /// GETTER / SETTER
-  /// =========================
   TextEditingController getTextController(String key) =>
       textControllers[key]!;
 
@@ -159,9 +141,6 @@ class SuratFormController extends GetxController {
   void setCheckboxValue(String key, bool value) =>
       checkboxValues[key]?.value = value;
 
-  /// =========================
-  /// VALIDASI
-  /// =========================
   bool validateForm() {
     for (var section in formSections) {
       final fields = section['fields'] as List<dynamic>? ?? [];
@@ -203,6 +182,8 @@ class SuratFormController extends GetxController {
   if (isSubmitting.value) return;
   isSubmitting.value = true;
 
+  print("INI SURAT DATA ${suratData['kode']}");
+
   try {
     if (!validateForm()) {
       final empty = getEmptyFields();
@@ -215,9 +196,6 @@ class SuratFormController extends GetxController {
       return;
     }
 
-    // ======================
-    // COLLECT FORM DATA
-    // ======================
     final Map<String, dynamic> collectedData = {};
     for (var section in formSections) {
       final fields = section['fields'] as List<dynamic>? ?? [];
@@ -248,20 +226,21 @@ class SuratFormController extends GetxController {
     final user = await StorageService.getUser();
     final token = await StorageService.getToken();
 
-    // ======================
-    // BUILD FORMDATA MAP
-    // ======================
+    final now = DateTime.now();
+    final tahun = now.year;
+    final jam = now.hour.toString().padLeft(2, '0');
+    final menit = now.minute.toString().padLeft(2, '0');
+    final detik = now.second.toString().padLeft(2, '0');
+
     final Map<String, dynamic> formDataMap = {
       'desa_id': ApiConstant.desaId,
+      'reg': "${tahun}/${suratData['kode']}/${jam}${menit}${detik}",
       'jenis_surat_id': suratData['id'],
       'data_form': jsonEncode(collectedData),
       'status': 'verifikasi',
       'created_by': int.parse(user!.id.toString()),
     };
 
-    // ======================
-    // MULTI FILE
-    // ======================
     final List<dio.MultipartFile> files = [];
 
     for (var entry in fileValues.entries) {
@@ -282,9 +261,6 @@ class SuratFormController extends GetxController {
 
     final dio.FormData formData = dio.FormData.fromMap(formDataMap);
 
-    // ======================
-    // SEND REQUEST
-    // ======================
     final response = await DioService.instance.post(
       ApiConstant.tambahSurat,
       data: formData,
