@@ -14,7 +14,6 @@ class SuratRiwayatPengajuanView
 
   @override
   Widget build(BuildContext context) {
-    // Initialize responsive sizing
     AppResponsive().init(context);
 
     return Scaffold(
@@ -36,22 +35,9 @@ class SuratRiwayatPengajuanView
             Get.back();
           },
         ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.refresh,
-              color: AppColors.white,
-            ),
-            onPressed: () {
-              controller.resetFilters();
-              controller.fetchData();
-            },
-          ),
-        ],
       ),
       body: Column(
         children: [
-          // Search Bar
           Padding(
             padding: AppResponsive.padding(horizontal: 4, vertical: 2),
             child: TextField(
@@ -76,7 +62,6 @@ class SuratRiwayatPengajuanView
             ),
           ),
 
-          // Filter chips display
           Obx(() {
             bool hasFilters = controller.selectedStatus.value != 'Semua' ||
                 controller.startDate.value != null ||
@@ -139,140 +124,146 @@ class SuratRiwayatPengajuanView
             );
           }),
 
-          // List of applications
           Expanded(
             child: Obx(() {
-              if (controller.isLoading.value) {
-                return Center(
-                    child: CircularProgressIndicator(color: AppColors.primary));
-              }
-
-              if (controller.filteredData.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.search_off,
-                          size: AppResponsive.sp(60), color: AppColors.grey),
-                      SizedBox(height: AppResponsive.h(2)),
-                      Text(
-                        'Tidak ada data yang ditemukan',
-                        style:
-                            AppText.bodyLarge(color: AppColors.textSecondary),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              return ListView.builder(
-                padding: AppResponsive.padding(horizontal: 4, vertical: 1),
-                itemCount: controller.filteredData.length,
-                itemBuilder: (context, index) {
-                  final item = controller.filteredData[index];
-
-                  return InkWell(
-                    onTap: () {
-                      Get.toNamed(
-                        Routes.SURAT_RIWAYAT_PENGAJUAN_DETAIL,
-                        arguments: {
-                          'id': item['id'],
-                          'data':
-                              item,
-                        },
-                      );
-                    },
-                    child: Card(
-                      color: AppColors.white,
-                      margin: AppResponsive.margin(bottom: 1.5),
-                      elevation: 1,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Padding(
-                        padding: AppResponsive.padding(horizontal: 4, vertical: 2),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  width: AppResponsive.h(28),
-                                  child: Text(
-                                    '${item['jenis_surat']['nama']}',
-                                    style: AppText.h6(color: AppColors.text),
-                                    softWrap: true,
-                                    overflow: TextOverflow.visible,
-                                  ),
-                                ),
-                                Container(
-                                  padding: AppResponsive.padding(
-                                      horizontal: 3, vertical: 0.8),
-                                  decoration: BoxDecoration(
-                                    color: controller
-                                        .getStatusColor(item['status'])
-                                        .withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    '${item['status']}',
-                                    style: AppText.smallBold(
-                                      color: controller
-                                          .getStatusColor(item['status']),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: AppResponsive.h(1)),
-                            Row(
-                              children: [
-                                Icon(Icons.numbers,
-                                    size: AppResponsive.sp(16),
-                                    color: AppColors.textSecondary),
-                                SizedBox(width: AppResponsive.w(0.5)),
-                                Text(
-                                  'No. Pengajuan - ${item['id']}',
-                                  style: AppText.pSmall(
-                                      color: AppColors.textSecondary),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: AppResponsive.h(0.5)),
-                            Row(
-                              children: [
-                                Icon(Icons.date_range,
-                                    size: AppResponsive.sp(16),
-                                    color: AppColors.textSecondary),
-                                SizedBox(width: AppResponsive.w(0.5)),
-                                Text(
-                                  'Tanggal: ${item['created_at'] != null
-                                  ? controller.dateFormat.format(
-                                      DateTime.parse(item['created_at']),
-                                    )
-                                  : '-'}',
-                                  style: AppText.pSmall(
-                                      color: AppColors.textSecondary),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: AppResponsive.h(0.5)),
-                            Text(
-                              'Keterangan: ${item['catatan_admin'] ?? '-'}',
-                              style: AppText.pSmall(color: AppColors.text),
-                            ),
-                            SizedBox(height: AppResponsive.h(0.2)),
-                          ],
+              return RefreshIndicator(
+                color: AppColors.primary,
+                onRefresh: () async => await controller.fetchData(),
+                child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: AppResponsive.padding(horizontal: 4, vertical: 1),
+                  itemCount: controller.isLoading.value
+                      ? 1
+                      : controller.filteredData.isEmpty
+                          ? 1
+                          : controller.filteredData.length,
+                  itemBuilder: (context, index) {
+                    if (controller.isLoading.value) {
+                      return SizedBox(
+                        height: 100,
+                        child: Center(
+                          child: CircularProgressIndicator(color: AppColors.primary),
                         ),
-                      ),
-                    ),
-                  );
-                },
+                      );
+                    } else if (controller.filteredData.isEmpty) {
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.8,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.search_off,
+                                  size: AppResponsive.sp(60), color: AppColors.grey),
+                              SizedBox(height: AppResponsive.h(2)),
+                              Text(
+                                'Tidak ada data yang ditemukan',
+                                style: AppText.bodyLarge(color: AppColors.textSecondary),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    } else {
+                      final item = controller.filteredData[index];
+
+                      return InkWell(
+                        onTap: () {
+                          Get.toNamed(
+                            Routes.SURAT_RIWAYAT_PENGAJUAN_DETAIL,
+                            arguments: {
+                              'id': item['id'],
+                              'data': item,
+                            },
+                          );
+                        },
+                        child: Card(
+                          color: AppColors.white,
+                          margin: AppResponsive.margin(bottom: 1.5),
+                          elevation: 1,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Padding(
+                            padding: AppResponsive.padding(horizontal: 4, vertical: 2),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      width: AppResponsive.h(28),
+                                      child: Text(
+                                        '${item['jenis_surat']['nama']}',
+                                        style: AppText.h6(color: AppColors.text),
+                                        softWrap: true,
+                                        overflow: TextOverflow.visible,
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: AppResponsive.padding(
+                                          horizontal: 3, vertical: 0.8),
+                                      decoration: BoxDecoration(
+                                        color: controller
+                                            .getStatusColor(item['status'])
+                                            .withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        '${item['status']}',
+                                        style: AppText.smallBold(
+                                          color: controller.getStatusColor(item['status']),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: AppResponsive.h(1)),
+                                Row(
+                                  children: [
+                                    Icon(Icons.numbers,
+                                        size: AppResponsive.sp(16),
+                                        color: AppColors.textSecondary),
+                                    SizedBox(width: AppResponsive.w(0.5)),
+                                    Text(
+                                      'No. Pengajuan - ${item['id']}',
+                                      style:
+                                          AppText.pSmall(color: AppColors.textSecondary),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: AppResponsive.h(0.5)),
+                                Row(
+                                  children: [
+                                    Icon(Icons.date_range,
+                                        size: AppResponsive.sp(16),
+                                        color: AppColors.textSecondary),
+                                    SizedBox(width: AppResponsive.w(0.5)),
+                                    Text(
+                                      'Tanggal: ${item['created_at'] != null ? controller.dateFormat.format(DateTime.parse(item['created_at'])) : '-'}',
+                                      style:
+                                          AppText.pSmall(color: AppColors.textSecondary),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: AppResponsive.h(0.5)),
+                                Text(
+                                  'Keterangan: ${item['catatan_admin'] ?? '-'}',
+                                  style: AppText.pSmall(color: AppColors.text),
+                                ),
+                                SizedBox(height: AppResponsive.h(0.2)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
               );
             }),
           ),
-        ],
+],
       ),
     );
   }

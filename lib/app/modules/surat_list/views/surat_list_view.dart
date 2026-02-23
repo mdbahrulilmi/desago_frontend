@@ -64,12 +64,10 @@ class SuratListView extends StatelessWidget {
         centerTitle: true,
       ),
 
-      // 🔥 BODY FIXED
       body: Column(
         children: [
           _buildHeader(controller),
 
-          /// 🔥 INI KUNCI KESELAMATAN
           Expanded(
             child: _buildJenisSuratList(controller),
           ),
@@ -80,8 +78,6 @@ class SuratListView extends StatelessWidget {
       ),
     );
   }
-
-  // ================= HEADER =================
 
   Widget _buildHeader(SuratListController controller) {
     return Column(

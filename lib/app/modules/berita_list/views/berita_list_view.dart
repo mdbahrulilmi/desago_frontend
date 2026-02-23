@@ -38,15 +38,49 @@ class BeritaListView extends GetView<BeritaListController> {
           _buildSearchBar(),
 
           Expanded(
-            child: Obx(() {
-              if (controller.filteredBeritas.isEmpty) {
-                return EmptyStateWidget(title: "Tidak ada berita", message: "Saat ini tidak ada berita yang tersedia");
-              }
+        child: Obx(() {
+          return RefreshIndicator(
+            onRefresh: controller.refreshBerita,
+            child: ListView.builder(
+              controller: controller.scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              itemCount: controller.filteredBeritas.isEmpty
+                  ? 1
+                  : controller.filteredBeritas.length +
+                      (controller.isLoadMore.value ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (controller.filteredBeritas.isEmpty) {
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.8,
+                    child: Center(
+                      child: EmptyStateWidget(
+                        title: "Tidak ada Berita",
+                        message: "Saat ini tidak ada berita yang tersedia",
+                      ),
+                    ),
+                  );
+                }
 
-              return _buildBeritaList();
-            }),
-          ),
-        ],
+                if (index < controller.filteredBeritas.length) {
+                  final berita = controller.filteredBeritas[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 14.0),
+                    child: _buildBeritaCard(berita),
+                  );
+                } else {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+              },
+            ),
+          );
+        }),
+      )],
       ),
     );
   }
@@ -135,14 +169,13 @@ Widget _buildBeritaCard(BeritaModel berita) {
                     fit: BoxFit.cover,
                   )
                 : Image.asset(
-                    "assets/images/default.png", // fallback image
+                    "assets/images/default.png",
                     fit: BoxFit.cover,
                   ),
             ),
           ),
         ),
 
-        // Konten Berita
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -153,7 +186,6 @@ Widget _buildBeritaCard(BeritaModel berita) {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Kategori
                 Text(
                   berita.kategori ?? '-',
                   style: AppText.smallBold(
@@ -163,7 +195,6 @@ Widget _buildBeritaCard(BeritaModel berita) {
 
                 SizedBox(height: AppResponsive.h(0.8)),
 
-                // Judul
                 AutoSizeText(
                   berita.judul?.toString() ?? '-',
                   style: AppText.pSmallBold(color: AppColors.dark),
@@ -174,8 +205,6 @@ Widget _buildBeritaCard(BeritaModel berita) {
                 ),
 
                 SizedBox(height: AppResponsive.h(0.6)),
-
-                // Excerpt
                 Text(
                   berita.excerpt ?? '',
                   style:

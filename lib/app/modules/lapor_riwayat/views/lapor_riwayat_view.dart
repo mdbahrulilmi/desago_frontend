@@ -104,32 +104,44 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
           SizedBox(height: AppResponsive.h(1)),
           Expanded(
             child: Obx(() {
-              if (controller.isLoading.value) {
-                return Center(
-                    child: CircularProgressIndicator(color: AppColors.primary));
-              }
-
-              if (controller.filteredLaporanList.isEmpty) {
-                return EmptyStateWidget(
-                  title: "Tidak ada Laporan",
-                  message: "Saat ini tidak ada laporan yang tersedia",
-                );
-              }
-
-              return ListView.builder(
-                padding: AppResponsive.padding(horizontal: 4, vertical: 1),
-                itemCount: controller.filteredLaporanList.length,
-                itemBuilder: (context, index) {
-                  final laporan = controller.filteredLaporanList[index];
-                  return _buildLaporanCard(laporan);
-                },
+              return RefreshIndicator(
+                onRefresh: () async => await controller.refreshData(),
+                child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: AppResponsive.padding(horizontal: 4, vertical: 1),
+                  itemCount: controller.isLoading.value
+                      ? 1
+                      : controller.filteredLaporanList.isEmpty
+                          ? 1
+                          : controller.filteredLaporanList.length,
+                  itemBuilder: (context, index) {
+                    if (controller.isLoading.value) {
+                      return SizedBox(
+                        height: 100,
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    } else if (controller.filteredLaporanList.isEmpty) {
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.8,
+                        child: Center(
+                          child: EmptyStateWidget(
+                            title: "Tidak ada Laporan",
+                            message: "Saat ini tidak ada laporan yang tersedia",
+                          ),
+                        ),
+                      );
+                    } else {
+                      final laporan = controller.filteredLaporanList[index];
+                      return _buildLaporanCard(laporan);
+                    }
+                  },
+                ),
               );
             }),
-          ),
-        ],
-      ),
-    );
-  }
+          ),],
+        ),
+      );
+    }
 
   Widget _buildLaporanCard(LaporModel laporan) {
     return InkWell(

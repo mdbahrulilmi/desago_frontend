@@ -58,59 +58,68 @@ class ProdukListSemuaView extends GetView<ProdukListSemuaController> {
               ),
             ),
           ),
-          Expanded(
-            child: Obx(() {
-              if (controller.isLoading.value &&
-                  controller.filteredProducts.isEmpty) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-
-              if (controller.filteredProducts.isEmpty) {
-                return const EmptyStateWidget(
-                  title: 'UMKM Tidak Ditemukan',
-                  message: 'Coba gunakan kata kunci lain',
-                );
-              }
-
-              return RefreshIndicator(
-                onRefresh: () async {
-                  await controller.refreshUMKM();
-                },
-                child: ListView.builder(
-                  controller: controller.scrollController,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppResponsive.w(4),
-                    vertical: AppResponsive.h(1),
-                  ),
-                  itemCount: controller.filteredProducts.length +
-                      (controller.isLoadMore.value ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index <
-                        controller.filteredProducts.length) {
-                      final product =
-                          controller.filteredProducts[index];
-                      return Padding(
-                        padding: EdgeInsets.only(
-                            bottom: AppResponsive.h(1)),
-                        child:
-                            _buildGridProductItem(product, index),
-                      );
-                    } else {
-                      return const Padding(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 16),
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    }
-                  },
+         Expanded(
+          child: Obx(() {
+            return RefreshIndicator(
+              onRefresh: () async => await controller.refreshUMKM(),
+              child: ListView.builder(
+                controller: controller.scrollController,
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppResponsive.w(4),
+                  vertical: AppResponsive.h(1),
                 ),
-              );
-            }),
-          ),
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: controller.filteredProducts.isEmpty
+                    ? 1 // satu item untuk empty state
+                    : controller.filteredProducts.length +
+                        (controller.isLoadMore.value ? 1 : 0),
+                itemBuilder: (context, index) {
+                  // Loading awal
+                  if (controller.isLoading.value &&
+                      controller.filteredProducts.isEmpty) {
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.8,
+                      child: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+
+                  // Empty state
+                  if (controller.filteredProducts.isEmpty) {
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.8,
+                      child: Center(
+                        child: EmptyStateWidget(
+                          title: "Tidak ada UMKM",
+                          message:
+                              "Saat ini tidak ada UMKM yang tersedia",
+                        ),
+                      ),
+                    );
+                  }
+
+                  // Item data
+                  if (index < controller.filteredProducts.length) {
+                    final product = controller.filteredProducts[index];
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: AppResponsive.h(1)),
+                      child: _buildGridProductItem(product, index),
+                    );
+                  } else {
+                    // Load more indicator
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+                },
+              ),
+            );
+          }),
+        )
         ],
       ),
     );
