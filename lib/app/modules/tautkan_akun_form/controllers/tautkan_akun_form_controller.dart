@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/controllers/auth_controller.dart';
+import 'package:desago/app/modules/akun/controllers/akun_controller.dart';
 import 'package:desago/app/services/dio_services.dart';
 import 'package:desago/app/services/storage_services.dart';
 import 'package:dio/dio.dart' as dio;
@@ -28,6 +30,8 @@ class TautkanAkunFormController extends GetxController {
   final isLoading = false.obs;
 
   final ImagePicker _picker = ImagePicker();
+  
+  final authController = Get.put(AuthController());
 
   Future<void> pickImage(bool isKTP) async {
     final XFile? image = await _picker.pickImage(
@@ -145,7 +149,7 @@ class TautkanAkunFormController extends GetxController {
 
       Get.back();
       Get.back();
-
+      authController.initAuth();
       Get.snackbar(
         "Berhasil",
         response.data["message"] ?? "Data berhasil dikirim",

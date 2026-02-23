@@ -108,7 +108,7 @@
       Get.toNamed('/lapor/buat');
     }
 
-    void refreshData() {
+    Future<void> refreshData() async {
       fetchLaporanList();
     }
 

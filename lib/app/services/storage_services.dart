@@ -57,4 +57,9 @@ class StorageService {
     return _storage.read(_verifiedKey);
   }
 
+  static String? getTokenSync() {
+    final box = GetStorage();
+    return box.read('token') as String?;
+  }
+
 }

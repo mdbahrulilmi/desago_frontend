@@ -134,7 +134,7 @@ flutter_native_splash:
   ios: true
 
   android_gravity: center
-  branding_mode: none  # <- aman
+  branding_mode: none
   ios_content_mode: scaleAspectFit
 
   android_12:

@@ -24,16 +24,19 @@ class AktivitasController extends GetxController {
   }
 
   void _scrollListener() {
-    if (scrollController.position.pixels >=
-            scrollController.position.maxScrollExtent - 200 &&
-        !isLoadingMore.value &&
-        !isLoading.value &&
-        currentPage < lastPage) {
-      loadMore();
-    }
-  }
+  if (!scrollController.hasClients) return;
 
-  Future<void> fetchAktivitas({bool isRefresh = false}) async {
+  final threshold = 100.0;
+
+  if (scrollController.position.extentAfter < threshold &&
+      !isLoadingMore.value &&
+      !isLoading.value &&
+      currentPage < lastPage) {
+    loadMore();
+  }
+}
+
+ Future<void> fetchAktivitas({bool isRefresh = false}) async {
   try {
     if (isRefresh) {
       currentPage = 1;
@@ -60,15 +63,23 @@ class AktivitasController extends GetxController {
     if (res.data == null) return;
 
     final body = res.data;
-
     final List data = body['data'] ?? [];
 
     currentPage = body['current_page'] ?? 1;
     lastPage = body['last_page'] ?? 1;
 
-    aktivitas.addAll(
+    aktivitas.assignAll(
       data.cast<Map<String, dynamic>>(),
     );
+
+    /// 🔥 AUTO LOAD kalau belum bisa scroll
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients &&
+          scrollController.position.maxScrollExtent == 0 &&
+          currentPage < lastPage) {
+        loadMore();
+      }
+    });
 
   } catch (e) {
     debugPrint('Error fetchAktivitas: $e');
@@ -76,59 +87,19 @@ class AktivitasController extends GetxController {
     isLoading.value = false;
   }
 }
-
-Future<void> goToPage(int page) async {
-  if (page == currentPage) return;
-
-  try {
-    isLoading.value = true;
-
-    currentPage = page;
-    aktivitas.clear();
-
-    final token = StorageService.getToken();
-
-    final res = await DioService.instance.get(
-      ApiConstant.aktivitas,
-      queryParameters: {
-        'page': currentPage,
-      },
-      options: Options(
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      ),
-    );
-
-    final body = res.data;
-    final List data = body['data'] ?? [];
-
-    lastPage = body['last_page'] ?? 1;
-
-    aktivitas.assignAll(
-      data.cast<Map<String, dynamic>>(),
-    );
-
-  } catch (e) {
-    debugPrint("Error goToPage: $e");
-  } finally {
-    isLoading.value = false;
-  }
-}
-
   Future<void> loadMore() async {
   if (currentPage >= lastPage) return;
 
   try {
     isLoadingMore.value = true;
-    currentPage++;
+    final nextPage = currentPage + 1;
 
     final token = StorageService.getToken();
 
     final res = await DioService.instance.get(
       ApiConstant.aktivitas,
       queryParameters: {
-        'page': currentPage,
+        'page': nextPage,
       },
       options: Options(
         headers: {
@@ -142,13 +113,15 @@ Future<void> goToPage(int page) async {
     final body = res.data;
     final List data = body['data'] ?? [];
 
+    currentPage = body['current_page'] ?? nextPage;
+    lastPage = body['last_page'] ?? lastPage;
+
     aktivitas.addAll(
       data.cast<Map<String, dynamic>>(),
     );
 
   } catch (e) {
     debugPrint('Error loadMore: $e');
-    currentPage--; // rollback kalau gagal
   } finally {
     isLoadingMore.value = false;
   }

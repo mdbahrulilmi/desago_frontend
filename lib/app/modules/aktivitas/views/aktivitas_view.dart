@@ -1,6 +1,5 @@
 import 'package:desago/app/helpers/time_helper.dart';
 import 'package:desago/app/utils/app_colors.dart';
-import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,7 +11,6 @@ class AktivitasView extends GetView<AktivitasController> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(AktivitasController());
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -26,165 +24,159 @@ class AktivitasView extends GetView<AktivitasController> {
         elevation: 1,
       ),
       body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+        /// Loading pertama kali
+        if (controller.isLoading.value &&
+            controller.aktivitas.isEmpty) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         }
 
+        /// Kosong
         if (controller.aktivitas.isEmpty) {
-          return const Center(child: Text('Belum ada aktivitas'));
+          return const Center(
+            child: Text('Belum ada aktivitas'),
+          );
         }
 
-       return RefreshIndicator(
-    onRefresh: () => controller.refreshAktivitas(),
-    child: ListView(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      children: [
-
-      ...controller.aktivitas.map((item) {
-
-        final isLapor = item['tipe'] == 'lapor';
-
-        return _buildReportCard(
-          icon: isLapor
-              ? Remix.alarm_warning_fill
-              : Remix.mail_send_fill,
-          route: isLapor
-              ? 'lapor-riwayat'
-              : 'surat-riwayat-pengajuan',
-          title: isLapor ? 'Lapor' : 'Surat',
-          subtitle: item['aktivitas'] ?? '-',
-          date: TimeHelper.formatTanggal(
-              item['created_at'] ?? '-'),
-          status: 'Terkirim',
-          onPressed: () {},
-        );
-      }).toList(),
-      
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(controller.lastPage, (index) {
-              final page = index + 1;
-              final isActive = page == controller.currentPage;
-
-              return GestureDetector(
-                onTap: () => controller.goToPage(page),
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8, horizontal: 12),
-                  decoration: BoxDecoration(
-                    color: isActive
-                        ? AppColors.primary
-                        : Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(6),
+        /// LIST
+        return RefreshIndicator(
+          onRefresh: controller.refreshAktivitas,
+          child: ListView.separated(
+            controller: controller.scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(0, 8, 0, 100),
+            itemCount: controller.aktivitas.length +
+                (controller.isLoadingMore.value ? 1 : 0),
+            separatorBuilder: (_, __) => Divider(
+              color: AppColors.border,
+              height: 1,
+              thickness: 1,
+            ),
+            itemBuilder: (context, index) {
+              /// Loading More Indicator
+              if (index >= controller.aktivitas.length) {
+                return const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Center(
+                    child: CircularProgressIndicator(),
                   ),
-                  child: Text(
-                    "$page",
-                    style: TextStyle(
-                      color: isActive
-                          ? Colors.white
-                          : Colors.black,
+                );
+              }
+
+              final item = controller.aktivitas[index];
+              final isLapor = item['tipe'] == 'lapor';
+
+              return RepaintBoundary(
+                child: _ReportCard(
+                  icon: isLapor
+                      ? Remix.alarm_warning_fill
+                      : Remix.mail_send_fill,
+                  route: isLapor
+                      ? 'lapor-riwayat'
+                      : 'surat-riwayat-pengajuan',
+                  title: isLapor ? 'Lapor' : 'Surat',
+                  subtitle: item['aktivitas'] ?? '-',
+                  date: TimeHelper.formatTanggal(
+                    item['created_at'] ?? '-',
+                  ),
+                  status: 'Terkirim',
+                ),
+              );
+            },
+          ),
+        );
+      }),
+    );
+  }
+}
+
+class _ReportCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final String date;
+  final String status;
+  final String route;
+
+  const _ReportCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.date,
+    required this.status,
+    required this.route,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => Get.toNamed('/$route'),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 54,
+              height: 54,
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: AppColors.secondary),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-              );
-            }),
-          ),
-        ),
-    ],
-  ),
-);
-}),
-    );
-  }
-
-  Widget _buildReportCard({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required String date,
-    required String status,
-    required String route,
-    VoidCallback? onPressed,
-  }) {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () => Get.toNamed('/${route}'),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 54,
-                  height: 54,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(icon, color: AppColors.secondary),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        date,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 3, horizontal: 6),
-                  decoration: BoxDecoration(
-                    color: AppColors.success,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    status,
-                    style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.secondary,
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[700],
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    date,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                  vertical: 3, horizontal: 6),
+              decoration: BoxDecoration(
+                color: AppColors.success,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                status,
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.secondary,
+                ),
+              ),
+            ),
+          ],
         ),
-        Divider(
-          color: AppColors.border,
-          height: AppResponsive.h(1),
-          thickness: 2,
-        ),
-      ],
+      ),
     );
   }
 }

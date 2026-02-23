@@ -1,4 +1,3 @@
-import 'package:desago/app/modules/password_baru/controllers/password_baru_controller.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -58,7 +57,7 @@ import '../modules/nomor_penting/bindings/nomor_penting_binding.dart';
 import '../modules/nomor_penting/views/nomor_penting_view.dart';
 import '../modules/otp_verifikasi/bindings/otp_verifikasi_binding.dart';
 import '../modules/otp_verifikasi/views/otp_verifikasi_view.dart';
-import '../modules/password_baru/bindings/password_baru_binding.dart';
+import '../modules/password_baru/controllers/password_baru_controller.dart';
 import '../modules/password_baru/views/password_baru_view.dart';
 import '../modules/produk_detail/bindings/produk_detail_binding.dart';
 import '../modules/produk_detail/views/produk_detail_view.dart';
@@ -125,7 +124,7 @@ class AppPages {
       page: () => const LupaPasswordView(),
       binding: LupaPasswordBinding(),
     ),
-     GetPage(
+    GetPage(
       name: '/password-baru',
       page: () => PasswordBaruView(),
       binding: BindingsBuilder(() {

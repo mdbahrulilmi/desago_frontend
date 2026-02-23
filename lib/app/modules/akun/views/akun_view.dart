@@ -22,12 +22,12 @@ class AkunView extends GetView<AkunController> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: RefreshIndicator(
-        onRefresh: ()=> controller.onRefresh(),
+        onRefresh: ()=> controller.auth.initAuth(),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             children: [
-
+        
               SizedBox(
                 height: 230,
                 child: Stack(
@@ -67,7 +67,7 @@ class AkunView extends GetView<AkunController> {
                   ],
                 ),
               ),
-
+        
               Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: AppResponsive.w(5),
@@ -76,10 +76,10 @@ class AkunView extends GetView<AkunController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
+        
                     /// ===== VERIFICATION BANNER =====
                     Obx(() {
-                      return controller.verification.value == "unverified"
+                      return !controller.auth.isVerified
                           ? InkWell(
                               onTap: () {
                                 Get.toNamed(Routes.TAUTKAN_AKUN);
@@ -125,12 +125,11 @@ class AkunView extends GetView<AkunController> {
                             )
                           : const SizedBox.shrink();
                     }),
-
+        
                     /// ===== BIODATA =====
                     Obx(() => Column(
                           children: [
-                            if (controller.verification.value !=
-                                "unverified") ...[
+                            if (controller.auth.isVerified) ...[
                               SizedBox(
                                   height: AppResponsive.h(1)),
                               _buildListTile(
@@ -149,7 +148,7 @@ class AkunView extends GetView<AkunController> {
                             ],
                           ],
                         )),
-
+        
                     /// ===== UBAH PASSWORD =====
                     _buildListTile(
                       Remix.lock_password_line,
@@ -164,7 +163,7 @@ class AkunView extends GetView<AkunController> {
                       thickness: 1,
                       color: AppColors.divider,
                     ),
-
+        
                     /// ===== NOTIFICATION SWITCH =====
                     Obx(
                       () => SwitchListTile(
@@ -199,17 +198,17 @@ class AkunView extends GetView<AkunController> {
                                 .withOpacity(0.5),
                       ),
                     ),
-
+        
                     Divider(
                       height: 1,
                       thickness: 1,
                       color: AppColors.divider,
                     ),
-
+        
                     SizedBox(
                       height: AppResponsive.h(3),
                     ),
-
+        
                     /// ===== LOGOUT =====
                     InkWell(
                       onTap: controller.logout,
@@ -342,12 +341,13 @@ class AkunView extends GetView<AkunController> {
                 mainAxisAlignment:
                     MainAxisAlignment.center,
                 children: [
-                  Text(
-                    controller.user.value?.username ??
-                        'Tidak Ada Nama',
-                    style:
-                        AppText.h6(color: AppColors.dark),
-                  ),
+                Text(
+                  controller.user.value?.nama_lengkap?.length != null &&
+                          controller.user.value!.nama_lengkap!.length > 4
+                      ? controller.user.value!.nama_lengkap.toString()
+                      : controller.user.value?.username ?? 'Tidak Ada Nama',
+                  style: AppText.h6(color: AppColors.dark),
+                ),
                   Text(
                     controller.user.value?.email ??
                         'Email Tidak Tersedia',

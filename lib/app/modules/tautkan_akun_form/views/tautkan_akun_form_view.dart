@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:desago/app/modules/tautkan_akun/controllers/tautkan_akun_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -112,17 +111,37 @@ class TautkanAkunFormView extends StatelessWidget {
             )),
 
             SizedBox(height: AppResponsive.h(2)),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => formController.submit(),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            Obx(() {
+              final loading = formController.isLoading.value;
+
+              return SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: loading ? null : () => formController.submit(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: loading
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.secondary,
+                          ),
+                        )
+                      : Text(
+                          "Simpan",
+                          style: AppText.bodyMediumBold(
+                            color: AppColors.secondary,
+                          ),
+                        ),
                 ),
-                child: Text("Simpan", style: AppText.bodyMediumBold(color: AppColors.secondary)),
-              ),
-            ),
+              );
+            }),
           ],
         ),
       ),

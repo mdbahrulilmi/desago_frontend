@@ -119,6 +119,16 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
 
               final desa = controller.desa.value;
               if (desa == null) return const SizedBox();
+             final raw = desa.misi ?? '';
+
+final misiList = (desa.misi ?? '')
+    .replaceAll('\r', '')
+    .replaceAll('\n', ' ')
+    .trim()
+    .split('.')
+    .map((e) => e.replaceAll(RegExp(r'\s+'), ' ').trim())
+    .where((e) => e.isNotEmpty)
+    .toList();
 
               return Column(
                 children: [
@@ -187,7 +197,6 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
                       Text('Visi & Misi', style: AppText.h5(color: AppColors.dark)),
                       SizedBox(height: AppResponsive.h(1)),
 
-                      // ===== VISI =====
                       Text('Visi', style: AppText.h6(color: AppColors.text)),
                       const SizedBox(height: 8),
                       Text(
@@ -197,16 +206,45 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
                       ),
 
                       SizedBox(height: AppResponsive.h(1)),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Misi',
+                                style: AppText.h6(color: AppColors.text),
+                              ),
+                              const SizedBox(height: 8),
 
-                      // ===== MISI =====
-                      // ===== VISI =====
-                      Text('Visi', style: AppText.h6(color: AppColors.text)),
-                      const SizedBox(height: 8),
-                      Text(
-                        desa.misi ?? '-',
-                        style: AppText.bodyMedium(color: AppColors.text),
-                        textAlign: TextAlign.justify,
-                      ),
+                              if (misiList.length > 1)
+                                ...List.generate(misiList.length, (index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 6),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${index + 1}. ',
+                                          style: AppText.bodyMedium(color: AppColors.text),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            misiList[index],
+                                            style: AppText.bodyMedium(color: AppColors.text),
+                                            textAlign: TextAlign.justify,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                })
+                              else
+                                Text(
+                                  desa.misi ?? '-',
+                                  style: AppText.bodyMedium(color: AppColors.text),
+                                  textAlign: TextAlign.justify,
+                                ),
+                            ],
+                          )
                     ],
                   ),
                 ],

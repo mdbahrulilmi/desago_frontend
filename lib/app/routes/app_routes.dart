@@ -56,8 +56,8 @@ abstract class _Paths {
   static const OTP_VERIFIKASI = '/otp-verifikasi';
   static const PASSWORD_BARU = '/password-baru';
   static const SUKSES_RESET_PASSWORD = '/sukses-reset-password';
-  static const METHOD_RESET_PASSWORD = '/method-reset-password';
-  static const LUPA_PASSWORD_WA = '/lupa-password-wa';
+  // static const METHOD_RESET_PASSWORD = '/method-reset-password';
+  // static const LUPA_PASSWORD_WA = '/lupa-password-wa';
   static const SUKSES_VERIFIKASI_EMAIL = '/sukses-verifikasi-email';
   static const AKUN = '/akun';
   static const LAYANAN = '/layanan';

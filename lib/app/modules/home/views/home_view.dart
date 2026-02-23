@@ -93,7 +93,7 @@ class HomeView extends GetView<HomeController> {
                   }),
                   SizedBox(height: AppResponsive.h(2)),
                   Obx(() {
-                      return controller.verification.value == "unverified"
+                      return !controller.auth.isVerified
                           ? InkWell(
                               onTap: () {
                                 Get.toNamed(Routes.TAUTKAN_AKUN);
@@ -171,7 +171,7 @@ class HomeView extends GetView<HomeController> {
                               Get.toNamed(Routes.PROFIL_DESA);
                             }),
                            Obx(() {
-                            return controller.verification.value == "verified"
+                            return controller.auth.isVerified
                                 ? _buildMenuItem(
                                     Remix.alarm_warning_line,
                                     'Lapor',
@@ -197,7 +197,8 @@ class HomeView extends GetView<HomeController> {
                               Get.toNamed(Routes.NOMOR_PENTING);
                             }),
                             Obx(() {
-                            return controller.verification.value == "verified"
+                              
+                            return controller.auth.isVerified
                                 ? _buildMenuItem(Remix.mail_fill, 'Surat',
                                 AppColors.primary,
                                 AppColors.secondary, () {

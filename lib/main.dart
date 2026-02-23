@@ -1,3 +1,4 @@
+import 'package:desago/app/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -14,7 +15,8 @@ Future<void> main() async {
   await GetStorage.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await initializeDateFormatting('id_ID', null);
-
+  
+  Get.put(AuthController(), permanent: true);
   Get.put(BottomNavigationController());
 
   final appLinks = AppLinks();
@@ -29,13 +31,11 @@ Future<void> main() async {
       'email': initialUri.queryParameters['email'] ?? '',
     };
   }
-
   runApp(MyApp(
     initialRoute: initialRoute,
     initialArgs: initialArgs,
   ));
 
-  // Running deep link listener
   appLinks.uriLinkStream.listen((uri) {
     if (uri != null && uri.path == '/reset-password') {
       final token = uri.queryParameters['token'] ?? '';
@@ -44,6 +44,7 @@ Future<void> main() async {
       Get.toNamed('/password-baru', arguments: {'token': token, 'email': email});
     }
   });
+  
 }
 
 class MyApp extends StatelessWidget {

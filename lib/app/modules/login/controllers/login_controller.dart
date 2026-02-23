@@ -1,5 +1,7 @@
 import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/controllers/auth_controller.dart';
 import 'package:desago/app/models/UserModel.dart';
+import 'package:desago/app/modules/home/controllers/home_controller.dart';
 import 'package:desago/app/routes/app_pages.dart';
 import 'package:desago/app/services/dio_services.dart';
 import 'package:desago/app/services/storage_services.dart';
@@ -34,55 +36,68 @@ class LoginController extends GetxController {
     final response = await DioService.instance.post(
       ApiConstant.login,
       data: {
-        'email': emailController.text,
-        'password': passwordController.text,
+        'email': emailController.text.trim(),
+        'password': passwordController.text.trim(),
       },
     );
 
-    if (response.data != null) {
-      final responseData = response.data as Map<String, dynamic>;
-
-      if (response.statusCode == 200 && responseData['success'] == true) {
-        final user = UserModel.fromJson(responseData['user']);
-        final token = responseData['token']?.toString() ?? '';
-        
-        await StorageService.saveUserData(user, token);
-
-        Get.snackbar(
-          'Berhasil',
-          responseData['message'],
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
-
-        Get.offAllNamed(Routes.MAIN);
-      } else {
-        Get.snackbar(
-          'Error',
-          responseData['message'] ?? 'Unknown error occurred',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
-      }
-    } else {
+    /// 🔥 Pastikan response ada
+    if (response.data == null) {
       Get.snackbar(
         'Error',
         'Gagal menerima data dari server',
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+      return;
     }
+
+    final responseData = response.data as Map<String, dynamic>;
+
+    /// 🔥 Login berhasil
+    if (response.statusCode == 200 && responseData['success'] == true) {
+      final user = UserModel.fromJson(responseData['user']);
+      final token = responseData['token']?.toString() ?? '';
+
+      await StorageService.saveUserData(user, token);
+
+      final auth = Get.find<AuthController>();
+      await auth.loadUser();
+
+      Get.snackbar(
+        'Berhasil',
+        responseData['message'] ?? 'Login berhasil',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+
+      Get.offAllNamed(Routes.MAIN);
+      return;
+    }
+
+    Get.snackbar(
+      'Error',
+      responseData['message'] ?? 'Login gagal',
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
+
   } on dio.DioException catch (e) {
     String errorMessage = 'Terjadi kesalahan';
 
     if (e.response != null) {
-      if (e.response!.statusCode == 422) {
+      final statusCode = e.response!.statusCode;
+
+      if (statusCode == 422) {
         final errors = e.response!.data['errors'];
-        errorMessage = errors.values.first[0] ?? 'Validasi gagal';
-      } else if (e.response!.statusCode == 401) {
+        if (errors != null && errors is Map) {
+          errorMessage = errors.values.first[0] ?? 'Validasi gagal';
+        }
+      } else if (statusCode == 401) {
         errorMessage = 'Username atau password salah';
       } else {
-        errorMessage = e.response!.data['message'] ?? 'Gagal terhubung ke server';
+        errorMessage =
+            e.response!.data['message'] ?? 'Gagal terhubung ke server';
       }
     }
 
@@ -92,7 +107,8 @@ class LoginController extends GetxController {
       backgroundColor: Colors.red,
       colorText: Colors.white,
     );
-  } catch (e, stackTrace) {
+
+  } catch (e) {
     Get.snackbar(
       'Error',
       e.toString(),
@@ -104,24 +120,26 @@ class LoginController extends GetxController {
   }
 }
 
-  Future<void> handleGoogleSignIn() async {
+Future<void> handleGoogleSignIn() async {
   try {
     isLoading.value = true;
+    print("========== GOOGLE LOGIN START ==========");
 
-    final GoogleSignIn _googleSignIn = GoogleSignIn(
+    final GoogleSignIn googleSignIn = GoogleSignIn(
       scopes: ['email', 'profile'],
       signInOption: SignInOption.standard,
     );
 
-    final isSignedIn = await _googleSignIn.isSignedIn();
-    
-    if (isSignedIn) {
-      await _googleSignIn.signOut();
+    if (await googleSignIn.isSignedIn()) {
+      print("🔄 Already signed in, signing out first");
+      await googleSignIn.signOut();
     }
 
-    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-    
+    final GoogleSignInAccount? googleUser =
+        await googleSignIn.signIn();
+
     if (googleUser == null) {
+      print("⚠️ User cancelled Google login");
       Get.snackbar(
         'Info',
         'Login dibatalkan',
@@ -131,16 +149,20 @@ class LoginController extends GetxController {
       return;
     }
 
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    print("👤 Google User: ${googleUser.email}");
 
-    final Map<String, dynamic> userData = {
+    final googleAuth = await googleUser.authentication;
+
+    final userData = {
       'email': googleUser.email,
       'name': googleUser.displayName,
       'google_id': googleUser.id,
       'avatar': googleUser.photoUrl,
       'access_token': googleAuth.accessToken,
-      'desa_id': ApiConstant.desaId
+      'desa_id': ApiConstant.desaId,
     };
+
+    print("📤 Sending Google data to backend");
 
     final response = await DioService.instance.post(
       ApiConstant.googleLogin,
@@ -150,43 +172,80 @@ class LoginController extends GetxController {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        validateStatus: (status) {
-          return status! < 500;
-        },
+        validateStatus: (status) => status! < 500,
       ),
     );
-    if (response.statusCode == 200) {
-      final token = response.data['token'];
-      final user = UserModel.fromJson(response.data['user']);
-      await StorageService.saveToken(token);
-      await StorageService.saveUser(user);
 
-      Get.offAllNamed(Routes.MAIN);
+    print("📥 Response Status: ${response.statusCode}");
+    print("📥 Response Data: ${response.data}");
+
+    if (response.data == null) {
+      print("❌ Response null");
+      Get.snackbar(
+        'Error',
+        'Gagal menerima data dari server',
+        backgroundColor: AppColors.danger,
+        colorText: AppColors.white,
+      );
+      return;
+    }
+
+    final responseData = response.data as Map<String, dynamic>;
+
+    if (response.statusCode == 200) {
+      print("✅ Google Login Success");
+
+      final token = responseData['token']?.toString() ?? '';
+      final user = UserModel.fromJson(responseData['user']);
+
+      print("🔑 Token: $token");
+      print("👤 User ID: ${user.id}");
+
+      await StorageService.saveUserData(user, token);
+
+      print("💾 User & Token saved");
+
+      final auth = Get.find<AuthController>();
+      print("🔄 Calling loadUser()");
+      await auth.loadUser();
+
+      print("🚀 Navigate to MAIN");
+
       Get.snackbar(
         'Berhasil',
         'Login dengan Google berhasil',
         backgroundColor: AppColors.success,
         colorText: AppColors.white,
       );
+
+      Get.offAllNamed(Routes.MAIN);
+      return;
     }
-  } catch (e) {
-    String errorMessage = 'Gagal login dengan Google';
-    if (e is PlatformException) {
-      errorMessage += '\nDetail: ${e.message}';
-    }
+
+    print("❌ Google Login Failed: ${responseData['message']}");
 
     Get.snackbar(
       'Error',
-      errorMessage,
+      responseData['message'] ?? 'Login Google gagal',
       backgroundColor: AppColors.danger,
       colorText: AppColors.white,
-      duration: const Duration(seconds: 5),
+    );
+
+  } catch (e, stack) {
+    print("❌ Google Login Error: $e");
+    print("📌 StackTrace: $stack");
+
+    Get.snackbar(
+      'Error',
+      'Terjadi kesalahan saat login Google',
+      backgroundColor: AppColors.danger,
+      colorText: AppColors.white,
     );
   } finally {
     isLoading.value = false;
+    print("========== GOOGLE LOGIN END ==========\n");
   }
 }
-
   void onForgotPassword() {
     Get.toNamed(Routes.LUPA_PASSWORD);
   }

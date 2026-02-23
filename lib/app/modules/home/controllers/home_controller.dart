@@ -1,5 +1,6 @@
   import 'package:carousel_slider/carousel_controller.dart';
   import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/controllers/auth_controller.dart';
   import 'package:desago/app/models/BeritaModel.dart';
   import 'package:desago/app/models/CarouselModel.dart';
 import 'package:desago/app/models/ProdukModel.dart';
@@ -25,7 +26,7 @@ import 'package:dio/dio.dart';
     var isLoadingCarousel = true.obs;
     var isLoadingBerita = true.obs;
     var isLoadingProduk = true.obs;
-    final verification = "".obs;
+    final auth = Get.find<AuthController>();
 
     final box = GetStorage();
 
@@ -37,32 +38,7 @@ import 'package:dio/dio.dart';
     fetchCarousel();
     fetchBerita();
     fetchProduct();
-    loadVerification();
   }
-
-  Future<String> getVerification({ required String token }) async {
-    final res = await DioService.instance.get(
-      ApiConstant.verification,
-      options: Options(headers: {
-        'Authorization': 'Bearer $token',
-        'Accept': 'application/json',
-      }),
-    );
-    return res.data['verification'];
-  }
-
-  Future<void> loadVerification() async {
-    final token = await StorageService.getToken();
-    if (token == null) return;
-
-    try {
-      final status = await getVerification(token: token);
-      verification.value = status;
-      await StorageService.saveVerified(status);
-    } catch (e) {
-    }
-  }
-
     void _loadCarouselCache() {
       final cached = box.read('carousel');
       if (cached != null) {
@@ -172,7 +148,7 @@ import 'package:dio/dio.dart';
       fetchCarousel();
       fetchBerita();
       fetchProduct();
-      loadVerification();
+      auth.initAuth();
     } 
 
     // Data produk

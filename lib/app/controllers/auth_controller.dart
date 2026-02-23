@@ -19,7 +19,22 @@ class AuthController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    initAuth();
     print("🔥 AuthController initialized");
+  }
+
+  Future<void> initAuth() async {
+    final token = StorageService.getToken();
+
+    print("INIT TOKEN: $token");
+
+    if (token != null && token.isNotEmpty) {
+
+      DioService.instance.options.headers['Authorization'] =
+          'Bearer $token';
+
+      await loadUser();
+    }
   }
 
   Future<void> loadUser() async {
@@ -27,7 +42,6 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
 
-      /// 🔹 1️⃣ Load cache
       final cachedUser = box.read('user');
       final cachedBiodata = box.read('biodata');
 
@@ -46,7 +60,6 @@ class AuthController extends GetxController {
         print("📦 No Cached Biodata");
       }
 
-      /// 🔹 2️⃣ Ambil token
       final token = await StorageService.getToken();
       print("🔑 Token: $token");
 
@@ -55,7 +68,6 @@ class AuthController extends GetxController {
         return;
       }
 
-      /// 🔹 3️⃣ Fetch biodata
       print("🌍 Fetching biodata from API...");
       final res = await DioService.instance.get(
         ApiConstant.biodata,
