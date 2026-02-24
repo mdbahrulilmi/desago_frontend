@@ -94,6 +94,7 @@ class AuthController extends GetxController {
         username: bio.username,
         email: bio.email,
         nama_lengkap: bio.namaLengkap,
+        phone: bio.noTelepon,
         avatar: bio.avatar,
         verified: bio.verification,
       );

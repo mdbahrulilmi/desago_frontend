@@ -41,13 +41,18 @@ class AkunController extends GetxController {
   Future<void> fetchUserData() async {
     try {
       final userData = await StorageService.getUser();
+
+      print("===== RAW USER DARI STORAGE =====");
+      print(userData?.toJson());
+      print("PHONE DI STORAGE: ${userData?.phone}");
+
       if (userData != null) {
         user.value = userData;
-        } else {
-        }
-      } catch (e) {
       }
+    } catch (e) {
+      print(e);
     }
+  }
 
   Future<void> logout() async {
     final bool? confirmed = await AppDialog.ask(

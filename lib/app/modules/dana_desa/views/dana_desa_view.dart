@@ -1,4 +1,5 @@
 import 'package:desago/app/models/AnggaranModel.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:desago/app/utils/app_colors.dart';
@@ -19,7 +20,7 @@ class DanaDesaView extends GetView<DanaDesaController> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildHeader(),
+            _buildHeader(context),
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -38,7 +39,7 @@ class DanaDesaView extends GetView<DanaDesaController> {
 
   // ================= HEADER =================
 
-  Widget _buildHeader() {
+  Widget _buildHeader(context) {
     return Container(
       height: 280,
       width: double.infinity,
@@ -84,11 +85,57 @@ class DanaDesaView extends GetView<DanaDesaController> {
                     )),
                 
                 const SizedBox(height: 8),
-                const Text(
-                  'Tahun Anggaran 2025',
-                  style: TextStyle(color: Colors.white70),
-                ),
-              ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min, // penting supaya Row tidak expand
+                  children: [
+                    Text(
+                      'Tahun Anggaran',
+                      style: AppText.bodyMedium(color: Colors.white70),
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        await showDialog(
+                          context: context,
+                          builder: (context) {
+                            final years = List.generate(10, (index) => 2021 + index);
+                            return Dialog(
+                              backgroundColor: Colors.transparent,
+                              insetPadding: const EdgeInsets.all(50), 
+                              child: Container(
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: CupertinoPicker(
+                                  scrollController: FixedExtentScrollController(
+                                    initialItem: years.indexOf(controller.selectedYear.value),
+                                  ),
+                                  itemExtent: 40,
+                                  onSelectedItemChanged: (index) {
+                                    controller.selectedYear.value = years[index];
+                                    controller.fetchDanaDesa();
+                                  },
+                                  children: years
+                                      .map((year) => Center(child: Text(year.toString())))
+                                      .toList(),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+                        child: Obx(() => Text(
+                              controller.selectedYear.value.toString(),
+                              style: AppText.h6(color: AppColors.secondary),
+                            )),
+                      ),
+                    ),
+                  ],
+                ),],
             ),
           )
 ],
