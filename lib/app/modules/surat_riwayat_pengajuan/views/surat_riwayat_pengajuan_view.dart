@@ -297,8 +297,6 @@ class SuratRiwayatPengajuanView
               ],
             ),
             SizedBox(height: AppResponsive.h(2)),
-
-            // Status filter
             Text(
               'Status',
               style: AppText.h6(color: AppColors.text),
@@ -329,8 +327,6 @@ class SuratRiwayatPengajuanView
                 )),
 
             SizedBox(height: AppResponsive.h(2)),
-
-            // Date filter
             Text(
               'Rentang Tanggal',
               style: AppText.h6(color: AppColors.text),
@@ -409,8 +405,6 @@ class SuratRiwayatPengajuanView
             ),
 
             SizedBox(height: AppResponsive.h(3)),
-
-            // Action buttons
             Row(
               children: [
                 Expanded(

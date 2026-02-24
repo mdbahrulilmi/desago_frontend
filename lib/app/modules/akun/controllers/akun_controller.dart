@@ -34,7 +34,6 @@ class AkunController extends GetxController {
   void onInit() {
     super.onInit();
     var token = StorageService.getToken();
-    print(token);
     fetchUserData();
   }
 
@@ -42,15 +41,10 @@ class AkunController extends GetxController {
     try {
       final userData = await StorageService.getUser();
 
-      print("===== RAW USER DARI STORAGE =====");
-      print(userData?.toJson());
-      print("PHONE DI STORAGE: ${userData?.phone}");
-
       if (userData != null) {
         user.value = userData;
       }
     } catch (e) {
-      print(e);
     }
   }
 

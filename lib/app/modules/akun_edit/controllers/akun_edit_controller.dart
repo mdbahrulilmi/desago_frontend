@@ -15,7 +15,7 @@ import 'package:image_picker/image_picker.dart';
 class AkunEditController extends GetxController {
   final akunController = Get.find<AkunController>();
   final user = Rxn<UserModel>();
-  final avatar = Rx<File?>(null); // file lokal sementara
+  final avatar = Rx<File?>(null);
   late TextEditingController emailController;
   late TextEditingController phoneController;
 
@@ -78,29 +78,15 @@ class AkunEditController extends GetxController {
   }
 
   Future<void> updateProfile() async {
-  debugPrint('================ UPDATE PROFILE START ================');
 
   try {
     isLoading.value = true;
-
-    // =========================
-    // TOKEN
-    // =========================
     final token = StorageService.getToken()?.trim();
-    debugPrint('Token: ${token != null ? "ADA" : "NULL"}');
 
     if (token == null || token.isEmpty) {
-      debugPrint('❌ Token tidak ditemukan');
       Get.snackbar('Error', 'Token tidak ditemukan');
       return;
     }
-
-    // =========================
-    // 1️⃣ UPDATE EMAIL & PHONE
-    // =========================
-    debugPrint('➡️ Hit API editProfile');
-    debugPrint('Email: ${emailController.text}');
-    debugPrint('No HP: ${phoneController.text}');
 
     final profileResponse = await DioService.instance.post(
       ApiConstant.editProfile,
@@ -114,13 +100,8 @@ class AkunEditController extends GetxController {
       }),
     );
 
-    debugPrint('⬅️ editProfile status: ${profileResponse.statusCode}');
-    debugPrint('⬅️ editProfile response: ${profileResponse.data}');
-
     if (profileResponse.statusCode != 200 ||
         profileResponse.data['success'] != true) {
-      debugPrint('❌ editProfile GAGAL');
-
       Get.snackbar(
         'Gagal',
         profileResponse.data['message'] ?? 'Gagal update profil',
@@ -128,20 +109,10 @@ class AkunEditController extends GetxController {
       return;
     }
 
-    debugPrint('✅ editProfile BERHASIL');
-
-    // =========================
-    // 2️⃣ UPDATE AVATAR (OPTIONAL)
-    // =========================
     if (avatar.value != null) {
-      debugPrint('➡️ Masuk flow UPDATE AVATAR');
 
       final file = avatar.value!;
       final fileName = file.path.split('/').last;
-
-      debugPrint('Avatar path: ${file.path}');
-      debugPrint('Avatar filename: $fileName');
-      debugPrint('Avatar size: ${file.lengthSync()} bytes');
 
       final formData = dio.FormData.fromMap({
         'avatar': await dio.MultipartFile.fromFile(
@@ -149,8 +120,6 @@ class AkunEditController extends GetxController {
           filename: fileName,
         ),
       });
-
-      debugPrint('➡️ Hit API updateAvatar');
 
       final avatarResponse = await DioService.instance.post(
         ApiConstant.updateAvatar,
@@ -161,12 +130,8 @@ class AkunEditController extends GetxController {
         }),
       );
 
-      debugPrint('⬅️ updateAvatar status: ${avatarResponse.statusCode}');
-      debugPrint('⬅️ updateAvatar response: ${avatarResponse.data}');
-
       if (avatarResponse.statusCode != 200 ||
           avatarResponse.data['status'] != true) {
-        debugPrint('❌ updateAvatar GAGAL');
 
         Get.snackbar(
           'Gagal',
@@ -174,38 +139,24 @@ class AkunEditController extends GetxController {
         );
         return;
       }
-
-      debugPrint('✅ updateAvatar BERHASIL');
-
       final updatedUser =
           UserModel.fromJson(avatarResponse.data['data']);
 
-      debugPrint('➡️ Save user ke storage (dari updateAvatar)');
       await StorageService.saveUser(updatedUser);
 
       akunController.user.value = updatedUser;
       akunController.user.refresh();
 
     } else {
-      // =========================
-      // TANPA AVATAR
-      // =========================
-      debugPrint('ℹ️ Avatar TIDAK diubah');
 
       final updatedUser =
           UserModel.fromJson(profileResponse.data['data']);
 
-      debugPrint('➡️ Save user ke storage (dari editProfile)');
       await StorageService.saveUser(updatedUser);
 
       akunController.user.value = updatedUser;
       akunController.user.refresh();
     }
-
-    // =========================
-    // 3️⃣ FINAL UI
-    // =========================
-    debugPrint('🎉 UPDATE PROFILE SELESAI');
 
     avatar.value = null;
     Get.back();
@@ -218,10 +169,6 @@ class AkunEditController extends GetxController {
     );
 
   } on dio.DioException catch (e) {
-    debugPrint('🔥 DIO ERROR');
-    debugPrint('Status: ${e.response?.statusCode}');
-    debugPrint('Data: ${e.response?.data}');
-    debugPrint('Message: ${e.message}');
 
     Get.snackbar(
       'Error',
@@ -230,7 +177,6 @@ class AkunEditController extends GetxController {
       colorText: Colors.white,
     );
   } catch (e) {
-    debugPrint('🔥 GENERAL ERROR: $e');
 
     Get.snackbar(
       'Error',
@@ -240,10 +186,8 @@ class AkunEditController extends GetxController {
     );
   } finally {
     isLoading.value = false;
-    debugPrint('================ UPDATE PROFILE END ================');
   }
 }
-
 
   void _showError(String message) {
     AppDialog.error(title: 'Error', message: message, buttonText: 'Tutup');

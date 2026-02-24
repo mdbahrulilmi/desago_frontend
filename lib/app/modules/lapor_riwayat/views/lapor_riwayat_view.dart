@@ -187,7 +187,7 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      "Kategori: ${laporan.kategori?.nama}", // kalau backend kasih name kategori, ganti di sini
+                      "Kategori: ${laporan.kategori?.nama}",
                       style: AppText.small(color: AppColors.text),
                     ),
                   ),

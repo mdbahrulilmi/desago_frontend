@@ -13,7 +13,6 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
 
   @override
   Widget build(BuildContext context) {
-    // Inisialisasi AppResponsive
     final AppResponsive responsive = AppResponsive();
     
     responsive.init(context);
@@ -85,8 +84,6 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
                       ],
                     ),
                   ),
-
-                  // ===== TAB PERANGKAT =====
                   RefreshIndicator(
                     onRefresh: controller.refreshProfile,
                     child: ListView(
@@ -104,7 +101,6 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
     );
   }
 
-  // Widget untuk Tab Profil
   Widget _buildProfilTab(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20.0),
@@ -257,7 +253,6 @@ final misiList = (desa.misi ?? '')
     );
   }
 
-  // Widget untuk Tab Perangkat
   Widget _buildPerangkatTab(BuildContext context) {
     return Obx(() {
     if (controller.isLoading.value) {
@@ -328,10 +323,7 @@ final misiList = (desa.misi ?? '')
               ],
             ),
           ),
-
           SizedBox(height: AppResponsive.h(1)),
-
-          // Card BPD
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -342,8 +334,6 @@ final misiList = (desa.misi ?? '')
                   style: AppText.h5(color: AppColors.dark),
                 ),
                 SizedBox(height: AppResponsive.h(1)),
-
-                // List anggota BPD
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),

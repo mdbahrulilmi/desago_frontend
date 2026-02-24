@@ -16,11 +16,8 @@ import 'package:dio/dio.dart' as dio;
 class LaporFormController extends GetxController {
   final TextEditingController judulController = TextEditingController();
   final TextEditingController deskripsiController = TextEditingController();
-
   final LaporController laporController = Get.find<LaporController>();
   RxList<LaporKategoriModel> categories = <LaporKategoriModel>[].obs;
-
-
   var isLoading = true.obs;
   var isSubmitting = false.obs;
   final List<String> tujuanList = [
@@ -30,7 +27,6 @@ class LaporFormController extends GetxController {
     'RT/RW',
     'Lainnya'
   ];
-
   final RxString selectedTujuan = RxString('');
   final RxInt selectedCategoryId = 0.obs;
   final RxString selectedCategoryName = ''.obs;
@@ -70,7 +66,6 @@ class LaporFormController extends GetxController {
       listData.map<LaporKategoriModel>((e) => LaporKategoriModel.fromJson(e)).toList(),
     );
   } catch (e) {
-    debugPrint(e.toString());
   } finally {
     isLoading.value = false;
   }
@@ -90,20 +85,6 @@ Future<void> createLapor({
   final userId = await StorageService.getUser()?.id;
   try {
     isSubmitting.value = true;
-
-    // --- Debug: tampilkan form data ---
-    print('=== DEBUG: createLapor form data ===');
-    print({
-      'desa_id': desaId,
-      'kategori_id': kategoriId,
-      'user_id': userId,
-      'judul': judul,
-      'ditujukan': ditujukan,
-      'deskripsi': deskripsi,
-      'gambar': gambar?.path,
-    });
-
-    // FormData sesuai backend
     final formData = dio.FormData.fromMap({
       'desa_id': desaId,
       'kategori_id': kategoriId,
@@ -130,28 +111,16 @@ Future<void> createLapor({
       ),
     );
 
-    // --- Debug: tampilkan response ---
-    print('=== DEBUG: createLapor response ===');
-    print(response.statusCode);
-    print(response.data);
-
     Get.offNamed(
       Routes.LAPOR_RIWAYAT,
       arguments: {'refresh': true},
     );
   } on dio.DioException catch (e) {
-    print('=== DEBUG: DioException ===');
-    print('Message: ${e.message}');
-    print('Response: ${e.response?.statusCode}');
-    print('Data: ${e.response?.data}');
     AppDialog.error(
       title: 'Gagal',
       message: 'Terjadi kesalahan saat mengirim laporan.\n${e.response?.data ?? e.message}',
     );
   } catch (e, st) {
-    print('=== DEBUG: Exception ===');
-    print(e);
-    print(st);
     AppDialog.error(
       title: 'Gagal',
       message: 'Terjadi kesalahan saat mengirim laporan.\n$e',

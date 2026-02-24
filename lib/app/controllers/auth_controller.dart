@@ -15,6 +15,7 @@ class AuthController extends GetxController {
   RxBool isLoading = true.obs;
 
   bool get isVerified => biodata.value?.isVerified ?? false;
+  bool get isPending => biodata.value?.isPending ?? false;
 
   @override
   void onInit() {
@@ -26,8 +27,6 @@ class AuthController extends GetxController {
   Future<void> initAuth() async {
     final token = StorageService.getToken();
 
-    print("INIT TOKEN: $token");
-
     if (token != null && token.isNotEmpty) {
 
       DioService.instance.options.headers['Authorization'] =
@@ -38,7 +37,6 @@ class AuthController extends GetxController {
   }
 
   Future<void> loadUser() async {
-    print("========== LOAD USER START ==========");
     try {
       isLoading.value = true;
 
@@ -46,29 +44,21 @@ class AuthController extends GetxController {
       final cachedBiodata = box.read('biodata');
 
       if (cachedUser != null) {
-        print("📦 Cached User Found");
         user.value = UserModel.fromJson(cachedUser);
       } else {
-        print("📦 No Cached User");
       }
 
       if (cachedBiodata != null) {
-        print("📦 Cached Biodata Found");
         biodata.value = BiodataModel.fromJson(cachedBiodata);
-        print("📦 Cached Verification: ${biodata.value?.verification}");
       } else {
-        print("📦 No Cached Biodata");
       }
 
       final token = await StorageService.getToken();
-      print("🔑 Token: $token");
 
       if (token == null) {
-        print("❌ Token null, stop loading");
         return;
       }
 
-      print("🌍 Fetching biodata from API...");
       final res = await DioService.instance.get(
         ApiConstant.biodata,
         options: Options(headers: {
@@ -77,18 +67,12 @@ class AuthController extends GetxController {
         }),
       );
 
-      print("✅ API Response: ${res.data}");
-
       final bio = BiodataModel.fromJson(res.data);
 
       biodata.value = bio;
-      print("🔄 Biodata Updated");
-      print("🔎 Verification from API: ${bio.verification}");
 
       box.write('biodata', res.data);
-      print("💾 Biodata saved to cache");
 
-      /// 🔹 4️⃣ Isi UserModel ringan
       user.value = UserModel(
         id: bio.id.toString(),
         username: bio.username,
@@ -100,31 +84,21 @@ class AuthController extends GetxController {
       );
 
       box.write('user', user.value?.toJson());
-      print("💾 User saved to cache");
-
-      print("🎯 isVerified: $isVerified");
 
     } catch (e, stackTrace) {
-      print("❌ Auth Error: $e");
-      print("📌 StackTrace: $stackTrace");
     } finally {
       isLoading.value = false;
-      print("========== LOAD USER END ==========");
     }
   }
 
   Future<void> refreshVerification() async {
-    print("========== REFRESH VERIFICATION START ==========");
     try {
       final token = await StorageService.getToken();
-      print("🔑 Token: $token");
 
       if (token == null) {
-        print("❌ Token null, cannot refresh");
         return;
       }
 
-      print("🌍 Refreshing biodata from API...");
       final res = await DioService.instance.get(
         ApiConstant.biodata,
         options: Options(headers: {
@@ -133,21 +107,12 @@ class AuthController extends GetxController {
         }),
       );
 
-      print("✅ Refresh API Response: ${res.data}");
-
       final bio = BiodataModel.fromJson(res.data);
 
       biodata.value = bio;
       box.write('biodata', res.data);
 
-      print("🔄 Verification Updated To: ${bio.verification}");
-      print("🎯 isVerified Now: $isVerified");
-
     } catch (e, stackTrace) {
-      print("❌ Refresh verification error: $e");
-      print("📌 StackTrace: $stackTrace");
     }
-
-    print("========== REFRESH VERIFICATION END ==========");
   }
 }

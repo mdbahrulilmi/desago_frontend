@@ -6,15 +6,10 @@ import 'package:intl/intl.dart';
 class SuratRiwayatPengajuanDetailController extends GetxController {
   final DateFormat dateFormat =
       DateFormat('dd MMMM yyyy HH:mm:ss', 'id_ID');
-
   final DateFormat perngajuanFormat =
       DateFormat('dd MMMM yyyy', 'id_ID');
-
   final RxString id = ''.obs;
   final RxMap<String, dynamic> data = <String, dynamic>{}.obs;
-
-  /// IMPORTANT:
-  /// date di sini SELALU String
   final RxList<Map<String, dynamic>> trackingStatus =
       <Map<String, dynamic>>[].obs;
 
@@ -30,10 +25,6 @@ class SuratRiwayatPengajuanDetailController extends GetxController {
     initTrackingData();
   }
 
-  // ===============================
-  // DATE HANDLER (ANTI AMBYAR)
-  // ===============================
-
   String formatDate(dynamic value) {
   if (value == null) return '-';
 
@@ -45,23 +36,18 @@ class SuratRiwayatPengajuanDetailController extends GetxController {
     } else if (value is String && value.isNotEmpty) {
       if (value.startsWith('0000-00-00')) return '-';
 
-      parsed = DateTime.parse(value); // jangan hapus Z
+      parsed = DateTime.parse(value);
     } else {
       return '-';
     }
 
-    parsed = parsed.toLocal(); // convert ke local timezone (WIB)
+    parsed = parsed.toLocal();
     return dateFormat.format(parsed);
   } catch (e) {
     debugPrint('Gagal parse date: $value');
     return '-';
   }
 }
-
-
-  // ===============================
-  // TRACKING DATA
-  // ===============================
 
   void initTrackingData() {
     final String tanggalPengajuan = formatDate(data['created_at']);
@@ -162,11 +148,7 @@ class SuratRiwayatPengajuanDetailController extends GetxController {
       'isRejected': isRejected,
     };
   }
-
-  // ===============================
-  // DATA FORM
-  // ===============================
-
+  
   Map<String, dynamic> get dataForm {
     final raw = data['data_form'];
 

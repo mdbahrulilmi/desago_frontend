@@ -68,10 +68,7 @@ class AkunEditView extends GetView<AkunEditController> {
               style: AppText.bodyMediumBold(color: AppColors.text),
             ),
           ),
-
           SizedBox(height: AppResponsive.h(5)),
-
-          /// EMAIL
           SizedBox(
             width: double.infinity,
             child: TextFormField(
@@ -94,10 +91,7 @@ class AkunEditView extends GetView<AkunEditController> {
               cursorColor: AppColors.dark,
             ),
           ),
-
           SizedBox(height: AppResponsive.h(2)),
-
-          /// NO TELEPON
           SizedBox(
             width: double.infinity,
             child: TextFormField(
@@ -121,10 +115,7 @@ class AkunEditView extends GetView<AkunEditController> {
               cursorColor: AppColors.dark,
             ),
           ),
-
           SizedBox(height: AppResponsive.h(4)),
-
-          /// BUTTON SIMPAN
           SizedBox(
             width: double.infinity,
             child: Obx(() => ElevatedButton(

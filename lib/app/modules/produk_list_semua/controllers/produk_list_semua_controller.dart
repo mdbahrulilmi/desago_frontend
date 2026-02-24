@@ -9,22 +9,15 @@ import 'package:get_storage/get_storage.dart';
 class ProdukListSemuaController extends GetxController {
   final TextEditingController searchController = TextEditingController();
   final box = GetStorage();
-
   final RxList<ProdukModel> products = <ProdukModel>[].obs;
   final RxList<ProdukModel> filteredProducts = <ProdukModel>[].obs;
-
   final RxString selectedCategory = 'Semua'.obs;
   final RxBool isLoading = true.obs;
-
-  // =======================
-  // PAGINATION
-  // =======================
   final ScrollController scrollController = ScrollController();
   final RxBool isLoadMore = false.obs;
   final RxInt currentPage = 1.obs;
   final RxBool hasMore = true.obs;
   static const int _limit = 10;
-
   static const _cacheKey = 'cache_produk_desa';
   static const _cacheTimeKey = 'cache_produk_desa_time';
   static const Duration _cacheTTL = Duration(hours: 12);
@@ -76,8 +69,6 @@ class ProdukListSemuaController extends GetxController {
 
           products.assignAll(data);
           filteredProducts.assignAll(data);
-
-          debugPrint('🟡 Produk loaded from cache (${data.length})');
           isLoading.value = false;
         }
       }
@@ -115,10 +106,7 @@ class ProdukListSemuaController extends GetxController {
       }
 
       await _saveToCache(data);
-
-      debugPrint('🟢 Produk loaded from API (${products.length})');
     } catch (e) {
-      debugPrint('🔴 Error fetchProduct: $e');
     } finally {
       isLoading.value = false;
     }
@@ -151,7 +139,6 @@ class ProdukListSemuaController extends GetxController {
         }
       }
     } catch (e) {
-      debugPrint('🔴 Error loadMoreProduct: $e');
     } finally {
       isLoadMore.value = false;
     }

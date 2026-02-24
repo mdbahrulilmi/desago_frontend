@@ -87,8 +87,6 @@ class AkunUbahPasswordView extends GetView<AkunUbahPasswordController> {
                     },
                   ),
                   SizedBox(height: AppResponsive.h(5)),
-                  
-                  // Tombol Simpan
                   Container(
                     margin: AppResponsive.padding(horizontal: 8),
                     width: double.infinity,
@@ -120,10 +118,7 @@ class AkunUbahPasswordView extends GetView<AkunUbahPasswordController> {
                           ),
                     )),
                   ),
-                  
                   SizedBox(height: AppResponsive.h(2)),
-                  
-                  // Tombol Batal
                   Container(
                     margin: AppResponsive.padding(horizontal: 8),
                     width: double.infinity,

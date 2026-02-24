@@ -55,8 +55,6 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
                             ),
                     ),
                   ),
-
-                  /// Konten bawah AppBar
                   SliverToBoxAdapter(
                     child: _buildProductInfo(),
                   ),
@@ -64,8 +62,6 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
               );
             }),
           ),
-
-          /// ===== Bottom Button =====
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -121,8 +117,6 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
       ),
     );
   }
-
-  // ================= INFO =================
 
   Widget _buildProductInfo() {
     return Padding(

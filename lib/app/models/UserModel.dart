@@ -33,7 +33,7 @@ class UserModel {
       username: json['username'],
       nama_lengkap: json['nama_lengkap'],
       email: json['email'],
-      phone: json['no_telepon']?.toString(),
+      phone: json['no_telepon'],
       avatar: json['avatar'],
       verified: json['verified'],
       oAuthAccounts: oAuthAccounts,

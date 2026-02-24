@@ -283,7 +283,6 @@ Widget _buildBeritaCard(BeritaModel berita) {
     );
   }
 
-  // Warna Kategori
   Color _getCategoryColor(String category) {
     switch (category) {
       case 'Pemerintahan':

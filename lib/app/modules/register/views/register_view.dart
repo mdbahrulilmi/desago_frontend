@@ -60,29 +60,6 @@ class RegisterView extends GetView<RegisterController> {
                   ),
                 ),
                 SizedBox(height: AppResponsive.h(4)),
-                // TextFormField(
-                //   style: AppText.bodyMedium(color: AppColors.dark),
-                //   controller: controller.namaLengkapController,
-                //   decoration: InputDecoration(
-                //     hintText: 'Masukkan nama lengkap',
-                //     hintStyle:
-                //         AppText.bodyMedium(color: AppColors.textSecondary),
-                //     prefixIcon:
-                //         Icon(Remix.user_line, color: AppColors.textSecondary),
-                //     border: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(8),
-                //       borderSide: BorderSide(color: AppColors.muted),
-                //     ),
-                //     enabledBorder: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(8),
-                //       borderSide: BorderSide(color: AppColors.muted),
-                //     ),
-                //     focusedBorder: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(8),
-                //       borderSide: BorderSide(color: AppColors.primary),
-                //     ),
-                //   ),
-                // ),
                 SizedBox(height: AppResponsive.h(2)),
                 TextFormField(
                   style: AppText.bodyMedium(color: AppColors.dark),
@@ -126,32 +103,6 @@ class RegisterView extends GetView<RegisterController> {
                   ),
                   cursorColor: AppColors.dark,
                 ),
-                // SizedBox(height: AppResponsive.h(2)),
-                // TextFormField(
-                //   style: AppText.bodyMedium(color: AppColors.dark),
-                //   controller: controller.phoneController,
-                //   keyboardType: TextInputType.phone,
-                //   decoration: InputDecoration(
-                //     hintText: 'Masukkan nomor HP/WhatsApp',
-                //     hintStyle:
-                //         AppText.bodyMedium(color: AppColors.textSecondary),
-                //     prefixIcon:
-                //         Icon(Remix.phone_line, color: AppColors.textSecondary),
-                //     border: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(8),
-                //       borderSide: BorderSide(color: AppColors.muted),
-                //     ),
-                //     enabledBorder: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(8),
-                //       borderSide: BorderSide(color: AppColors.muted),
-                //     ),
-                //     focusedBorder: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(8),
-                //       borderSide: BorderSide(color: AppColors.primary),
-                //     ),
-                //   ),
-                //   cursorColor: AppColors.dark,
-                // ),
                 SizedBox(height: AppResponsive.h(2)),
                 Obx(() => TextFormField(
                       style: AppText.bodyMedium(color: AppColors.dark),
@@ -184,42 +135,6 @@ class RegisterView extends GetView<RegisterController> {
                       ),
                       cursorColor: AppColors.dark,
                     )),
-                // SizedBox(height: AppResponsive.h(2)),
-                // Obx(() => TextFormField(
-                //       style: AppText.bodyMedium(color: AppColors.dark),
-                //       controller: controller.confirmPasswordController,
-                //       obscureText: controller.isConfirmPasswordHidden.value,
-                //       decoration: InputDecoration(
-                //         hintText: 'Konfirmasi kata sandi',
-                //         hintStyle:
-                //             AppText.bodyMedium(color: AppColors.textSecondary),
-                //         prefixIcon: Icon(Remix.lock_line,
-                //             color: AppColors.textSecondary),
-                //         suffixIcon: IconButton(
-                //           onPressed: () =>
-                //               controller.toggleConfirmPasswordVisibility(),
-                //           icon: Icon(
-                //             controller.isConfirmPasswordHidden.value
-                //                 ? Remix.eye_off_line
-                //                 : Remix.eye_line,
-                //             color: AppColors.textSecondary,
-                //           ),
-                //         ),
-                //         border: OutlineInputBorder(
-                //           borderRadius: BorderRadius.circular(8),
-                //           borderSide: BorderSide(color: AppColors.muted),
-                //         ),
-                //         enabledBorder: OutlineInputBorder(
-                //           borderRadius: BorderRadius.circular(8),
-                //           borderSide: BorderSide(color: AppColors.muted),
-                //         ),
-                //         focusedBorder: OutlineInputBorder(
-                //           borderRadius: BorderRadius.circular(8),
-                //           borderSide: BorderSide(color: AppColors.primary),
-                //         ),
-                //       ),
-                //       cursorColor: AppColors.dark,
-                //     )),
                 SizedBox(height: AppResponsive.h(3)),
                 Obx(() => SizedBox(
                       width: double.infinity,
@@ -227,7 +142,7 @@ class RegisterView extends GetView<RegisterController> {
                       child: ElevatedButton(
                         onPressed: controller.isLoading.value
                             ? null
-                            : () => controller.onRegister(),
+                            : () => controller.validateAndSubmit(),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           shape: RoundedRectangleBorder(
@@ -265,7 +180,7 @@ class RegisterView extends GetView<RegisterController> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextButton(
-                      onPressed: () => controller.onLogin(),
+                      onPressed: () => Get.back(),
                       child: Text(
                         'Sudah punya akun',
                         style: AppText.bodyLarge(color: AppColors.dark),

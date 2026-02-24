@@ -70,11 +70,10 @@ class ProdukListSemuaView extends GetView<ProdukListSemuaController> {
                 ),
                 physics: const AlwaysScrollableScrollPhysics(),
                 itemCount: controller.filteredProducts.isEmpty
-                    ? 1 // satu item untuk empty state
+                    ? 1
                     : controller.filteredProducts.length +
                         (controller.isLoadMore.value ? 1 : 0),
                 itemBuilder: (context, index) {
-                  // Loading awal
                   if (controller.isLoading.value &&
                       controller.filteredProducts.isEmpty) {
                     return SizedBox(
@@ -84,8 +83,6 @@ class ProdukListSemuaView extends GetView<ProdukListSemuaController> {
                       ),
                     );
                   }
-
-                  // Empty state
                   if (controller.filteredProducts.isEmpty) {
                     return SizedBox(
                       height: MediaQuery.of(context).size.height * 0.8,
@@ -98,8 +95,6 @@ class ProdukListSemuaView extends GetView<ProdukListSemuaController> {
                       ),
                     );
                   }
-
-                  // Item data
                   if (index < controller.filteredProducts.length) {
                     final product = controller.filteredProducts[index];
                     return Padding(
@@ -107,7 +102,6 @@ class ProdukListSemuaView extends GetView<ProdukListSemuaController> {
                       child: _buildGridProductItem(product, index),
                     );
                   } else {
-                    // Load more indicator
                     return const Padding(
                       padding: EdgeInsets.symmetric(vertical: 16),
                       child: Center(

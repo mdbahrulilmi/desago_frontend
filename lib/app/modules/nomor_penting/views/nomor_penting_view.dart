@@ -59,7 +59,6 @@ class NomorPentingView extends GetView<NomorPentingController> {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 16),
-                  // Search Field
                   Container(
                     decoration: BoxDecoration(
                       color: AppColors.light,
@@ -73,35 +72,32 @@ class NomorPentingView extends GetView<NomorPentingController> {
                       ],
                     ),
                     child: TextField(
-          controller: controller.searchController,
-          onChanged: controller.filterNomorDarurat,
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(vertical: 12),
-            hintText: 'Cari nomor penting...',
-            hintStyle: AppText.bodyMedium(color: AppColors.textSecondary),
-            prefixIcon: Icon(Remix.search_line, color: AppColors.iconGrey),
-        
-            suffixIcon: ValueListenableBuilder<TextEditingValue>(
-        valueListenable: controller.searchController,
-        builder: (context, value, child) {
-          if (value.text.isEmpty) return const SizedBox();
-          return IconButton(
-            icon: Icon(Remix.close_line, color: AppColors.primary),
-            onPressed: () {
-              controller.searchController.clear();
-              // controller.filterNomorPenting('');
-            },
-          );
-        },
-            ),
-        
-            border: InputBorder.none,
-            enabledBorder: InputBorder.none,
-            focusedBorder: InputBorder.none,
-          ),
-        ),
-        
+                      controller: controller.searchController,
+                      onChanged: controller.filterNomorDarurat,
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                        hintText: 'Cari nomor penting...',
+                        hintStyle: AppText.bodyMedium(color: AppColors.textSecondary),
+                        prefixIcon: Icon(Remix.search_line, color: AppColors.iconGrey),
+                    
+                        suffixIcon: ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: controller.searchController,
+                    builder: (context, value, child) {
+                      if (value.text.isEmpty) return const SizedBox();
+                      return IconButton(
+                        icon: Icon(Remix.close_line, color: AppColors.primary),
+                        onPressed: () {
+                          controller.searchController.clear();
+                          // controller.filterNomorPenting('');
+                        },
+                      );
+                    },
                   ),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                ),
+              )),
                 ],
               ),
             ),

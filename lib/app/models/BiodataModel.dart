@@ -54,29 +54,29 @@ class BiodataModel {
   factory BiodataModel.fromJson(Map<String, dynamic> json) {
     return BiodataModel(
       id: json['id'] ?? 0,
-      desaId: json['desa_id'] ?? '',
-      username: json['username'] ?? '',
-      email: json['email'] ?? '',
-      nik: json['nik'] ?? '-',
-      namaLengkap: json['nama_lengkap'] ?? '-',
-      jenisKelamin: json['jenis_kelamin'] ?? '-',
-      berlakuHingga: json['berlaku_hingga'] ?? '-',
+      desaId: json['desa_id'],
+      username: json['username'],
+      email: json['email'],
+      nik: json['nik'],
+      namaLengkap: json['nama_lengkap'],
+      jenisKelamin: json['jenis_kelamin'],
+      berlakuHingga: json['berlaku_hingga'],
       kewarganegaraan: json['kewarganegaraan'] ?? 'WNI',
-      pekerjaan: json['pekerjaan'] ?? '-',
-      statusPerkawinan: json['status_perkawinan'] ?? '-',
-      agama: json['agama'] ?? '-',
-      alamat: json['alamat'] ?? '-',
-      golonganDarah: json['golongan_darah'] ?? '-',
-      tempatLahir: json['tempat_lahir'] ?? '-',
-      tanggalLahir: json['tanggal_lahir'] ?? '-',
-      noKk: json['no_kk'] ?? '-',
-      verification: json['verification'] ?? 'pending',
-      noTelepon: json['no_telepon'] ?? '-',
-      avatar: json['avatar'] ?? '',
-      ktpFile: json['ktp_file'] ?? '',
-      kkFile: json['kk_file'] ?? '',
-      createdAt: json['created_at'] ?? '',
-      updatedAt: json['updated_at'] ?? '',
+      pekerjaan: json['pekerjaan'],
+      statusPerkawinan: json['status_perkawinan'],
+      agama: json['agama'],
+      alamat: json['alamat'],
+      golonganDarah: json['golongan_darah'],
+      tempatLahir: json['tempat_lahir'],
+      tanggalLahir: json['tanggal_lahir'],
+      noKk: json['no_kk'],
+      verification: json['verification'],
+      noTelepon: json['no_telepon'],
+      avatar: json['avatar'],
+      ktpFile: json['ktp_file'],
+      kkFile: json['kk_file'],
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
     );
   }
 
@@ -110,4 +110,5 @@ class BiodataModel {
   }
 
   bool get isVerified => verification == "verified";
+  bool get isPending => verification == "pending";
 }

@@ -10,7 +10,6 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
   
   @override
   Widget build(BuildContext context) {
-    // Initialize responsive sizing
     AppResponsive().init(context);
     
     return Scaffold(
@@ -44,7 +43,6 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header Card
                   Padding(
                     padding: AppResponsive.padding(all: 2),
                     child: Column(
@@ -116,15 +114,11 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
                   ),
                   
                   SizedBox(height: AppResponsive.h(3)),
-                  
-                  // Status Tracking
                   Text(
                     'Status Pengajuan',
                     style: AppText.h5(color: AppColors.text),
                   ),
                   SizedBox(height: AppResponsive.h(2)),
-                  
-                  // Tracking Timeline
                   ListView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
@@ -139,7 +133,6 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
                       return Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Timeline Line and Dot
                           Column(
                             children: [
                               Container(
@@ -211,8 +204,6 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
                           ),
                           
                           SizedBox(width: AppResponsive.w(2)),
-                          
-                          // Content
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

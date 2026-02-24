@@ -59,7 +59,6 @@ class LaporController extends GetxController {
     }
   }
   
-  // Metode untuk menampilkan error
   void _showError(String message) {
     Get.snackbar(
       'Error',
@@ -70,7 +69,6 @@ class LaporController extends GetxController {
     );
   }
   
-  // Metode untuk menampilkan dialog izin ditolak
   void _showPermissionDeniedDialog() {
     Get.dialog(
       AlertDialog(

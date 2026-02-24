@@ -33,99 +33,97 @@ class AktivitasController extends GetxController {
       !isLoading.value &&
       currentPage < lastPage) {
     loadMore();
-  }
-}
-
- Future<void> fetchAktivitas({bool isRefresh = false}) async {
-  try {
-    if (isRefresh) {
-      currentPage = 1;
-      lastPage = 1;
-      aktivitas.clear();
     }
+  }
 
-    isLoading.value = true;
-
-    final token = StorageService.getToken();
-
-    final res = await DioService.instance.get(
-      ApiConstant.aktivitas,
-      queryParameters: {
-        'page': currentPage,
-      },
-      options: Options(
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      ),
-    );
-
-    if (res.data == null) return;
-
-    final body = res.data;
-    final List data = body['data'] ?? [];
-
-    currentPage = body['current_page'] ?? 1;
-    lastPage = body['last_page'] ?? 1;
-
-    aktivitas.assignAll(
-      data.cast<Map<String, dynamic>>(),
-    );
-
-    /// 🔥 AUTO LOAD kalau belum bisa scroll
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (scrollController.hasClients &&
-          scrollController.position.maxScrollExtent == 0 &&
-          currentPage < lastPage) {
-        loadMore();
+  Future<void> fetchAktivitas({bool isRefresh = false}) async {
+    try {
+      if (isRefresh) {
+        currentPage = 1;
+        lastPage = 1;
+        aktivitas.clear();
       }
-    });
 
-  } catch (e) {
-    debugPrint('Error fetchAktivitas: $e');
-  } finally {
-    isLoading.value = false;
-  }
-}
-  Future<void> loadMore() async {
-  if (currentPage >= lastPage) return;
+      isLoading.value = true;
 
-  try {
-    isLoadingMore.value = true;
-    final nextPage = currentPage + 1;
+      final token = StorageService.getToken();
 
-    final token = StorageService.getToken();
-
-    final res = await DioService.instance.get(
-      ApiConstant.aktivitas,
-      queryParameters: {
-        'page': nextPage,
-      },
-      options: Options(
-        headers: {
-          'Authorization': 'Bearer $token',
+      final res = await DioService.instance.get(
+        ApiConstant.aktivitas,
+        queryParameters: {
+          'page': currentPage,
         },
-      ),
-    );
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
 
-    if (res.data == null) return;
+      if (res.data == null) return;
 
-    final body = res.data;
-    final List data = body['data'] ?? [];
+      final body = res.data;
+      final List data = body['data'] ?? [];
 
-    currentPage = body['current_page'] ?? nextPage;
-    lastPage = body['last_page'] ?? lastPage;
+      currentPage = body['current_page'] ?? 1;
+      lastPage = body['last_page'] ?? 1;
 
-    aktivitas.addAll(
-      data.cast<Map<String, dynamic>>(),
-    );
+      aktivitas.assignAll(
+        data.cast<Map<String, dynamic>>(),
+      );
 
-  } catch (e) {
-    debugPrint('Error loadMore: $e');
-  } finally {
-    isLoadingMore.value = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (scrollController.hasClients &&
+            scrollController.position.maxScrollExtent == 0 &&
+            currentPage < lastPage) {
+          loadMore();
+        }
+      });
+
+    } catch (e) {
+    } finally {
+      isLoading.value = false;
+    }
   }
-}
+
+  Future<void> loadMore() async {
+    if (currentPage >= lastPage) return;
+
+    try {
+      isLoadingMore.value = true;
+      final nextPage = currentPage + 1;
+
+      final token = StorageService.getToken();
+
+      final res = await DioService.instance.get(
+        ApiConstant.aktivitas,
+        queryParameters: {
+          'page': nextPage,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      if (res.data == null) return;
+
+      final body = res.data;
+      final List data = body['data'] ?? [];
+
+      currentPage = body['current_page'] ?? nextPage;
+      lastPage = body['last_page'] ?? lastPage;
+
+      aktivitas.addAll(
+        data.cast<Map<String, dynamic>>(),
+      );
+
+    } catch (e) {
+    } finally {
+      isLoadingMore.value = false;
+    }
+  }
 
   Future<void> refreshAktivitas() async {
     await fetchAktivitas(isRefresh: true);

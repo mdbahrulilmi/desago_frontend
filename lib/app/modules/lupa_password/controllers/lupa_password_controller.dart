@@ -11,10 +11,8 @@ class LupaPasswordController extends GetxController {
   final isLoading = false.obs;
 
   void onVerifyIdentity() async {
-    print('DEBUG: onVerifyIdentity called'); // Debug
 
     if (emailController.text.isEmpty) {
-      print('DEBUG: Email kosong'); // Debug
       Get.snackbar(
         'Error',
         'Email tidak boleh kosong',
@@ -25,7 +23,6 @@ class LupaPasswordController extends GetxController {
     }
 
     if (!GetUtils.isEmail(emailController.text)) {
-      print('DEBUG: Format email tidak valid: ${emailController.text}'); // Debug
       Get.snackbar(
         'Error',
         'Format email tidak valid',
@@ -37,7 +34,6 @@ class LupaPasswordController extends GetxController {
 
     try {
       isLoading.value = true;
-      print('DEBUG: Sending request ke API'); // Debug
 
       final options = Options(
         receiveTimeout: const Duration(seconds: 30),
@@ -49,16 +45,12 @@ class LupaPasswordController extends GetxController {
       );
 
       final email = emailController.text.trim();
-      print('DEBUG: Email dikirim: $email'); // Debug
 
       final response = await DioService.instance.post(
         ApiConstant.sendLinkPassword,
         data: {'email': email},
         options: options,
       );
-
-      print('DEBUG: Response status: ${response.statusCode}'); // Debug
-      print('DEBUG: Response data: ${response.data}'); // Debug
 
       if (!Get.isRegistered<LupaPasswordController>()) return;
 
@@ -75,17 +67,14 @@ class LupaPasswordController extends GetxController {
 
         if (!Get.isRegistered<LupaPasswordController>()) return;
         Get.offNamed(Routes.SUKSES_RESET_PASSWORD);
-        print('DEBUG: Navigasi ke SUKSES_RESET_PASSWORD'); // Debug
       }
     } catch (e) {
-      print('DEBUG: Catch error -> $e'); // Debug
       if (!Get.isRegistered<LupaPasswordController>()) return;
       String errorMessage = 'Terjadi kesalahan, silahkan coba lagi';
 
       if (e is DioException) {
         if (e.response != null) {
           errorMessage = e.response?.data['message'] ?? errorMessage;
-          print('DEBUG: DioException response -> ${e.response?.data}'); // Debug
         } else {
           switch (e.type) {
             case DioExceptionType.receiveTimeout:
@@ -113,19 +102,16 @@ class LupaPasswordController extends GetxController {
     } finally {
       if (Get.isRegistered<LupaPasswordController>()) {
         isLoading.value = false;
-        print('DEBUG: isLoading false'); // Debug
       }
     }
   }
 
   void onBackToLogin() {
-    print('DEBUG: onBackToLogin called'); // Debug
     Get.back();
   }
 
   @override
   void onClose() {
-    print('DEBUG: onClose called, disposing emailController'); // Debug
     emailController.dispose();
     super.onClose();
   }

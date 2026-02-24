@@ -106,7 +106,6 @@ class LoginView extends GetView<LoginController> {
                       child: ElevatedButton(
                         onPressed: controller.isLoading.value
                             ? null
-                            // onPressed: () => Get.toNamed('password-baru'),
                             : () => controller.onLogin(),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,

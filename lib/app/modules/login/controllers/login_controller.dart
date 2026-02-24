@@ -41,7 +41,6 @@ class LoginController extends GetxController {
       },
     );
 
-    /// 🔥 Pastikan response ada
     if (response.data == null) {
       Get.snackbar(
         'Error',
@@ -54,7 +53,6 @@ class LoginController extends GetxController {
 
     final responseData = response.data as Map<String, dynamic>;
 
-    /// 🔥 Login berhasil
     if (response.statusCode == 200 && responseData['success'] == true) {
       final user = UserModel.fromJson(responseData['user']);
       final token = responseData['token']?.toString() ?? '';
@@ -123,7 +121,6 @@ class LoginController extends GetxController {
 Future<void> handleGoogleSignIn() async {
   try {
     isLoading.value = true;
-    print("========== GOOGLE LOGIN START ==========");
 
     final GoogleSignIn googleSignIn = GoogleSignIn(
       scopes: ['email', 'profile'],
@@ -131,7 +128,6 @@ Future<void> handleGoogleSignIn() async {
     );
 
     if (await googleSignIn.isSignedIn()) {
-      print("🔄 Already signed in, signing out first");
       await googleSignIn.signOut();
     }
 
@@ -139,7 +135,6 @@ Future<void> handleGoogleSignIn() async {
         await googleSignIn.signIn();
 
     if (googleUser == null) {
-      print("⚠️ User cancelled Google login");
       Get.snackbar(
         'Info',
         'Login dibatalkan',
@@ -148,8 +143,6 @@ Future<void> handleGoogleSignIn() async {
       );
       return;
     }
-
-    print("👤 Google User: ${googleUser.email}");
 
     final googleAuth = await googleUser.authentication;
 
@@ -161,8 +154,6 @@ Future<void> handleGoogleSignIn() async {
       'access_token': googleAuth.accessToken,
       'desa_id': ApiConstant.desaId,
     };
-
-    print("📤 Sending Google data to backend");
 
     final response = await DioService.instance.post(
       ApiConstant.googleLogin,
@@ -176,11 +167,7 @@ Future<void> handleGoogleSignIn() async {
       ),
     );
 
-    print("📥 Response Status: ${response.statusCode}");
-    print("📥 Response Data: ${response.data}");
-
     if (response.data == null) {
-      print("❌ Response null");
       Get.snackbar(
         'Error',
         'Gagal menerima data dari server',
@@ -193,23 +180,14 @@ Future<void> handleGoogleSignIn() async {
     final responseData = response.data as Map<String, dynamic>;
 
     if (response.statusCode == 200) {
-      print("✅ Google Login Success");
 
       final token = responseData['token']?.toString() ?? '';
       final user = UserModel.fromJson(responseData['user']);
 
-      print("🔑 Token: $token");
-      print("👤 User ID: ${user.id}");
-
       await StorageService.saveUserData(user, token);
 
-      print("💾 User & Token saved");
-
       final auth = Get.find<AuthController>();
-      print("🔄 Calling loadUser()");
       await auth.loadUser();
-
-      print("🚀 Navigate to MAIN");
 
       Get.snackbar(
         'Berhasil',
@@ -222,8 +200,6 @@ Future<void> handleGoogleSignIn() async {
       return;
     }
 
-    print("❌ Google Login Failed: ${responseData['message']}");
-
     Get.snackbar(
       'Error',
       responseData['message'] ?? 'Login Google gagal',
@@ -232,8 +208,6 @@ Future<void> handleGoogleSignIn() async {
     );
 
   } catch (e, stack) {
-    print("❌ Google Login Error: $e");
-    print("📌 StackTrace: $stack");
 
     Get.snackbar(
       'Error',
@@ -243,7 +217,6 @@ Future<void> handleGoogleSignIn() async {
     );
   } finally {
     isLoading.value = false;
-    print("========== GOOGLE LOGIN END ==========\n");
   }
 }
   void onForgotPassword() {

@@ -25,7 +25,6 @@ class AkunUbahPasswordController extends GetxController {
   @override
   void onInit() {
     getIsOauth();
-    print(isOauth);
     super.onInit();
   }
 
@@ -115,7 +114,6 @@ class AkunUbahPasswordController extends GetxController {
       );
       
     final data = response.data;
-    print("INI DATAAA $data");
 
     if (data['success'] != true) {
       AppDialog.error(

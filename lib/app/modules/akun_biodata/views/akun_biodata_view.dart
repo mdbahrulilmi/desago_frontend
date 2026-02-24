@@ -277,7 +277,6 @@ Widget _buildHeader() {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Avatar
                           Stack(
                             clipBehavior: Clip.none,
                             children: [

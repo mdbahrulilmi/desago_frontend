@@ -47,7 +47,6 @@ class LaporDetailView extends GetView<LaporDetailController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      /// IMAGE
                       if (laporan.gambar != null && laporan.gambar!.isNotEmpty)
                         ClipRRect(
                           borderRadius: const BorderRadius.vertical(

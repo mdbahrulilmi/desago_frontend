@@ -45,7 +45,6 @@ import 'package:dio/dio.dart';
         carousel.assignAll(
           (cached as List).map((e) => Carousel.fromJson(e)).toList(),
         );
-        print('🟢 Carousel loaded from cache (${carousel.length})');
       }
     }
   
@@ -64,7 +63,6 @@ import 'package:dio/dio.dart';
 
       if (listData.isEmpty) {
         carousel.clear();
-        print('⚠️ listData KOSONG');
         return;
       }
 
@@ -73,8 +71,6 @@ import 'package:dio/dio.dart';
       box.write('carousel', listData);
 
     } catch (e, stack) {
-      print('ERROR fetchCarousel: $e');
-      print(stack);
     } finally {
       isLoadingCarousel.value = false;
     }
@@ -94,11 +90,7 @@ import 'package:dio/dio.dart';
         beritas.value = listData
             .map((e) => BeritaModel.fromJson(e))
             .toList();
-
-        print('Berita loaded: ${beritas.length}');
       } catch (e, stack) {
-        print('ERROR fetchBerita: $e');
-        print(stack);
       } finally {
         isLoadingBerita.value = false;
       }
@@ -150,8 +142,6 @@ import 'package:dio/dio.dart';
       fetchProduct();
       auth.initAuth();
     } 
-
-    // Data produk
       void changeSlide(int index) {
       currentIndex.value = index;
     }
@@ -194,7 +184,6 @@ Aku lihat $product, mau nanya detailnya dong.
         products.value =
             listData.map((e) => ProdukModel.fromJson(e)).toList();
 
-        print('Produk loaded: ${products.length}');
       } catch (e) {
         products.clear();
         return;

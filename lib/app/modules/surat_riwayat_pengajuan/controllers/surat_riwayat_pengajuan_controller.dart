@@ -14,17 +14,14 @@ class SuratRiwayatPengajuanController extends GetxController {
   final TextEditingController searchController = TextEditingController();
   final DateFormat dateFormat = DateFormat('dd/MM/yyyy');
 
-  // ===== FILTER =====
   final selectedStatus = 'Semua'.obs;
   final startDate = Rx<DateTime?>(null);
   final endDate = Rx<DateTime?>(null);
 
-  // ===== DATA =====
   final isLoading = false.obs;
   final originalData = <Map<String, dynamic>>[].obs;
   final filteredData = <Map<String, dynamic>>[].obs;
 
-  // ===== STATUS OPTIONS (sesuai backend) =====
   final List<String> statusOptions = [
     'Semua',
     'menunggu',
@@ -45,7 +42,6 @@ class SuratRiwayatPengajuanController extends GetxController {
     super.onClose();
   }
 
-  // ================= FETCH DATA =================
   Future<void> fetchData() async {
     try {
       isLoading.value = true;
@@ -85,29 +81,24 @@ class SuratRiwayatPengajuanController extends GetxController {
 
       filterData();
     } catch (e) {
-      debugPrint('❌ fetchData error: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
-  // ================= FILTER DATA =================
   void filterData() {
     final query = searchController.text.toLowerCase();
 
     filteredData.value = originalData.where((item) {
-      // 🔍 SEARCH
       final matchesSearch =
           item['id'].toString().contains(query) ||
           item['status'].toString().toLowerCase().contains(query) ||
           item['data_form'].toString().toLowerCase().contains(query);
 
-      // 📌 STATUS
       final matchesStatus =
           selectedStatus.value == 'Semua' ||
           item['status'] == selectedStatus.value;
 
-      // 📅 DATE (created_at)
       bool matchesDate = true;
 
       if (item['created_at'] != null) {
@@ -131,7 +122,6 @@ class SuratRiwayatPengajuanController extends GetxController {
     }).toList();
   }
 
-  // ================= FILTER ACTION =================
   void setStatusFilter(String status) {
     selectedStatus.value = status;
     filterData();

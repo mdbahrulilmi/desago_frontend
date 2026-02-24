@@ -1,3 +1,4 @@
+import 'package:desago/app/middleware/verification_middleware.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -13,24 +14,14 @@ import '../modules/akun_biodata/bindings/akun_biodata_binding.dart';
 import '../modules/akun_biodata/views/akun_biodata_view.dart';
 import '../modules/akun_edit/bindings/akun_edit_binding.dart';
 import '../modules/akun_edit/views/akun_edit_view.dart';
-import '../modules/akun_pengaturan/bindings/akun_pengaturan_binding.dart';
-import '../modules/akun_pengaturan/views/akun_pengaturan_view.dart';
 import '../modules/akun_ubah_password/bindings/akun_ubah_password_binding.dart';
 import '../modules/akun_ubah_password/views/akun_ubah_password_view.dart';
 import '../modules/berita_detail/bindings/berita_detail_binding.dart';
 import '../modules/berita_detail/views/berita_detail_view.dart';
 import '../modules/berita_list/bindings/berita_list_binding.dart';
 import '../modules/berita_list/views/berita_list_view.dart';
-import '../modules/cek_bansos/bindings/cek_bansos_binding.dart';
-import '../modules/cek_bansos/views/cek_bansos_view.dart';
-import '../modules/cek_bansos_hasil/bindings/cek_bansos_hasil_binding.dart';
-import '../modules/cek_bansos_hasil/views/cek_bansos_hasil_view.dart';
 import '../modules/dana_desa/bindings/dana_desa_binding.dart';
 import '../modules/dana_desa/views/dana_desa_view.dart';
-import '../modules/donasi/bindings/donasi_binding.dart';
-import '../modules/donasi/views/donasi_view.dart';
-import '../modules/donasi_detail/bindings/donasi_detail_binding.dart';
-import '../modules/donasi_detail/views/donasi_detail_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/lapor/bindings/lapor_binding.dart';
@@ -41,22 +32,14 @@ import '../modules/lapor_form/bindings/lapor_form_binding.dart';
 import '../modules/lapor_form/views/lapor_form_view.dart';
 import '../modules/lapor_riwayat/bindings/lapor_riwayat_binding.dart';
 import '../modules/lapor_riwayat/views/lapor_riwayat_view.dart';
-import '../modules/layanan/bindings/layanan_binding.dart';
-import '../modules/layanan/views/layanan_view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
-import '../modules/loker_desa/bindings/loker_desa_binding.dart';
-import '../modules/loker_desa/views/loker_desa_view.dart';
-import '../modules/loker_desa_detail/bindings/loker_desa_detail_binding.dart';
-import '../modules/loker_desa_detail/views/loker_desa_detail_view.dart';
 import '../modules/lupa_password/bindings/lupa_password_binding.dart';
 import '../modules/lupa_password/views/lupa_password_view.dart';
 import '../modules/main/bindings/main_binding.dart';
 import '../modules/main/views/main_view.dart';
 import '../modules/nomor_penting/bindings/nomor_penting_binding.dart';
 import '../modules/nomor_penting/views/nomor_penting_view.dart';
-import '../modules/otp_verifikasi/bindings/otp_verifikasi_binding.dart';
-import '../modules/otp_verifikasi/views/otp_verifikasi_view.dart';
 import '../modules/password_baru/controllers/password_baru_controller.dart';
 import '../modules/password_baru/views/password_baru_view.dart';
 import '../modules/produk_detail/bindings/produk_detail_binding.dart';
@@ -139,11 +122,6 @@ class AppPages {
       binding: SuksesResetPasswordBinding(),
     ),
     GetPage(
-      name: _Paths.OTP_VERIFIKASI,
-      page: () => const OtpVerifikasiView(),
-      binding: OtpVerifikasiBinding(),
-    ),
-    GetPage(
       name: _Paths.SUKSES_VERIFIKASI_EMAIL,
       page: () => const SuksesVerifikasiEmailView(),
       binding: SuksesVerifikasiEmailBinding(),
@@ -152,16 +130,6 @@ class AppPages {
       name: _Paths.AKUN,
       page: () => const AkunView(),
       binding: AkunBinding(),
-    ),
-    GetPage(
-      name: _Paths.LAYANAN,
-      page: () => const LayananView(),
-      binding: LayananBinding(),
-    ),
-    GetPage(
-      name: _Paths.AKUN_PENGATURAN,
-      page: () => const AkunPengaturanView(),
-      binding: AkunPengaturanBinding(),
     ),
     GetPage(
       name: _Paths.NOMOR_PENTING,
@@ -187,11 +155,17 @@ class AppPages {
       name: _Paths.LAPOR,
       page: () => const LaporView(),
       binding: LaporBinding(),
+      middlewares: [
+        VerificationMiddleware(),
+      ],
     ),
     GetPage(
       name: _Paths.LAPOR_FORM,
       page: () => const LaporFormView(),
       binding: LaporFormBinding(),
+      middlewares: [
+        VerificationMiddleware(),
+      ],
     ),
     GetPage(
       name: _Paths.PRODUK_LIST_SEMUA,
@@ -227,41 +201,14 @@ class AppPages {
       name: _Paths.SURAT_FORM,
       page: () => const SuratFormView(),
       binding: SuratFormBinding(),
-    ),
-    GetPage(
-      name: _Paths.LOKER_DESA,
-      page: () => const LokerDesaView(),
-      binding: LokerDesaBinding(),
-    ),
-    GetPage(
-      name: _Paths.LOKER_DESA_DETAIL,
-      page: () => const LokerDesaDetailView(),
-      binding: LokerDesaDetailBinding(),
+      middlewares: [
+        VerificationMiddleware(),
+      ],
     ),
     GetPage(
       name: _Paths.DANA_DESA,
       page: () => const DanaDesaView(),
       binding: DanaDesaBinding(),
-    ),
-    GetPage(
-      name: _Paths.CEK_BANSOS,
-      page: () => const CekBansosView(),
-      binding: CekBansosBinding(),
-    ),
-    GetPage(
-      name: _Paths.CEK_BANSOS_HASIL,
-      page: () => const CekBansosHasilView(),
-      binding: CekBansosHasilBinding(),
-    ),
-    GetPage(
-      name: _Paths.DONASI,
-      page: () => const DonasiView(),
-      binding: DonasiBinding(),
-    ),
-    GetPage(
-      name: _Paths.DONASI_DETAIL,
-      page: () => const DonasiDetailView(),
-      binding: DonasiDetailBinding(),
     ),
     GetPage(
       name: _Paths.SURAT_RIWAYAT_PENGAJUAN,
@@ -297,6 +244,9 @@ class AppPages {
       name: _Paths.SURAT_LIST,
       page: () => const SuratListView(),
       binding: SuratListBinding(),
+      middlewares: [
+        VerificationMiddleware(),
+      ],
     ),
     GetPage(
       name: _Paths.AKUN_EDIT,

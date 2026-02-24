@@ -78,20 +78,16 @@ class AgendaView extends GetView<AgendaController> {
           focusedDay: controller.selectedDay.value,
           selectedDayPredicate: (day) =>
               isSameDay(controller.selectedDay.value, day),
-
           eventLoader: (day) {
             return controller.getAgendaByDay(day);
           },
-
           onDaySelected: (selectedDay, focusedDay) {
             controller.selectedDay.value = selectedDay;
           },
-
           headerStyle: const HeaderStyle(
             formatButtonVisible: false,
             titleCentered: true,
           ),
-
           calendarStyle: CalendarStyle(
             selectedDecoration: BoxDecoration(
               color: AppColors.primary,
@@ -101,8 +97,6 @@ class AgendaView extends GetView<AgendaController> {
               color: AppColors.primary.withOpacity(0.3),
               shape: BoxShape.circle,
             ),
-
-            /// 🔴 MARKER MERAH
             markerDecoration: BoxDecoration(
               color: Colors.red,
               shape: BoxShape.circle,
@@ -116,12 +110,10 @@ class AgendaView extends GetView<AgendaController> {
   Widget _selectedDateInfo() {
     return Obx(() {
       final day = controller.selectedDay.value;
-
       final namaHari =
           DateFormat('EEEE', 'id_ID').format(day);
       final tanggal =
           DateFormat('dd MMMM yyyy', 'id_ID').format(day);
-
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -142,7 +134,6 @@ class AgendaView extends GetView<AgendaController> {
   Widget _agendaList() {
     return Obx(() {
       final list = controller.agendaByDate;
-
       if (list.isEmpty) {
         return Center(
           child: Column(
@@ -174,7 +165,7 @@ class AgendaView extends GetView<AgendaController> {
           ),
         );
       }
-
+      
       return ListView.builder(
         padding: AppResponsive.padding(horizontal: 5),
         itemCount: list.length,
@@ -193,7 +184,6 @@ class AgendaView extends GetView<AgendaController> {
     });
   }
 
-  /// ================= AGENDA CARD =================
   Widget _agendaCard({
     required String category,
     required String title,
@@ -220,7 +210,6 @@ class AgendaView extends GetView<AgendaController> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// TIME LINE
           Column(
             children: [
               Text(time, style: AppText.bodyMediumBold()),
@@ -233,8 +222,6 @@ class AgendaView extends GetView<AgendaController> {
             ],
           ),
           SizedBox(width: AppResponsive.w(5)),
-
-          /// CONTENT
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -275,12 +262,11 @@ class AgendaView extends GetView<AgendaController> {
             ),
           ),
           IconButton(
-                  icon: Icon(Icons.share, size: 25, color: color,),
-                  onPressed: () {
-                    controller.shareAgenda(agenda);
-                  },
-                )
-
+            icon: Icon(Icons.share, size: 25, color: color,),
+            onPressed: () {
+              controller.shareAgenda(agenda);
+            },
+          )
         ],
       ),
     );

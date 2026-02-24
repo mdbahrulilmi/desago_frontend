@@ -1,3 +1,4 @@
+import 'package:desago/app/helpers/empty_helper.dart';
 import 'package:desago/app/helpers/time_helper.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_text.dart';
@@ -12,7 +13,7 @@ class AktivitasView extends GetView<AktivitasController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.secondary,
       appBar: AppBar(
         title: Text(
           'Aktivitas',
@@ -24,7 +25,6 @@ class AktivitasView extends GetView<AktivitasController> {
         elevation: 1,
       ),
       body: Obx(() {
-        /// Loading pertama kali
         if (controller.isLoading.value &&
             controller.aktivitas.isEmpty) {
           return const Center(
@@ -32,14 +32,18 @@ class AktivitasView extends GetView<AktivitasController> {
           );
         }
 
-        /// Kosong
         if (controller.aktivitas.isEmpty) {
-          return const Center(
-            child: Text('Belum ada aktivitas'),
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.8,
+            child: Center(
+              child: EmptyStateWidget(
+                title: "Tidak ada Aktivitas",
+                message: "Saat ini tidak ada Aktivitas yang tersedia",
+              ),
+            ),
           );
         }
 
-        /// LIST
         return RefreshIndicator(
           onRefresh: controller.refreshAktivitas,
           child: ListView.separated(
@@ -54,7 +58,6 @@ class AktivitasView extends GetView<AktivitasController> {
               thickness: 1,
             ),
             itemBuilder: (context, index) {
-              /// Loading More Indicator
               if (index >= controller.aktivitas.length) {
                 return const Padding(
                   padding: EdgeInsets.all(16),

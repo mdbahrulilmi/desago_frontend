@@ -35,17 +35,14 @@ class AgendaDetailView extends GetView<AgendaDetailController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Judul Agenda
             Text(
               agenda['judul'] ?? 'Tanpa Judul',
               style: AppText.h4(color: AppColors.dark),
             ),
             const SizedBox(height: 8),
 
-            // Kategori dan Status
             Row(
               children: [
-                // Badge Kategori
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -61,7 +58,6 @@ class AgendaDetailView extends GetView<AgendaDetailController> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                // Badge Status
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -79,7 +75,6 @@ class AgendaDetailView extends GetView<AgendaDetailController> {
             ),
             const SizedBox(height: 16),
 
-            // Tanggal dan Waktu
             _buildDetailItem(
               icon: Remix.calendar_check_line,
               title: 'Tanggal',
@@ -97,7 +92,6 @@ class AgendaDetailView extends GetView<AgendaDetailController> {
             ),
             const SizedBox(height: 16),
 
-            // Gambar Agenda
             if (agenda['gambar'] != null && agenda['gambar'].isNotEmpty)
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
@@ -118,7 +112,6 @@ class AgendaDetailView extends GetView<AgendaDetailController> {
               ),
             const SizedBox(height: 16),
 
-            // Deskripsi Agenda
             Text(
               'Deskripsi',
               style: AppText.h6(color: AppColors.dark),
@@ -130,7 +123,6 @@ class AgendaDetailView extends GetView<AgendaDetailController> {
             ),
             const SizedBox(height: 16),
 
-            // Peserta Agenda
             Text(
               'Peserta',
               style: AppText.h6(color: AppColors.dark),
@@ -139,13 +131,11 @@ class AgendaDetailView extends GetView<AgendaDetailController> {
             _buildParticipantList(agenda['peserta']),
             const SizedBox(height: 16),
 
-            // Tombol Aksi
             Row(
               children: [
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Daftar atau gabung ke agenda
                       controller.joinAgenda(agenda['id']);
                     },
                     style: ElevatedButton.styleFrom(
@@ -250,7 +240,6 @@ class AgendaDetailView extends GetView<AgendaDetailController> {
           trailing:
               const Icon(Icons.chevron_right, color: AppColors.textSecondary),
           onTap: () {
-            // Navigasi ke profil peserta
             controller.viewParticipantProfile(participant['id']);
           },
         );

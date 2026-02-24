@@ -76,10 +76,8 @@ class AkunView extends GetView<AkunController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-        
-                    /// ===== VERIFICATION BANNER =====
                     Obx(() {
-                      return !controller.auth.isVerified
+                      return !controller.auth.isVerified && !controller.auth.isPending
                           ? InkWell(
                               onTap: () {
                                 Get.toNamed(Routes.TAUTKAN_AKUN);
@@ -123,10 +121,52 @@ class AkunView extends GetView<AkunController> {
                                 ),
                               ),
                             )
+                          : controller.auth.isPending
+                          ? InkWell(
+                              onTap: () {
+                                Get.toNamed(Routes.TAUTKAN_AKUN);
+                              },
+                              child: Container(
+                                height: AppResponsive.h(12),
+                                width: double.infinity,
+                                padding:
+                                    AppResponsive.padding(vertical: 1),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(10),
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        AppColors.amber,
+                                        AppColors.warning,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.all(15),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Akun anda sedang diproses',
+                                          style: AppText.button(
+                                              color: AppColors.text),
+                                        ),
+                                        Text(
+                                          'Akun anda sedang diverifikasi oleh pihak desa, Harap menunggu!.',
+                                          style: AppText.small(
+                                              color: AppColors.text),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
                           : const SizedBox.shrink();
                     }),
-        
-                    /// ===== BIODATA =====
                     Obx(() => Column(
                           children: [
                             if (controller.auth.isVerified) ...[
@@ -148,8 +188,6 @@ class AkunView extends GetView<AkunController> {
                             ],
                           ],
                         )),
-        
-                    /// ===== UBAH PASSWORD =====
                     _buildListTile(
                       Remix.lock_password_line,
                       'Ubah Password',
@@ -163,8 +201,6 @@ class AkunView extends GetView<AkunController> {
                       thickness: 1,
                       color: AppColors.divider,
                     ),
-        
-                    /// ===== NOTIFICATION SWITCH =====
                     Obx(
                       () => SwitchListTile(
                         contentPadding:
@@ -208,8 +244,6 @@ class AkunView extends GetView<AkunController> {
                     SizedBox(
                       height: AppResponsive.h(3),
                     ),
-        
-                    /// ===== LOGOUT =====
                     InkWell(
                       onTap: controller.logout,
                       child: Center(
@@ -240,8 +274,7 @@ class AkunView extends GetView<AkunController> {
       ),
     );
   }
-
-  /// ================= LIST TILE =================
+  
   Widget _buildListTile(
       IconData iconLeft, String title,
       [VoidCallback? onTap]) {
@@ -342,7 +375,7 @@ class AkunView extends GetView<AkunController> {
                     MainAxisAlignment.center,
                 children: [
                 Text(
-                  controller.user.value?.nama_lengkap?.length != null &&
+                  controller.user.value?.nama_lengkap != null &&
                           controller.user.value!.nama_lengkap!.length > 4
                       ? controller.user.value!.nama_lengkap.toString()
                       : controller.user.value?.username ?? 'Tidak Ada Nama',

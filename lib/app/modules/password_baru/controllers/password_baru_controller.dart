@@ -30,10 +30,7 @@ class PasswordBaruController extends GetxController {
     token = args?['token'] ?? Get.parameters['token'] ?? '';
     email = args?['email'] ?? Get.parameters['email'] ?? '';
 
-    print('>>> PasswordBaruController initialized: token=$token, email=$email');
-
     if (token.isEmpty || email.isEmpty) {
-      print('>>> Token/email kosong, redirect ke login');
       Future.microtask(() => Get.offAllNamed('/login'));
     }
 
@@ -83,12 +80,6 @@ class PasswordBaruController extends GetxController {
 
  Future<void> onUpdatePassword() async {
   if (isLoading.value) return;
-
-  print('=== RESET PASSWORD START ===');
-  print('Token: $token');
-  print('Email: $email');
-  print('Password: ${passwordController.text}');
-
   if (passwordController.text.isEmpty ||
       confirmPasswordController.text.isEmpty) {
     _error('Mohon lengkapi semua field');
@@ -111,10 +102,6 @@ class PasswordBaruController extends GetxController {
         'password': passwordController.text,
       },
     );
-
-    print('=== RESPONSE SUCCESS ===');
-    print(response.data);
-
     Get.snackbar(
       'Berhasil',
       'Kata sandi berhasil diperbarui',
@@ -125,13 +112,7 @@ class PasswordBaruController extends GetxController {
     Get.offAllNamed('/login');
 
   } catch (e) {
-
-    print('=== RESPONSE ERROR ===');
-    print(e.toString());
-
     if (e is DioException) {
-      print('Status Code: ${e.response?.statusCode}');
-      print('Response Data: ${e.response?.data}');
     }
 
     _error('Reset gagal');
@@ -141,7 +122,6 @@ class PasswordBaruController extends GetxController {
 }
 
 void _error(String msg) {
-    print('>>> ERROR: $msg');
     Get.snackbar(
       'Error',
       msg,

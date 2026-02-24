@@ -2,9 +2,7 @@ import 'package:desago/app/utils/app_colors.dart';
 import 'package:get/get.dart';
 
 class AgendaDetailController extends GetxController {
-  // Fungsi untuk bergabung ke agenda
   void joinAgenda(String agendaId) {
-    // Implementasi logika untuk bergabung/mendaftar ke agenda
     Get.snackbar(
       'Berhasil',
       'Anda telah terdaftar dalam agenda ini',
@@ -15,9 +13,7 @@ class AgendaDetailController extends GetxController {
     );
   }
 
-  // Fungsi untuk membagikan agenda
   void shareAgenda(Map<String, dynamic> agenda) {
-    // Implementasi logika untuk membagikan agenda
     Get.snackbar(
       'Berhasil',
       'Agenda berhasil dibagikan',
@@ -28,9 +24,7 @@ class AgendaDetailController extends GetxController {
     );
   }
 
-  // Fungsi untuk melihat profil peserta
   void viewParticipantProfile(String participantId) {
-    // Navigasi ke halaman profil peserta
     Get.toNamed('/participant/$participantId');
   }
 }

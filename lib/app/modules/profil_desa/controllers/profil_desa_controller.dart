@@ -57,10 +57,8 @@ class ProfilDesaController extends GetxController
       desa.value = ProfilDesaModel.fromJson(
         cached is String ? jsonDecode(cached) : cached,
       );
-      debugPrint('🟡 PROFIL DESA: loaded from cache');
       return true;
     } catch (e) {
-      debugPrint('🔴 Cache error: $e');
       return false;
     }
   }
@@ -76,9 +74,7 @@ class ProfilDesaController extends GetxController
       final res = await DioService.instance.get(ApiConstant.profilDesa);
       desa.value = ProfilDesaModel.fromJson(res.data);
       _saveToCache(res.data);
-      debugPrint('🟢 PROFIL DESA: fetched from API');
     } catch (e) {
-      debugPrint('🔴 fetchProfile error: $e');
     } finally {
       isLoading.value = false;
     }

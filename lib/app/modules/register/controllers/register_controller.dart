@@ -15,12 +15,9 @@ class RegisterController extends GetxController {
   final phoneController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
-
   final isLoading = false.obs;
   final isPasswordHidden = true.obs;
   final isConfirmPasswordHidden = true.obs;
-
-  final formKey = GlobalKey<FormState>();
 
   void togglePasswordVisibility() {
     isPasswordHidden.value = !isPasswordHidden.value;
@@ -47,19 +44,18 @@ class RegisterController extends GetxController {
       final responseData = response.data as Map<String, dynamic>;
   
       if (response.statusCode == 200 || response.data['success'] == true) {
-          Get.snackbar(
-              'Registrasi Berhasil',
-              responseData['message'] ?? 'Selamat datang! Silakan login.',
-              backgroundColor: AppColors.success,
-              colorText: AppColors.white,
-          );
-          Future.delayed(const Duration(seconds: 1), () {
-            Get.delete<RegisterController>();
-            Get.offAllNamed(Routes.LOGIN);
-          });
+        Get.snackbar(
+          'Registrasi Berhasil',
+          responseData['message'] ?? 'Selamat datang! Silakan login.',
+          backgroundColor: AppColors.success,
+          colorText: AppColors.white,
+        );
 
-      } else {
-        throw response.data['message'] ?? 'Gagal melakukan registrasi';
+        await Future.delayed(const Duration(seconds: 1));
+
+        if (Get.currentRoute != Routes.LOGIN) {
+          Get.offNamedUntil(Routes.LOGIN, (route) => route.isFirst);
+        }
       }
     } on DioException catch (e) {
       String errorMessage = 'Terjadi kesalahan';
@@ -94,7 +90,6 @@ class RegisterController extends GetxController {
     Get.back();
   }
 
-  // Validasi form
   String? validateName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Nama lengkap wajib diisi';
@@ -126,7 +121,6 @@ class RegisterController extends GetxController {
     if (value == null || value.isEmpty) {
       return 'Nomor HP wajib diisi';
     }
-    // Format nomor HP Indonesia
     String pattern = r'(^(?:[+62])?[0-9]{10,12}$)';
     RegExp regExp = RegExp(pattern);
     if (!regExp.hasMatch(value)) {
@@ -134,6 +128,7 @@ class RegisterController extends GetxController {
     }
     return null;
   }
+  
 
   String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
@@ -164,7 +159,6 @@ class RegisterController extends GetxController {
     return null;
   }
 
-  // Format nomor HP
   void formatPhoneNumber(String value) {
     String numbers = value.replaceAll(RegExp(r'[^0-9]'), '');
 
@@ -180,14 +174,42 @@ class RegisterController extends GetxController {
     );
   }
 
+  void validateAndSubmit() {
+    final usernameError = validateUsername(usernameController.text);
+    final emailError = validateEmail(emailController.text);
+    final passwordError = validatePassword(passwordController.text);
+
+    if (usernameError != null) {
+      showError(usernameError);
+      return;
+    }
+
+    if (emailError != null) {
+      showError(emailError);
+      return;
+    }
+
+    if (passwordError != null) {
+      showError(passwordError);
+      return;
+    }
+
+    onRegister();
+  }
+
+  void showError(String message) {
+    Get.snackbar(
+      'Validasi Gagal',
+      message,
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+      snackPosition: SnackPosition.TOP,
+      margin: const EdgeInsets.all(12),
+    );
+  }
+
   @override
   void onClose() {
-    namaLengkapController.dispose();
-    usernameController.dispose();
-    emailController.dispose();
-    phoneController.dispose();
-    passwordController.dispose();
-    confirmPasswordController.dispose();
     super.onClose();
   }
 }

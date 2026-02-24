@@ -9,7 +9,7 @@ class SuratListController extends GetxController {
 
   @override
   void onInit() {
-    super.onInit();
+    super.onInit(); 
     fetchJenisSurat();
   }
 
@@ -37,11 +37,7 @@ class SuratListController extends GetxController {
       jenisSuratList.assignAll(
         listData.map((e) => Map<String, dynamic>.from(e)).toList(),
       );
-
-      print('Jenis surat loaded: ${jenisSuratList.length}');
     } catch (e, s) {
-      print('fetchJenisSurat error: $e');
-      print(s);
     } finally {
       isLoading.value = false;
     }
@@ -51,8 +47,8 @@ class SuratListController extends GetxController {
   Get.toNamed(
     '/surat-form',
     arguments: {
-      'suratId': surat['id'].toString(),       // pastikan string
-      'suratTitle': surat['nama'].toString(),  // pastikan string
+      'suratId': surat['id'].toString(),
+      'suratTitle': surat['nama'].toString(),
       'suratData': surat,
     },
   );

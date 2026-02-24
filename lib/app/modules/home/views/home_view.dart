@@ -93,7 +93,7 @@ class HomeView extends GetView<HomeController> {
                   }),
                   SizedBox(height: AppResponsive.h(2)),
                   Obx(() {
-                      return !controller.auth.isVerified
+                     return !controller.auth.isVerified && !controller.auth.isPending
                           ? InkWell(
                               onTap: () {
                                 Get.toNamed(Routes.TAUTKAN_AKUN);
@@ -130,6 +130,50 @@ class HomeView extends GetView<HomeController> {
                                           'Tautkan akun anda untuk mendapatkan pelayanan maksimal',
                                           style: AppText.small(
                                               color: AppColors.white),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : controller.auth.isPending
+                          ? InkWell(
+                              onTap: () {
+                                Get.toNamed(Routes.TAUTKAN_AKUN);
+                              },
+                              child: Container(
+                                height: AppResponsive.h(12),
+                                width: double.infinity,
+                                padding:
+                                    AppResponsive.padding(vertical: 1),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(10),
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        AppColors.amber,
+                                        AppColors.warning,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.all(15),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Akun anda sedang diproses',
+                                          style: AppText.button(
+                                              color: AppColors.text),
+                                        ),
+                                        Text(
+                                          'Akun anda sedang diverifikasi oleh pihak desa, Harap menunggu!.',
+                                          style: AppText.small(
+                                              color: AppColors.text),
                                         ),
                                       ],
                                     ),

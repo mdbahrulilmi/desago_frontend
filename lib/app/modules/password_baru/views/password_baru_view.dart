@@ -7,7 +7,7 @@ import 'package:remixicon/remixicon.dart';
 import '../controllers/password_baru_controller.dart';
 
 class PasswordBaruView extends GetView<PasswordBaruController> {
-  const PasswordBaruView(); // Hapus super.key
+  const PasswordBaruView();
 
   @override
   Widget build(BuildContext context) {

@@ -38,10 +38,8 @@ class AkunBiodataController extends GetxController {
       user.value = BiodataModel.fromJson(
         cached is String ? jsonDecode(cached) : cached,
       );
-      debugPrint('🟡 PROFIL DESA: loaded from cache');
       return true;
     } catch (e) {
-      debugPrint('🔴 Cache error: $e');
       return false;
     }
   }
@@ -63,7 +61,6 @@ class AkunBiodataController extends GetxController {
       if (response.data != null) {
         user.value = BiodataModel.fromJson(response.data);
         box.write(_cacheKey, response.data);
-        debugPrint('🟢 PROFIL DESA: saved to cache');
       }
 
     } catch (e) {

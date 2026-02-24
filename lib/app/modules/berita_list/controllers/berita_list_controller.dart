@@ -26,7 +26,6 @@ class BeritaListController extends GetxController {
 
   final isLoading = true.obs;
 
-  // ================= PAGINATION =================
   final ScrollController scrollController = ScrollController();
   final RxBool isLoadMore = false.obs;
   final RxInt currentPage = 1.obs;
@@ -65,8 +64,6 @@ class BeritaListController extends GetxController {
     super.onClose();
   }
 
-  // ================= API =================
-
   Future<void> fetchBerita() async {
     try {
       isLoading.value = beritas.isEmpty;
@@ -94,7 +91,6 @@ class BeritaListController extends GetxController {
 
       await _saveToCache(data);
     } catch (e) {
-      debugPrint('🔴 Error fetchBerita: $e');
     } finally {
       isLoading.value = false;
     }
@@ -128,13 +124,10 @@ class BeritaListController extends GetxController {
         }
       }
     } catch (e) {
-      debugPrint('🔴 Error loadMoreBerita: $e');
     } finally {
       isLoadMore.value = false;
     }
   }
-
-  // ================= FILTER =================
 
   void filterBerita(String keyword) {
     filteredBeritas.assignAll(
@@ -170,8 +163,6 @@ class BeritaListController extends GetxController {
     box.remove(_cacheKey);
     box.remove(_cacheTimeKey);
   }
-
-  // ================= CACHE =================
 
   void _loadFromCache() {}
 

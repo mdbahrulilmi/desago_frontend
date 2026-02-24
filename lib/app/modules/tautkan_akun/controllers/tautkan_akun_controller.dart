@@ -13,11 +13,9 @@ class TautkanAkunController extends GetxController {
 
   final ImagePicker _picker = ImagePicker();
 
-  // ============================== SCAN FUNCTION ==============================
   Future<void> scanKTP() async {
     try {
       isLoading.value = true;
-      debugPrint("=== MULAI SCAN KTP ===");
 
       final XFile? image = await _picker.pickImage(
         source: ImageSource.camera,
@@ -25,10 +23,8 @@ class TautkanAkunController extends GetxController {
       );
       if (image == null) {
         isLoading.value = false;
-        debugPrint("Tidak ada gambar diambil");
         return;
       }
-      debugPrint("Gambar diambil: ${image.path}");
 
       final inputImage = InputImage.fromFile(File(image.path));
       final textRecognizer =
@@ -37,22 +33,12 @@ class TautkanAkunController extends GetxController {
       final RecognizedText recognizedText =
           await textRecognizer.processImage(inputImage);
 
-      // ====== SEBELUM PARSING ======
       rawText.value = recognizedText.text;
-      debugPrint("========== RAW OCR ==========");
-      debugPrint(rawText.value); // Hasil OCR mentah
-      debugPrint("=============================");
-
       await textRecognizer.close();
-
-      // ====== PARSING ======
       final result = _parseKTP(rawText.value);
-
-      debugPrint("Hasil parsing siap dikirim ke form: $result");
 
       isLoading.value = false;
 
-      // ====== UPDATE FORM OTOMATIS ======
       final formController =
           Get.put(TautkanAkunFormController(), permanent: true);
       formController.fillFormFromOCR(result);
@@ -62,14 +48,11 @@ class TautkanAkunController extends GetxController {
 
     } catch (e, st) {
       isLoading.value = false;
-      debugPrint("ERROR SCAN KTP: $e\n$st");
       Get.snackbar("Error", "Gagal scan KTP");
     }
   }
 
-  // ============================== PARSER KTP ROBUST ==============================
   Map<String, String> _parseKTP(String text) {
-    debugPrint("========== PARSING FINAL ==========");
 
     final result = {
       "nama_lengkap": "",
@@ -131,8 +114,6 @@ if (line.toUpperCase().contains("JL") || line.toUpperCase().contains("JALAN")) {
   List<String> alamatParts = [];
   for (int j = i; j < lines.length; j++) {
     String nextLine = lines[j].trim();
-
-    // Stop collecting if the line contains other known fields
     if (nextLine.toUpperCase().contains("AGAMA") ||
         nextLine.toUpperCase().contains("STATUS") ||
         nextLine.toUpperCase().contains("PEKERJAAN") ||
@@ -142,7 +123,6 @@ if (line.toUpperCase().contains("JL") || line.toUpperCase().contains("JALAN")) {
         nextLine.toUpperCase().contains("BERLAKU") ||
         agamaList.any((a) => nextLine.toUpperCase().contains(a))) break;
 
-    // Remove leading colon if any
     if (nextLine.startsWith(":")) nextLine = nextLine.substring(1).trim();
 
     alamatParts.add(nextLine);
@@ -202,11 +182,6 @@ if (line.toUpperCase().contains("JL") || line.toUpperCase().contains("JALAN")) {
     }
 
     ktpData.value = result;
-
-    debugPrint("========== HASIL FINAL ==========");
-    result.forEach((k, v) => debugPrint("$k : $v"));
-    debugPrint("==================================");
-
     return result;
   }
 }

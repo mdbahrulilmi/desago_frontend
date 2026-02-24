@@ -60,7 +60,6 @@ class SuratFormController extends GetxController {
     formSections.value =
         rawSections.map((e) => Map<String, dynamic>.from(e)).toList();
 
-    /// init controller tiap field
     for (var section in formSections) {
       final fields = section['fields'] as List<dynamic>? ?? [];
 
@@ -182,8 +181,6 @@ class SuratFormController extends GetxController {
   if (isSubmitting.value) return;
   isSubmitting.value = true;
 
-  print("INI SURAT DATA ${suratData['kode']}");
-
   try {
     if (!validateForm()) {
       final empty = getEmptyFields();
@@ -225,7 +222,6 @@ class SuratFormController extends GetxController {
 
     final user = await StorageService.getUser();
     final token = await StorageService.getToken();
-
     final now = DateTime.now();
     final tahun = now.year;
     final jam = now.hour.toString().padLeft(2, '0');
@@ -324,10 +320,6 @@ class SuratFormController extends GetxController {
   }
   
 String? getTimeValue(String key) => timeValues[key]?.value;
-
-/// =========================
-/// CEK FIELD KOSONG
-/// =========================
   Map<String, String> getEmptyFields() {
     final Map<String, String> emptyFields = {};
 

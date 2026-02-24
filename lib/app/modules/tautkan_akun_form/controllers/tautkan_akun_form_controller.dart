@@ -40,12 +40,8 @@ class TautkanAkunFormController extends GetxController {
     );
 
     if (image == null) {
-      print("❌ User batal pilih gambar");
       return;
     }
-
-    print("📸 Image picked: ${image.path}");
-    print("📸 Image name: ${image.name}");
 
     if (isKTP) {
       ktpImage.value = File(image.path);
@@ -59,25 +55,18 @@ class TautkanAkunFormController extends GetxController {
 
   Future<void> submit() async {
 
-    print("========== SUBMIT START ==========");
-
     if (nikController.text.isEmpty || nokkController.text.isEmpty) {
-      print("❌ NIK atau No KK kosong");
       Get.snackbar("Error", "NIK dan No KK wajib diisi");
       return;
     }
 
     if (ktpImage.value == null || kkImage.value == null) {
-      print("❌ File belum lengkap");
       Get.snackbar("Error", "Foto KTP dan KK wajib diupload");
       return;
     }
 
     String? token = StorageService.getToken();
-    print("🔑 Token: $token");
-
     if (token == null) {
-      print("❌ Token null");
       Get.snackbar("Error", "Token tidak ditemukan, silakan login ulang");
       return;
     }
@@ -85,26 +74,6 @@ class TautkanAkunFormController extends GetxController {
     try {
       isLoading.value = true;
 
-      print("🌍 Endpoint: ${ApiConstant.biodataStore}");
-
-      print("📦 Data yang dikirim:");
-      print("NIK: ${nikController.text}");
-      print("Nama: ${namaController.text}");
-      print("Tanggal Lahir: ${tanggalLahirController.text}");
-      print("Tempat Lahir: ${tempatLahirController.text}");
-      print("Status: ${statusPerkawinanController.text}");
-      print("Agama: ${agamaController.text}");
-      print("Alamat: ${alamatController.text}");
-      print("Pekerjaan: ${pekerjaanController.text}");
-      print("Berlaku Hingga: ${berlakuHinggaController.text}");
-      print("No KK: ${nokkController.text}");
-      print("Gol Darah: ${golonganDarahController.text}");
-      print("Jenis Kelamin: ${jenisKelaminController.text}");
-      print("Kewarganegaraan: ${kewarganegaraanController.text}");
-
-      print("📎 KTP Path: ${ktpImage.value!.path}");
-      print("📎 KK Path: ${kkImage.value!.path}");
-      
       dio.FormData formData = dio.FormData.fromMap({
         "nik": nikController.text,
         "nama_lengkap": namaController.text,
@@ -130,9 +99,6 @@ class TautkanAkunFormController extends GetxController {
           filename: kkImage.value!.path.split('/').last,
         ),
       });
-
-      print("🚀 Mengirim request...");
-
       final response = await DioService.instance.post(
         ApiConstant.biodataStore,
         data: formData,
@@ -143,10 +109,6 @@ class TautkanAkunFormController extends GetxController {
           },
         ),
       );
-
-      print("✅ STATUS CODE: ${response.statusCode}");
-      print("✅ RESPONSE DATA: ${response.data}");
-
       Get.back();
       Get.back();
       authController.initAuth();
@@ -157,18 +119,10 @@ class TautkanAkunFormController extends GetxController {
 
     } on dio.DioException catch (e) {
 
-      print("❌ DIO ERROR TERJADI");
-      print("❌ Message: ${e.message}");
-
       if (e.response != null) {
-        print("❌ STATUS CODE: ${e.response!.statusCode}");
-        print("❌ RESPONSE DATA: ${e.response!.data}");
-
         final data = e.response!.data;
-
         if (e.response!.statusCode == 422 && data["errors"] != null) {
           final firstError = data["errors"].values.first[0];
-          print("❌ VALIDATION ERROR: $firstError");
           Get.snackbar("Validasi Error", firstError);
         } else {
           Get.snackbar(
@@ -178,22 +132,17 @@ class TautkanAkunFormController extends GetxController {
         }
 
       } else {
-        print("❌ Tidak ada response (network error)");
         Get.snackbar("Error", "Tidak dapat terhubung ke server");
       }
 
     } catch (e) {
-      print("❌ ERROR LAIN: $e");
       Get.snackbar("Error", e.toString());
     } finally {
       isLoading.value = false;
-      print("========== SUBMIT END ==========");
     }
   }
 
-  // ================= OCR Fill =================
   void fillFormFromOCR(Map<String, String> ktpData) {
-    print("🧠 Mengisi form dari OCR: $ktpData");
 
     nikController.text = ktpData["nik"] ?? '';
     namaController.text = ktpData["nama_lengkap"] ?? '';

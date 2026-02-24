@@ -36,7 +36,6 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                     "${berita.gambar}",
                     fit: BoxFit.cover,
                   ),
-
                   DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -51,8 +50,6 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                     ),
                     child: const SizedBox.expand(),
                   ),
-
-                  // Kategori
                   Positioned(
                     bottom: 16,
                     left: 16,
@@ -69,8 +66,6 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                       ),
                     ),
                   ),
-
-                  // Share
                   Positioned(
                     top: 40,
                     right: 16,
@@ -87,8 +82,6 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
               ),
             ),
           ),
-
-          // CONTENT
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -99,9 +92,7 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                     berita.judul,
                     style: AppText.h5(color: AppColors.text),
                   ),
-
                   const SizedBox(height: 12),
-
                   Row(
                     children: [
                       CircleAvatar(
@@ -129,9 +120,7 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 16),
-
                   Html(
                     data: berita.content,
                     style: {

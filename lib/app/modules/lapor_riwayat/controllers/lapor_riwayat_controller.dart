@@ -11,15 +11,9 @@
 
   class LaporRiwayatController extends GetxController {
     final dateFormat = DateFormat('dd MMMM yyyy, HH:mm');
-
-    // Data riwayat laporan
     final RxList<LaporModel> laporanList = <LaporModel>[].obs;
     final RxList<LaporModel> filteredLaporanList = <LaporModel>[].obs;
-
-    // Loading state
     final RxBool isLoading = true.obs;
-
-    // Filter
     final TextEditingController searchController = TextEditingController();
     final RxString selectedStatus = 'Semua'.obs;
     final RxList<String> statusOptions = ['Semua', 'Menunggu', 'Diproses', 'Selesai', 'Ditolak'].obs;
@@ -57,8 +51,6 @@
 
         filterLaporan();
       } catch (e, stackTrace) {
-        debugPrint('Error fetchLaporanList: $e');
-        debugPrint(stackTrace.toString());
       } finally {
         isLoading.value = false;
       }

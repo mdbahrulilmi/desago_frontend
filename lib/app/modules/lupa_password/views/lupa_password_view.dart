@@ -47,7 +47,6 @@ class LupaPasswordView extends GetView<LupaPasswordController> {
                   ),
                 ),
                 SizedBox(height: AppResponsive.h(4)),
-                // Form Fields
                 TextFormField(
                   controller: controller.emailController,
                   style: AppText.bodyMedium(color: AppColors.dark),
@@ -77,7 +76,6 @@ class LupaPasswordView extends GetView<LupaPasswordController> {
                         onPressed: controller.isLoading.value
                             ? null
                             : () => controller.onVerifyIdentity(),
-                            // : () => controller.onVerifyIdentity(),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           shape: RoundedRectangleBorder(

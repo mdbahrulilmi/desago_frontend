@@ -17,7 +17,6 @@ class AgendaController extends GetxController {
     fetchAgenda();
   }
 
-  /// ================= FETCH =================
   Future<void> fetchAgenda() async {
     try {
       isLoading.value = true;
@@ -31,17 +30,13 @@ class AgendaController extends GetxController {
         listData.map((e) => AgendaModel.fromJson(e)).toList(),
       );
 
-      print('🟢 Agenda loaded: ${agendas.length}');
     } catch (e, stack) {
       agendas.clear();
-      print('🔴 Error fetchAgenda: $e');
-      print(stack);
     } finally {
       isLoading.value = false;
     }
   }
 
-  /// ================= FILTER BY DAY =================
   List<AgendaModel> getAgendaByDay(DateTime day) {
     return agendas.where((agenda) {
       return isSameDay(agenda.tanggal, day);
@@ -51,7 +46,6 @@ class AgendaController extends GetxController {
   List<AgendaModel> get agendaByDate =>
       getAgendaByDay(selectedDay.value);
 
-  /// ================= SHARE =================
   void shareAgenda(AgendaModel agenda) {
     final tanggalFormatted =
         DateFormat('dd MMMM yyyy', 'id_ID').format(agenda.tanggal);
