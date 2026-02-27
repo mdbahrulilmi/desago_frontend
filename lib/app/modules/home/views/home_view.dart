@@ -498,7 +498,7 @@ class HomeView extends GetView<HomeController> {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Container(
-        margin: EdgeInsets.only(left: 9, right: 3),
+        margin: const EdgeInsets.only(left: 9, right: 3),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -510,45 +510,43 @@ class HomeView extends GetView<HomeController> {
         ),
       ),
       SizedBox(height: AppResponsive.h(3)),
-        Obx(() {
-          return UIStateHelper.handleState(
-            isLoading: controller.isLoadingCarousel.value,
-            isEmpty: controller.carousel.isEmpty,
-            content: CarouselSlider(
-              options: CarouselOptions(
-                autoPlay: true,
-                autoPlayCurve: Curves.fastOutSlowIn,
-                autoPlayInterval: const Duration(seconds: 3),
-                autoPlayAnimationDuration: const Duration(seconds: 2),
-                viewportFraction: 1,
-              ),
-              items: controller.carousel.map((item) {
-                return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 5),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.network(
-                      item.gambar ?? '',
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            loadingWidget: _carouselShimmer(),
-            emptyWidget: SizedBox(
-              height: AppResponsive.h(20),
-              child: const Center(child: Text("Carousel kosong")),
-            ),
+
+      Obx(() {
+        if (controller.isLoadingProduk.value) {
+          return _productShimmer();
+        }
+
+        if (controller.products.isEmpty) {
+          return SizedBox(
+            height: AppResponsive.h(20),
+            child: const Center(child: Text("Produk kosong")),
           );
-        }),
+        }
+
+        return SizedBox(
+          height: AppResponsive.h(35),
+          child: CarouselSlider(
+            carouselController: controller.carouselController,
+            options: CarouselOptions(
+              height: AppResponsive.h(35),
+              viewportFraction: 0.50,
+              enableInfiniteScroll: false,
+              padEnds: false,
+              onPageChanged: (index, reason) {
+                controller.changeSlide(index);
+              },
+            ),
+            items: controller.products.map((product) {
+              return _buildProductCard(context, product);
+            }).toList(),
+          ),
+        );
+      }),
+
       SizedBox(height: AppResponsive.h(2)),
     ],
   );
 }
-
-
 Widget _buildNewsSection(BuildContext context) {
   return Obx(() {
     return UIStateHelper.handleState(

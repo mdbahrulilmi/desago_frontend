@@ -224,7 +224,6 @@ class DanaDesaView extends GetView<DanaDesaController> {
           child: _danaDesaCard(
             title: item.kategori?.nama ?? '-',
             nominal: controller.formatRupiah(item.anggaran),
-            icon: Icons.subdirectory_arrow_right,
             profit: true,
             level: level,
           ),
@@ -250,7 +249,6 @@ class DanaDesaView extends GetView<DanaDesaController> {
           child: _danaDesaCard(
             title: item.kategori?.nama ?? '-',
             nominal: controller.formatRupiah(item.anggaran),
-            icon: Icons.subdirectory_arrow_right,
             profit: false,
             level: level,
           ),
@@ -307,7 +305,7 @@ class DanaDesaView extends GetView<DanaDesaController> {
   Widget _danaDesaCard({
     required String title,
     required String nominal,
-    required IconData icon,
+    IconData? icon,
     required bool profit,
     int level = 0,
   }) {
@@ -384,13 +382,14 @@ class DanaDesaView extends GetView<DanaDesaController> {
                 ],
               ),
             ),
-            Icon(
-              icon,
-              size: (22.0 - (level * 2)).clamp(14, 22),
-              color:
-                  profit ? AppColors.darkGreen : AppColors.primary,
-            ),
-            
+            if (icon != null) 
+              Icon(
+                icon,
+                size: (22.0 - (level * 2)).clamp(14, 22),
+                color: profit 
+                    ? AppColors.darkGreen 
+                    : AppColors.primary,
+              ),  
           ],
         ),
       ),
