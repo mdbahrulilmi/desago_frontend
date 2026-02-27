@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
@@ -514,34 +516,62 @@ class SuratFormView extends GetView<SuratFormController> {
   }
 
   Widget _buildSelectedFile(String key) {
-    final file = controller.getFileValue(key);
-    return Container(
+  final file = controller.getFileValue(key);
+
+  if (file == null) return const SizedBox();
+
+  final isImage = file.path.toLowerCase().endsWith('.png') ||
+      file.path.toLowerCase().endsWith('.jpg') ||
+      file.path.toLowerCase().endsWith('.jpeg') ||
+      file.path.toLowerCase().endsWith('.webp');
+
+  return InkWell(
+    onTap: () => controller.pickFile(key), // tetap bisa ganti
+    child: Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.dark.withOpacity(0.2)),
       ),
-      child: Row(
+      child: Column(
         children: [
-          Icon(Icons.file_present, color: AppColors.primary),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              file?.path.split('/').last ?? 'File selected',
-              style: AppText.bodyMedium(color: AppColors.dark),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+          if (isImage)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.file(
+                File(file.path),
+                height: 150,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            )
+          else
+            Row(
+              children: [
+                Icon(Icons.file_present, color: AppColors.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    file.path.split('/').last,
+                    style: AppText.bodyMedium(color: AppColors.dark),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            "Ketuk untuk ganti file",
+            style: AppText.pSmallBold(color: AppColors.primary),
           ),
-          // IconButton(
-          //   icon: Icon(Icons.close, color: AppColors.danger),
-          //   onPressed: () => controller.removeFile(key),
-          // ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildFilePicker(String key) {
     return InkWell(

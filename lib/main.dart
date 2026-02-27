@@ -20,7 +20,7 @@ Future<void> main() async {
   Get.put(BottomNavigationController());
 
   final appLinks = AppLinks();
-  String initialRoute = AppPages.getInitialRoute();
+  String initialRoute = AppPages.getInitialRoute(); 
   Map<String, String>? initialArgs;
 
   final initialUri = await appLinks.getInitialLink();

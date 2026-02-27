@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:desago/app/components/custom_bottom_navigation_controller.dart';
 import 'package:desago/app/components/custom_bottom_navigation_widget.dart';
+import 'package:desago/app/components/ui_state_helper.dart';
 import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/models/BeritaModel.dart';
 import 'package:desago/app/models/ProdukModel.dart';
@@ -28,271 +29,286 @@ class HomeView extends GetView<HomeController> {
       backgroundColor: Colors.white,
       body: SafeArea(
           child: RefreshIndicator(
-        onRefresh: controller.refreshData,
-        child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            color: AppColors.primary,
+            onRefresh: controller.refreshData,
+            child: SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(width: AppResponsive.w(3)),
-                      Expanded(
-                          child: Image.asset(
-                        'assets/img/logo.png',
-                        height: AppResponsive.h(6),
-                      )),
-                    ],
-                  ),
-                  SizedBox(height: AppResponsive.h(2)),
-                  Obx(() {
-                    if (controller.isLoadingCarousel.value && controller.carousel.isEmpty) {
-                      return SizedBox(
-                        height: AppResponsive.h(20),
-                        child: const Center(child: CircularProgressIndicator()),
-                      );
-                    }
-
-                    if (controller.carousel.isEmpty) {
-                      return SizedBox(
-                        height: AppResponsive.h(20),
-                        child: const Center(child: Text('Carousel kosong')),
-                      );
-                    }
-
-                    return CarouselSlider(
-                      options: CarouselOptions(
-                        autoPlay: true,
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        autoPlayInterval: const Duration(seconds: 3),
-                        autoPlayAnimationDuration: const Duration(seconds: 2),
-                        viewportFraction: 1,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(width: AppResponsive.w(3)),
+                          Expanded(
+                              child: Image.asset(
+                            'assets/img/logo.png',
+                            height: AppResponsive.h(6),
+                          )),
+                        ],
                       ),
-                      items: controller.carousel.map((item) {
-                        final imageUrl = '${item.gambar}';
-                        print(imageUrl);
-
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 5),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.network(
-                              imageUrl,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              errorBuilder: (_, __, ___) =>
-                                  const Icon(Icons.broken_image),
+                      SizedBox(height: AppResponsive.h(2)),
+                      Obx(() {
+                        return UIStateHelper.handleState(
+                          isLoading: controller.isLoadingCarousel.value,
+                          isEmpty: controller.carousel.isEmpty,
+                          loadingWidget: _carouselShimmer(),
+                          emptyWidget: SizedBox(
+                            height: AppResponsive.h(20),
+                            child: const Center(child: Text('Carousel kosong')),
+                          ),
+                          content: CarouselSlider(
+                            options: CarouselOptions(
+                              autoPlay: true,
+                              autoPlayCurve: Curves.fastOutSlowIn,
+                              autoPlayInterval: const Duration(seconds: 3),
+                              autoPlayAnimationDuration: const Duration(seconds: 2),
+                              viewportFraction: 1,
                             ),
+                            items: controller.carousel.map((item) {
+                              final imageUrl = '${item.gambar}';
+
+                              return Container(
+                                margin: const EdgeInsets.symmetric(horizontal: 5),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.network(
+                                    imageUrl,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    errorBuilder: (_, __, ___) =>
+                                        const Icon(Icons.broken_image),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
                         );
-                      }).toList(),
-                    );
-                  }),
-                  SizedBox(height: AppResponsive.h(2)),
-                  Obx(() {
-                     return !controller.auth.isVerified && !controller.auth.isPending
-                          ? InkWell(
-                              onTap: () {
-                                Get.toNamed(Routes.TAUTKAN_AKUN);
-                              },
-                              child: Container(
-                                height: AppResponsive.h(12),
-                                width: double.infinity,
-                                padding:
-                                    AppResponsive.padding(vertical: 1),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(10),
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        AppColors.info,
-                                        AppColors.lightBlue,
-                                      ],
-                                    ),
-                                  ),
-                                  child: Padding(
+                      }),
+                      SizedBox(height: AppResponsive.h(2)),
+                      Obx(() {
+                        return !controller.auth.isVerified && !controller.auth.isPending
+                              ? InkWell(
+                                  onTap: () {
+                                    Get.toNamed(Routes.TAUTKAN_AKUN);
+                                  },
+                                  child: Container(
+                                    height: AppResponsive.h(12),
+                                    width: double.infinity,
                                     padding:
-                                        const EdgeInsets.all(15),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Tautkan Akun Anda Dengan Desa',
-                                          style: AppText.button(
-                                              color: AppColors.white),
+                                        AppResponsive.padding(vertical: 1),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(10),
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            AppColors.info,
+                                            AppColors.lightBlue,
+                                          ],
                                         ),
-                                        Text(
-                                          'Tautkan akun anda untuk mendapatkan pelayanan maksimal',
-                                          style: AppText.small(
-                                              color: AppColors.white),
+                                      ),
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.all(15),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Tautkan Akun Anda Dengan Desa',
+                                              style: AppText.button(
+                                                  color: AppColors.white),
+                                            ),
+                                            Text(
+                                              'Tautkan akun anda untuk mendapatkan pelayanan maksimal',
+                                              style: AppText.small(
+                                                  color: AppColors.white),
+                                            ),
+                                          ],
                                         ),
-                                      ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            )
-                          : controller.auth.isPending
-                          ? InkWell(
-                              onTap: () {
-                                Get.toNamed(Routes.TAUTKAN_AKUN);
-                              },
-                              child: Container(
-                                height: AppResponsive.h(12),
-                                width: double.infinity,
-                                padding:
-                                    AppResponsive.padding(vertical: 1),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(10),
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        AppColors.amber,
-                                        AppColors.warning,
-                                      ],
-                                    ),
-                                  ),
-                                  child: Padding(
+                                )
+                              : controller.auth.isPending
+                              ? InkWell(
+                                  child: Container(
+                                    height: AppResponsive.h(12),
+                                    width: double.infinity,
                                     padding:
-                                        const EdgeInsets.all(15),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Akun anda sedang diproses',
-                                          style: AppText.button(
-                                              color: AppColors.text),
+                                        AppResponsive.padding(vertical: 1),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(10),
+                                        gradient: LinearGradient(
+                                          colors: [
+                                          const Color.fromARGB(223, 0, 68, 12),
+                                          const Color.fromARGB(223, 4, 157, 19),
+                                          ],
                                         ),
-                                        Text(
-                                          'Akun anda sedang diverifikasi oleh pihak desa, Harap menunggu!.',
-                                          style: AppText.small(
-                                              color: AppColors.text),
+                                      ),
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.all(15),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Akun anda sedang diproses',
+                                              style: AppText.button(
+                                                  color: AppColors.secondary),
+                                            ),
+                                            Text(
+                                              'Akun anda sedang diverifikasi oleh pihak desa, Harap menunggu!.',
+                                              style: AppText.small(
+                                                  color: AppColors.secondary),
+                                            ),
+                                          ],
                                         ),
-                                      ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            )
-                          : const SizedBox.shrink();
-                    }),
+                                )
+                              : const SizedBox.shrink();
+                        }),
 
-                
-                  SizedBox(height: AppResponsive.h(2)),
-                  
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(width: AppResponsive.w(2)),
-                      Text(
-                        'Layanan Untukmu',
-                        style: AppText.h5(color: AppColors.dark),
+                    
+                      SizedBox(height: AppResponsive.h(2)),
+                      
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(width: AppResponsive.w(2)),
+                          Text(
+                            'Layanan Untukmu',
+                            style: AppText.h5(color: AppColors.dark),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  SizedBox(height: AppResponsive.h(1)),
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: GridView.count(
-                          childAspectRatio: 0.8,
-                          crossAxisCount: 4,
-                          crossAxisSpacing: AppResponsive.w(4),
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          children: [
-                            _buildMenuItem(Remix.bank_line, 'Profile Desa',
-                                AppColors.primary, 
-                                AppColors.secondary, () {
-                              Get.toNamed(Routes.PROFIL_DESA);
-                            }),
-                           Obx(() {
-                            return controller.auth.isVerified
-                                ? _buildMenuItem(
-                                    Remix.alarm_warning_line,
-                                    'Lapor',
-                                    AppColors.primary,
-                                    AppColors.secondary,
-                                    () {
-                                      Get.toNamed(Routes.LAPOR);
-                                    },
-                                  )
-                                : _buildMenuItem(
-                                    Remix.alarm_warning_line,
-                                    'Lapor',
-                                    AppColors.grey,
-                                    AppColors.secondary,
-                                    (){
-                                      Get.toNamed(Routes.TAUTKAN_AKUN);
-                                    },
-                                  );
-                          }),
-                            _buildMenuItem(null, 'No Darurat',
-                                AppColors.primary,
-                                AppColors.secondary, () {
-                              Get.toNamed(Routes.NOMOR_PENTING);
-                            }),
-                            Obx(() {
-                              
-                            return controller.auth.isVerified
-                                ? _buildMenuItem(Remix.mail_fill, 'Surat',
-                                AppColors.primary,
-                                AppColors.secondary, () {
-                                 Get.toNamed(Routes.SURAT_LIST);
-                                })
-                                : _buildMenuItem(Remix.mail_fill, 'Surat',
-                                AppColors.grey,
-                                AppColors.secondary, () {
-                                 Get.toNamed(Routes.TAUTKAN_AKUN);
-                                });
-                          }),
-                                                        
-                            _buildMenuItem(Remix.file_chart_fill, 'Dana Desa',
-                                AppColors.secondary,
-                                AppColors.primary, () {
-                                  Get.toNamed(Routes.DANA_DESA);
-                                }),                      
-                            _buildMenuItem(Remix.box_3_fill,
-                                'UMKM', AppColors.secondary,
-                                AppColors.primary, () {
-                                  Get.toNamed(Routes.PRODUK_LIST_SEMUA);
-                               }),                            
-                            _buildMenuItem(Remix.calendar_todo_fill, 'Agenda',
-                                AppColors.secondary,
-                                AppColors.primary, () {
-                                  Get.toNamed(Routes.AGENDA);
+                      SizedBox(height: AppResponsive.h(1)),
+                      Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: GridView.count(
+                              childAspectRatio: 0.8,
+                              crossAxisCount: 4,
+                              crossAxisSpacing: AppResponsive.w(4),
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              children: [
+                                _buildMenuItem(Remix.bank_line, 'Profile Desa',
+                                    AppColors.primary, 
+                                    AppColors.secondary, () {
+                                  Get.toNamed(Routes.PROFIL_DESA);
                                 }),
-                            
-                            _buildMenuItem(Remix.newspaper_fill, 'Berita',
-                            AppColors.secondary,
-                            AppColors.primary, () {
-                              final beritaController = Get.put(BeritaListController(), permanent: true);
-                              Get.toNamed(Routes.BERITA_LIST);
-                            }),            
-                          ],
-                        ),
+                              Obx(() {
+                                return controller.auth.isVerified
+                                    ? _buildMenuItem(
+                                        Remix.alarm_warning_line,
+                                        'Lapor',
+                                        AppColors.primary,
+                                        AppColors.secondary,
+                                        () {
+                                          Get.toNamed(Routes.LAPOR);
+                                        },
+                                      )
+                                    : controller.auth.isPending 
+                                    ? _buildMenuItem(
+                                      Remix.alarm_warning_line,
+                                      'Lapor',
+                                      AppColors.grey,
+                                      AppColors.secondary, () {
+                                      Get.snackbar(
+                                        'Error',
+                                        'Akun Anda belum diverifikasi',
+                                        backgroundColor: AppColors.primary,
+                                        colorText: AppColors.secondary,
+                                      );})
+                                    : _buildMenuItem(
+                                        Remix.alarm_warning_line,
+                                        'Lapor',
+                                        AppColors.grey,
+                                        AppColors.secondary,
+                                        (){
+                                          Get.toNamed(Routes.TAUTKAN_AKUN);
+                                        },
+                                      );
+                              }),
+                                _buildMenuItem(null, 'No Darurat',
+                                    AppColors.primary,
+                                    AppColors.secondary, () {
+                                  Get.toNamed(Routes.NOMOR_PENTING);
+                                }),
+                                Obx(() {
+                                  
+                                return controller.auth.isVerified
+                                    ? _buildMenuItem(Remix.mail_fill, 'Surat',
+                                    AppColors.primary,
+                                    AppColors.secondary, () {
+                                    Get.toNamed(Routes.SURAT_LIST);
+                                    })
+                                    : controller.auth.isPending 
+                                    ? _buildMenuItem(Remix.mail_fill, 'Surat',
+                                      AppColors.grey,
+                                      AppColors.secondary, () {
+                                      Get.snackbar(
+                                        'Error',
+                                        'Akun Anda belum diverifikasi',
+                                        backgroundColor: AppColors.primary,
+                                        colorText: AppColors.secondary,
+                                      );
+                                      })
+                                    : _buildMenuItem(Remix.mail_fill, 'Surat',
+                                    AppColors.grey,
+                                    AppColors.secondary, () {
+                                    Get.toNamed(Routes.TAUTKAN_AKUN);
+                                    });
+                              }),
+                                                            
+                                _buildMenuItem(Remix.file_chart_fill, 'Dana Desa',
+                                    AppColors.secondary,
+                                    AppColors.primary, () {
+                                      Get.toNamed(Routes.DANA_DESA);
+                                    }),                      
+                                _buildMenuItem(Remix.box_3_fill,
+                                    'UMKM', AppColors.secondary,
+                                    AppColors.primary, () {
+                                      Get.toNamed(Routes.PRODUK_LIST_SEMUA);
+                                  }),                            
+                                _buildMenuItem(Remix.calendar_todo_fill, 'Agenda',
+                                    AppColors.secondary,
+                                    AppColors.primary, () {
+                                      Get.toNamed(Routes.AGENDA);
+                                    }),
+                                
+                                _buildMenuItem(Remix.newspaper_fill, 'Berita',
+                                AppColors.secondary,
+                                AppColors.primary, () {
+                                  final beritaController = Get.put(BeritaListController(), permanent: true);
+                                  Get.toNamed(Routes.BERITA_LIST);
+                                }),            
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: AppResponsive.h(2),
+                          )
+                        ],
                       ),
-                      SizedBox(
-                        height: AppResponsive.h(2),
-                      )
-                    ],
-                  ),
-                  _buildNewsSection(context),
-                  SizedBox(height: AppResponsive.h(2)),
-                 _buildProductSection(context),
-                 SizedBox(height: AppResponsive.h(10)),
-                ]),
-          ),
-        ),
-      )),
+                      _buildNewsSection(context),
+                      SizedBox(height: AppResponsive.h(2)),
+                    _buildProductSection(context),
+                    SizedBox(height: AppResponsive.h(10)),
+                    ]),
+              ),
+            ),
+          )),
     );
   }
 
@@ -494,95 +510,82 @@ class HomeView extends GetView<HomeController> {
         ),
       ),
       SizedBox(height: AppResponsive.h(3)),
-      Obx(() {
-        if (controller.isLoadingProduk.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (controller.products.isEmpty) {
-          return const Center(child: Text('Produk kosong'));
-        }
-
-        return SizedBox(
-        height: AppResponsive.h(35),
-        child: CarouselSlider(
-          carouselController: controller.carouselController,
-          options: CarouselOptions(
-            height: AppResponsive.h(35),
-            viewportFraction: 0.50,
-            enableInfiniteScroll: false,
-            padEnds: false,
-            onPageChanged: (index, reason) {
-              controller.changeSlide(index);
-            },
-          ),
-          items: controller.products.map((product) {
-            return _buildProductCard(context, product);
-          }).toList(),
-        ),
-      );
-}),
+        Obx(() {
+          return UIStateHelper.handleState(
+            isLoading: controller.isLoadingCarousel.value,
+            isEmpty: controller.carousel.isEmpty,
+            content: CarouselSlider(
+              options: CarouselOptions(
+                autoPlay: true,
+                autoPlayCurve: Curves.fastOutSlowIn,
+                autoPlayInterval: const Duration(seconds: 3),
+                autoPlayAnimationDuration: const Duration(seconds: 2),
+                viewportFraction: 1,
+              ),
+              items: controller.carousel.map((item) {
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.network(
+                      item.gambar ?? '',
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            loadingWidget: _carouselShimmer(),
+            emptyWidget: SizedBox(
+              height: AppResponsive.h(20),
+              child: const Center(child: Text("Carousel kosong")),
+            ),
+          );
+        }),
       SizedBox(height: AppResponsive.h(2)),
     ],
   );
 }
 
+
 Widget _buildNewsSection(BuildContext context) {
   return Obx(() {
-    if (controller.isLoadingBerita.value) {
-      return SizedBox(
+    return UIStateHelper.handleState(
+      isLoading: controller.isLoadingBerita.value,
+      isEmpty: controller.beritas.isEmpty,
+      loadingWidget: _newsShimmer(),
+      emptyWidget: SizedBox(
         height: AppResponsive.h(30),
-        child: Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (controller.beritas.isEmpty) {
-      return SizedBox(
-        height: AppResponsive.h(30),
-        child: Center(child: Text('Belum ada berita')),
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(left: 9, right: 3),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Berita Desa",
-                style: AppText.h5(color: AppColors.dark),
-              ),
-            ],
+        child: const Center(child: Text("Belum ada berita")),
+      ),
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(left: 9, right: 3),
+            child: Text(
+              "Berita Desa",
+              style: AppText.h5(color: AppColors.dark),
+            ),
           ),
-        ),
-        SizedBox(height: AppResponsive.h(2)),
-        CarouselSlider(
-          options: CarouselOptions(
-            autoPlay: true,
-            height: AppResponsive.h(30),
-            viewportFraction: 0.70,
-            autoPlayCurve: Curves.fastOutSlowIn,
-            autoPlayInterval: Duration(seconds: 5),
-            autoPlayAnimationDuration: const Duration(seconds: 3),
-            pauseAutoPlayOnTouch: true,
-            padEnds: false,
-            enlargeCenterPage: false,
+          SizedBox(height: AppResponsive.h(2)),
+          CarouselSlider(
+            options: CarouselOptions(
+              autoPlay: true,
+              height: AppResponsive.h(30),
+              viewportFraction: 0.70,
+              autoPlayInterval: const Duration(seconds: 5),
+            ),
+            items: controller.beritas
+                .map((berita) => _buildNewsCard(context, berita))
+                .toList(),
           ),
-          items: controller.beritas.map((berita) {
-            return _buildNewsCard(context, berita);
-
-          }).toList(),
-        ),
-      ],
+        ],
+      ),
     );
   });
 }
-
-  
-
  Widget _buildNewsCard(
   BuildContext context,
   BeritaModel berita,
@@ -639,6 +642,56 @@ Widget _buildNewsSection(BuildContext context) {
             ),
           ),
         ],
+      ),
+    ),
+  );
+}
+
+
+Widget _carouselShimmer() {
+  return SizedBox(
+    height: AppResponsive.h(20),
+    child: Container(
+      margin: const EdgeInsets.symmetric(horizontal: 5),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(10),
+      ),
+    ),
+  );
+}
+
+Widget _newsShimmer() {
+  return SizedBox(
+    height: AppResponsive.h(30),
+    child: ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: 3,
+      itemBuilder: (_, __) => Container(
+        width: AppResponsive.w(70),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade300,
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    ),
+  );
+}
+
+Widget _productShimmer() {
+  return SizedBox(
+    height: AppResponsive.h(35),
+    child: ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: 3,
+      itemBuilder: (_, __) => Container(
+        width: AppResponsive.w(45),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade300,
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
     ),
   );

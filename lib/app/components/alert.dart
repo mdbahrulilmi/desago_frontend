@@ -6,13 +6,11 @@ import '../utils/app_responsive.dart';
 import '../utils/app_text.dart';
 
 class AppDialog {
-  // Jalur asset untuk animasi Lottie
   static const String _successLottie = 'assets/lottie/ok.json';
   static const String _errorLottie = 'assets/lottie/error.json';
   static const String _askLottie = 'assets/lottie/ask.json';
   static const String _infoLottie = 'assets/lottie/info.json';
 
-  /// Dialog sukses dengan animasi Lottie
   static Future<void> success({
     required String title,
     required String message,
@@ -34,7 +32,6 @@ class AppDialog {
     );
   }
 
-  /// Dialog error dengan animasi Lottie
   static Future<void> error({
     required String title,
     required String message,
@@ -56,7 +53,6 @@ class AppDialog {
     );
   }
 
-  /// Dialog informasi dengan animasi Lottie
   static Future<void> info({
     required String title,
     required String message,
@@ -78,7 +74,6 @@ class AppDialog {
     );
   }
 
-  /// Dialog konfirmasi (ask) dengan animasi Lottie dan dua button
   static Future<bool?> ask({
     required String title,
     required String message,
@@ -112,7 +107,6 @@ class AppDialog {
     );
   }
 
-  /// Widget builder untuk dialog
   static Widget _buildDialog({
     required String lottieAsset,
     required String title,
@@ -153,29 +147,20 @@ class AppDialog {
               height: AppResponsive.h(15),
               repeat: true,
               animate: true,
-            ),
-            
+            ),            
             SizedBox(height: AppResponsive.h(2)),
-            
-            // Title
             Text(
               title,
               style: AppText.h5(color: AppColors.dark),
               textAlign: TextAlign.center,
-            ),
-            
+            ),   
             SizedBox(height: AppResponsive.h(1)),
-            
-            // Message
             Text(
               message,
               style: AppText.bodyMedium(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
-            
             SizedBox(height: AppResponsive.h(3)),
-            
-            // Buttons
             Row(
               mainAxisAlignment: showCancelButton 
                   ? MainAxisAlignment.spaceEvenly 
@@ -204,7 +189,6 @@ class AppDialog {
     );
   }
 
-  /// Widget builder untuk button dalam dialog
   static Widget _buildButton({
     required String text,
     required VoidCallback onPressed,

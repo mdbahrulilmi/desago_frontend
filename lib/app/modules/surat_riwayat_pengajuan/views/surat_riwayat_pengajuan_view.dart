@@ -139,12 +139,6 @@ class SuratRiwayatPengajuanView
                           : controller.filteredData.length,
                   itemBuilder: (context, index) {
                     if (controller.isLoading.value) {
-                      return SizedBox(
-                        height: 100,
-                        child: Center(
-                          child: CircularProgressIndicator(color: AppColors.primary),
-                        ),
-                      );
                     } else if (controller.filteredData.isEmpty) {
                       return SizedBox(
                         height: MediaQuery.of(context).size.height * 0.8,

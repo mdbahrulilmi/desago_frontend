@@ -22,7 +22,10 @@ class AkunView extends GetView<AkunController> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: RefreshIndicator(
-        onRefresh: ()=> controller.auth.initAuth(),
+        color: AppColors.primary,
+        onRefresh: () async {
+         await controller.auth.refreshVerification();
+        },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
@@ -123,9 +126,6 @@ class AkunView extends GetView<AkunController> {
                             )
                           : controller.auth.isPending
                           ? InkWell(
-                              onTap: () {
-                                Get.toNamed(Routes.TAUTKAN_AKUN);
-                              },
                               child: Container(
                                 height: AppResponsive.h(12),
                                 width: double.infinity,
@@ -137,8 +137,8 @@ class AkunView extends GetView<AkunController> {
                                         BorderRadius.circular(10),
                                     gradient: LinearGradient(
                                       colors: [
-                                        AppColors.amber,
-                                        AppColors.warning,
+                                        const Color.fromARGB(223, 0, 68, 12),
+                                        const Color.fromARGB(223, 4, 157, 19),
                                       ],
                                     ),
                                   ),
@@ -152,12 +152,12 @@ class AkunView extends GetView<AkunController> {
                                         Text(
                                           'Akun anda sedang diproses',
                                           style: AppText.button(
-                                              color: AppColors.text),
+                                              color: AppColors.secondary),
                                         ),
                                         Text(
                                           'Akun anda sedang diverifikasi oleh pihak desa, Harap menunggu!.',
                                           style: AppText.small(
-                                              color: AppColors.text),
+                                              color: AppColors.secondary),
                                         ),
                                       ],
                                     ),

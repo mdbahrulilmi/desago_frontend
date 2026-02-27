@@ -1,3 +1,5 @@
+import 'package:desago/app/components/shimmer_helper.dart';
+import 'package:desago/app/components/ui_state_helper.dart';
 import 'package:desago/app/helpers/empty_helper.dart';
 import 'package:desago/app/helpers/time_helper.dart';
 import 'package:desago/app/utils/app_colors.dart';
@@ -24,27 +26,24 @@ class AktivitasView extends GetView<AktivitasController> {
         foregroundColor: AppColors.secondary,
         elevation: 1,
       ),
-      body: Obx(() {
-        if (controller.isLoading.value &&
-            controller.aktivitas.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        if (controller.aktivitas.isEmpty) {
-          return SizedBox(
-            height: MediaQuery.of(context).size.height * 0.8,
-            child: Center(
-              child: EmptyStateWidget(
-                title: "Tidak ada Aktivitas",
-                message: "Saat ini tidak ada Aktivitas yang tersedia",
-              ),
+      body:Obx(() {
+      return UIStateHelper.handleState(
+        isLoading: controller.isLoading.value &&
+            controller.aktivitas.isEmpty,
+        isEmpty: controller.aktivitas.isEmpty,
+        emptyWidget: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.8,
+          child: const Center(
+            child: EmptyStateWidget(
+              title: "Tidak ada Aktivitas",
+              message:
+                  "Saat ini tidak ada Aktivitas yang tersedia",
             ),
-          );
-        }
-
-        return RefreshIndicator(
+          ),
+        ),
+        loadingWidget: const _AktivitasShimmer(),
+        content: RefreshIndicator(
+          color: AppColors.primary,
           onRefresh: controller.refreshAktivitas,
           child: ListView.separated(
             controller: controller.scrollController,
@@ -61,9 +60,7 @@ class AktivitasView extends GetView<AktivitasController> {
               if (index >= controller.aktivitas.length) {
                 return const Padding(
                   padding: EdgeInsets.all(16),
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  child: Center(child: CircularProgressIndicator()),
                 );
               }
 
@@ -86,10 +83,11 @@ class AktivitasView extends GetView<AktivitasController> {
                   status: 'Terkirim',
                 ),
               );
-            },
+              },
+            ),
           ),
         );
-      }),
+      })
     );
   }
 }
@@ -180,6 +178,67 @@ class _ReportCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _AktivitasShimmer extends StatelessWidget {
+  const _AktivitasShimmer();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(0, 8, 0, 100),
+      itemCount: 6,
+      separatorBuilder: (_, __) => Divider(
+        color: AppColors.border,
+        height: 1,
+        thickness: 1,
+      ),
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ShimmerHelper.box(
+                width: 54,
+                height: 54,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                  children: [
+                    ShimmerHelper.text(
+                      width: 100,
+                      height: 16,
+                    ),
+                    const SizedBox(height: 8),
+                    ShimmerHelper.text(
+                      width: double.infinity,
+                      height: 14,
+                    ),
+                    const SizedBox(height: 6),
+                    ShimmerHelper.text(
+                      width: 120,
+                      height: 12,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              ShimmerHelper.box(
+                width: 60,
+                height: 20,
+                radius: 6,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

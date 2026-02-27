@@ -38,6 +38,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
         ),
       ),
       body: RefreshIndicator(
+        color: AppColors.primary,
         onRefresh: () async {
           await controller.refreshNomorPenting();
         },
@@ -173,7 +174,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
                                 child: Icon(
                                   Remix.file_copy_line,
                                   size: 16,
-                                  color: AppColors.info,
+                                  color: AppColors.grey,
                                 ),
                               ),
                             ],
@@ -183,7 +184,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
                     ),
                     Icon(
                       Icons.info_outline,
-                      color: AppColors.info,
+                      color: AppColors.grey,
                     ),
                   ],
                 ),
@@ -200,7 +201,6 @@ class NomorPentingView extends GetView<NomorPentingController> {
     );
   }
 
-  // Method untuk menampilkan bottom sheet detail
   void _showDetailBottomSheet(BuildContext context, NomorPentingModel item) {
     AppBottomSheet.show(
       title: 'Detail Kontak',

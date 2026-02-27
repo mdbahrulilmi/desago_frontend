@@ -105,6 +105,7 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
           Expanded(
             child: Obx(() {
               return RefreshIndicator(
+                color: AppColors.primary,
                 onRefresh: () async => await controller.refreshData(),
                 child: ListView.builder(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -116,10 +117,6 @@ class LaporRiwayatView extends GetView<LaporRiwayatController> {
                           : controller.filteredLaporanList.length,
                   itemBuilder: (context, index) {
                     if (controller.isLoading.value) {
-                      return SizedBox(
-                        height: 100,
-                        child: Center(child: CircularProgressIndicator()),
-                      );
                     } else if (controller.filteredLaporanList.isEmpty) {
                       return SizedBox(
                         height: MediaQuery.of(context).size.height * 0.8,

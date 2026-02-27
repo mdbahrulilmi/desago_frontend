@@ -40,6 +40,7 @@ class BeritaListView extends GetView<BeritaListController> {
           Expanded(
         child: Obx(() {
           return RefreshIndicator(
+            color: AppColors.primary,
             onRefresh: controller.refreshBerita,
             child: ListView.builder(
               controller: controller.scrollController,
@@ -69,12 +70,6 @@ class BeritaListView extends GetView<BeritaListController> {
                     child: _buildBeritaCard(berita),
                   );
                 } else {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
                 }
               },
             ),
@@ -127,12 +122,6 @@ class BeritaListView extends GetView<BeritaListController> {
             child: _buildBeritaCard(berita),
           );
         } else {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
         }
       },
     ),

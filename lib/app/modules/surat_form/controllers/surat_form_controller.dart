@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:desago/app/constant/api_constant.dart';
+import 'package:desago/app/helpers/image_compress_helper.dart';
 import 'package:desago/app/models/SuratModel.dart';
 import 'package:desago/app/services/dio_services.dart';
 import 'package:desago/app/services/storage_services.dart';
@@ -12,6 +13,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 
 class SuratFormController extends GetxController {
   final isLoading = true.obs;
@@ -128,11 +130,37 @@ class SuratFormController extends GetxController {
   File? getFileValue(String key) => fileValues[key]?.value;
 
   void pickFile(String key) async {
-    final result = await FilePicker.platform.pickFiles();
-    if (result != null) {
-      fileValues[key]?.value = File(result.files.single.path!);
+  final result = await FilePicker.platform.pickFiles(
+    type: FileType.image,
+    withData: true, // 🔥 WAJIB
+  );
+
+  if (result != null) {
+    final bytes = result.files.single.bytes;
+
+    if (bytes == null) {
+      debugPrint("❌ File bytes null");
+      return;
     }
+
+    // Simpan ke temp file dulu
+    final tempDir = await getTemporaryDirectory();
+    final file = File(
+        "${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg");
+
+    await file.writeAsBytes(bytes);
+
+    // 🔥 Sekarang compress dari file nyata
+    final compressed =
+        await ImageCompressHelper.compressToHardLimit(
+      file: file,
+      maxSizeInKB: 100,
+      debugMode: true,
+    );
+
+    fileValues[key]?.value = compressed ?? file;
   }
+}
 
   bool getCheckboxValue(String key) =>
       checkboxValues[key]?.value ?? false;

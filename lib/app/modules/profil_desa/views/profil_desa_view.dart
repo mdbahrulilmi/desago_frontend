@@ -24,9 +24,6 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
         title: Obx((){
           final desa = controller.desa.value;
           if (controller.isLoading.value) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
             }
           return Text(
           "Profil Desa ${desa?.nama ?? '' }",
@@ -76,6 +73,7 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
               controller: controller.tabController,
               children: [
                 RefreshIndicator(
+                    color: AppColors.primary,
                     onRefresh: controller.refreshProfile,
                     child: ListView(
                       physics: const AlwaysScrollableScrollPhysics(),
@@ -85,6 +83,7 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
                     ),
                   ),
                   RefreshIndicator(
+                    color: AppColors.primary,
                     onRefresh: controller.refreshProfile,
                     child: ListView(
                       physics: const AlwaysScrollableScrollPhysics(),
@@ -110,7 +109,7 @@ class ProfilDesaView extends GetView<ProfilDesaController> {
           Center(
             child: Obx(() {
               if (controller.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
+                
               }
 
               final desa = controller.desa.value;
@@ -256,7 +255,7 @@ final misiList = (desa.misi ?? '')
   Widget _buildPerangkatTab(BuildContext context) {
     return Obx(() {
     if (controller.isLoading.value) {
-      return const Center(child: CircularProgressIndicator());
+      
     }
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),

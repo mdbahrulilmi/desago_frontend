@@ -15,7 +15,6 @@ class PermissionHelper {
     return true;
   }
 
-  // Metode untuk memeriksa dan meminta izin galeri saja
   static Future<bool> checkAndRequestGalleryPermissions() async {
     if (Platform.isAndroid) {
       if (await Permission.photos.isGranted) {

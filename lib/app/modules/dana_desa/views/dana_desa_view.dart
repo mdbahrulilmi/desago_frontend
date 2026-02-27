@@ -144,12 +144,9 @@ class DanaDesaView extends GetView<DanaDesaController> {
     );
   }
 
-  // ================= TOTAL =================
-
   Widget _totalPendapatan() {
     return Obx(() {
       if (controller.isLoading.value) {
-        return const CircularProgressIndicator();
       }
 
       return Column(
@@ -182,7 +179,6 @@ class DanaDesaView extends GetView<DanaDesaController> {
   Widget _totalBelanja() {
     return Obx(() {
       if (controller.isLoading.value) {
-        return const CircularProgressIndicator();
       }
 
       return Column(

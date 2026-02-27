@@ -221,7 +221,14 @@ class LaporFormView extends GetView<LaporFormController> {
                   ),
                 ),
                 child: controller.isSubmitting.value
-                  ? CircularProgressIndicator(color: Colors.white)
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
                   : Text(
                   'Kirim Laporan',
                   style: AppText.button(color: AppColors.white),

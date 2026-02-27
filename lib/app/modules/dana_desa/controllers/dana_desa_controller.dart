@@ -72,25 +72,29 @@ class DanaDesaController extends GetxController {
 
 Future<void> fetchDanaDesa() async {
   debugPrint('Fetching dana desa...');
-  final res = await DioService.instance.get(ApiConstant.anggaran,
-    queryParameters: {'desa_id': ApiConstant.desaId, 'tahun': selectedYear},
+  final res = await DioService.instance.get(
+    ApiConstant.anggaran,
+    queryParameters: {
+      'desa_id': ApiConstant.desaId,
+      'tahun': selectedYear,
+    },
   );
-  debugPrint('Dana desa raw data: ${res.data}');
+
+  desaNama.value = res.data['desa'] ?? '';
 
   final allData = (res.data['data'] as List)
       .map((e) => AnggaranModel.fromJson(e))
       .toList();
 
-  pendapatan.assignAll(allData.where((e) => e.kategori?.tipe == 'pendapatan'));
-  belanja.assignAll(allData.where((e) => e.kategori?.tipe == 'belanja'));
+  pendapatan.assignAll(
+      allData.where((e) => e.kategori?.tipe == 'pendapatan'));
+
+  belanja.assignAll(
+      allData.where((e) => e.kategori?.tipe == 'belanja'));
 
   _cachedPendapatan = pendapatan.toList();
   _cachedBelanja = belanja.toList();
   _isDanaDesaCached = true;
-
-  debugPrint('Pendapatan count: ${pendapatan.length}');
-  debugPrint('Belanja count: ${belanja.length}');
-  debugPrint('Desa nama: ${desaNama.value}');
 }
 
   int kategoriLevel(AnggaranKategoriModel kategori) {

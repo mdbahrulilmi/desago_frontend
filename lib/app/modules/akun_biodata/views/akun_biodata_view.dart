@@ -18,12 +18,10 @@ Widget build(BuildContext context) {
     backgroundColor: AppColors.secondary,
     body: Obx(() {
       if (controller.isLoading.value) {
-        return Center(
-          child: CircularProgressIndicator(color: AppColors.primary),
-        );
       }
 
       return RefreshIndicator(
+        color: AppColors.primary,
         onRefresh: () async {
             await controller.fetchUserData();
           },
@@ -296,10 +294,15 @@ Widget _buildHeader() {
                                     color: AppColors.primary,
                                   ),
                                   child: ClipOval(
-                                    child: Image.network(
-                                      "https://backend.desagodigital.id/${controller.avatar}",
-                                      fit: BoxFit.cover,
-                                    ),
+                                    child: controller.avatar == null || controller.avatar!.isEmpty
+                                        ? _buildDefaultAvatar()
+                                        : Image.network(
+                                            "https://backend.desagodigital.id/${controller.avatar}",
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error, stackTrace) {
+                                              return _buildDefaultAvatar();
+                                            },
+                                          ),
                                   ),
                                 ),
                               ),
@@ -389,6 +392,17 @@ Widget _verificationCard() {
       ),
     );
   });
+}
+
+Widget _buildDefaultAvatar() {
+  return Container(
+    color: Colors.grey.shade300,
+    child: const Icon(
+      Icons.person,
+      size: 50,
+      color: Colors.grey,
+    ),
+  );
 }
 
 Widget _circleButton({

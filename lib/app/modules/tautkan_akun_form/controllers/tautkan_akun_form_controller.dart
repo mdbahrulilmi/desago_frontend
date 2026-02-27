@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/controllers/auth_controller.dart';
+import 'package:desago/app/helpers/image_compress_helper.dart';
 import 'package:desago/app/modules/akun/controllers/akun_controller.dart';
 import 'package:desago/app/services/dio_services.dart';
 import 'package:desago/app/services/storage_services.dart';
@@ -31,22 +32,45 @@ class TautkanAkunFormController extends GetxController {
 
   final ImagePicker _picker = ImagePicker();
   
-  final authController = Get.put(AuthController());
+  final authController = Get.find<AuthController>();
 
   Future<void> pickImage(bool isKTP) async {
     final XFile? image = await _picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 80,
+      imageQuality: 100,
     );
 
-    if (image == null) {
+    if (image == null) return;
+
+    File originalFile = File(image.path);
+
+    double originalSizeKB = originalFile.lengthSync() / 1024;
+    debugPrint("========== IMAGE DEBUG ==========");
+    debugPrint("Original Path: ${originalFile.path}");
+    debugPrint("Original Size: ${originalSizeKB.toStringAsFixed(2)} KB");
+
+    File? compressedFile = await ImageCompressHelper.compressToHardLimit(
+      file: originalFile,
+      maxSizeInKB: 100,
+      debugMode: true, // ini penting
+    );
+
+    if (compressedFile == null) {
+      debugPrint("❌ Compress failed");
+      Get.snackbar("Error", "Gagal kompres gambar");
       return;
     }
 
+    double finalSizeKB = compressedFile.lengthSync() / 1024;
+
+    debugPrint("Final Path: ${compressedFile.path}");
+    debugPrint("Final Size: ${finalSizeKB.toStringAsFixed(2)} KB");
+    debugPrint("=================================");
+
     if (isKTP) {
-      ktpImage.value = File(image.path);
+      ktpImage.value = compressedFile;
     } else {
-      kkImage.value = File(image.path);
+      kkImage.value = compressedFile;
     }
   }
 

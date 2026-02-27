@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:desago/app/helpers/image_compress_helper.dart';
 import 'package:desago/app/modules/tautkan_akun_form/controllers/tautkan_akun_form_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -42,7 +43,21 @@ class TautkanAkunController extends GetxController {
       final formController =
           Get.put(TautkanAkunFormController(), permanent: true);
       formController.fillFormFromOCR(result);
-      formController.ktpImage.value = File(image.path);
+      File originalFile = File(image.path);
+
+      File? compressedFile =
+          await ImageCompressHelper.compressToHardLimit(
+        file: originalFile,
+        maxSizeInKB: 100,
+        debugMode: true,
+      );
+
+      if (compressedFile == null) {
+        Get.snackbar("Error", "Gagal kompres gambar KTP");
+        return;
+      }
+
+      formController.ktpImage.value = compressedFile;
 
       Get.toNamed(Routes.TAUTKAN_AKUN_FORM);
 

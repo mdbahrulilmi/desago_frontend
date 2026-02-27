@@ -92,27 +92,27 @@ class AuthController extends GetxController {
   }
 
   Future<void> refreshVerification() async {
-    try {
-      final token = await StorageService.getToken();
-
-      if (token == null) {
-        return;
-      }
-
-      final res = await DioService.instance.get(
-        ApiConstant.biodata,
-        options: Options(headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-        }),
-      );
-
-      final bio = BiodataModel.fromJson(res.data);
-
-      biodata.value = bio;
-      box.write('biodata', res.data);
-
-    } catch (e, stackTrace) {
+  try {
+    final token = await StorageService.getToken();
+    if (token == null) {
+      return;
     }
+
+    final res = await DioService.instance.get(
+      ApiConstant.biodata,
+      options: Options(headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      }),
+    );
+
+    final bio = BiodataModel.fromJson(res.data);
+    biodata.value = bio;
+    biodata.refresh();
+
+    box.write('biodata', res.data);
+
+  } catch (e, stackTrace) {
   }
+}
 }

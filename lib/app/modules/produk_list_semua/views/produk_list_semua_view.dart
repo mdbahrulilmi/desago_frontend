@@ -61,6 +61,7 @@ class ProdukListSemuaView extends GetView<ProdukListSemuaController> {
          Expanded(
           child: Obx(() {
             return RefreshIndicator(
+              color: AppColors.primary,
               onRefresh: () async => await controller.refreshUMKM(),
               child: ListView.builder(
                 controller: controller.scrollController,
@@ -76,12 +77,6 @@ class ProdukListSemuaView extends GetView<ProdukListSemuaController> {
                 itemBuilder: (context, index) {
                   if (controller.isLoading.value &&
                       controller.filteredProducts.isEmpty) {
-                    return SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.8,
-                      child: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
                   }
                   if (controller.filteredProducts.isEmpty) {
                     return SizedBox(
@@ -102,12 +97,6 @@ class ProdukListSemuaView extends GetView<ProdukListSemuaController> {
                       child: _buildGridProductItem(product, index),
                     );
                   } else {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
                   }
                 },
               ),
