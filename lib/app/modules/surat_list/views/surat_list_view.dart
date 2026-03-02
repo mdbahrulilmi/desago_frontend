@@ -69,7 +69,7 @@ class SuratListView extends StatelessWidget {
           _buildHeader(controller),
 
           Expanded(
-            child: _buildJenisSuratList(controller),
+            child: _buildJenisSuratList(context, controller),
           ),
 
           if (!Navigator.canPop(context))
@@ -134,68 +134,89 @@ class SuratListView extends StatelessWidget {
   }
 
 
-  Widget _buildJenisSuratList(SuratListController controller) {
-    return Obx(() {
-      if (controller.isLoading.value) {
-        return const Center(child: CircularProgressIndicator());
-      }
+  Widget _buildJenisSuratList(
+  BuildContext context,
+  SuratListController controller,
+) {
+  return Obx(() {
+    if (controller.isLoading.value) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
 
-      if (controller.jenisSuratList.isEmpty) {
-        return const EmptyStateWidget(
-          title: "Tidak ada surat",
-          message: "Saat ini tidak ada surat yang tersedia",
-        );
-      }
-
-      return ListView.builder(
-        padding: AppResponsive.padding(horizontal: 4, top: 1),
-        itemCount: controller.jenisSuratList.length,
-        itemBuilder: (context, index) {
-          final item = controller.jenisSuratList[index];
-
-          return Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.dark.withOpacity(0.2),
-              ),
-            ),
-            child: InkWell(
-              onTap: () => controller.navigateToDetail(item),
-              borderRadius: BorderRadius.circular(12),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item['nama'] ?? 'Jenis Surat',
-                            style: AppText.h6(color: AppColors.dark),
-                          ),
-                          const SizedBox(height: 6),
-                          Text( 
-                            item['deskripsi'] ?? '-',
-                            style: AppText.bodyMedium(
-                              color: AppColors.textSecondary,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Icon(Icons.chevron_right),
-                  ],
+    if (controller.jenisSuratList.isEmpty) {
+      return RefreshIndicator(
+        onRefresh: controller.fetchJenisSurat,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: const Center(
+                child: EmptyStateWidget(
+                  title: "Tidak ada surat",
+                  message: "Saat ini tidak ada surat yang tersedia",
                 ),
               ),
             ),
-          );
-        },
+          ],
+        ),
+      );
+    }
+
+      return RefreshIndicator(
+        onRefresh: ()=> controller.fetchJenisSurat(),
+        child: ListView.builder(
+          padding: AppResponsive.padding(horizontal: 4, top: 1),
+          itemCount: controller.jenisSuratList.length,
+          itemBuilder: (context, index) {
+            final item = controller.jenisSuratList[index];
+        
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppColors.dark.withOpacity(0.2),
+                ),
+              ),
+              child: InkWell(
+                onTap: () => controller.navigateToDetail(item),
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item['nama'] ?? 'Jenis Surat',
+                              style: AppText.h6(color: AppColors.dark),
+                            ),
+                            const SizedBox(height: 6),
+                            Text( 
+                              item['deskripsi'] ?? '-',
+                              style: AppText.bodyMedium(
+                                color: AppColors.textSecondary,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.chevron_right),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
       );
     });
   }

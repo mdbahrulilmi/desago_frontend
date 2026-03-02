@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:desago/app/helpers/time_helper.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
@@ -49,10 +50,15 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
                     flexibleSpace: FlexibleSpaceBar(
                       background: produk == null
                           ? const SizedBox()
-                          : Image.network(
-                              produk.gambar,
-                              fit: BoxFit.cover,
-                            ),
+                          : CachedNetworkImage(
+                            imageUrl: produk.gambar ?? '',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            placeholder: (context, url) =>
+                                const Center(child: CircularProgressIndicator()),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.broken_image, size: 50),
+                          )
                     ),
                   ),
                   SliverToBoxAdapter(

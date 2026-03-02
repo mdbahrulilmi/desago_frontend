@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:desago/app/components/bottom_sheet.dart';
 import 'package:desago/app/helpers/empty_helper.dart';
 import 'package:desago/app/models/NomorPentingModel.dart';
@@ -142,7 +143,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
                         backgroundColor: AppColors.muted,
                         backgroundImage: item.gambar != null &&
                                 item.gambar!.isNotEmpty
-                            ? NetworkImage(item.gambar!)
+                            ? CachedNetworkImageProvider(item.gambar!)
                             : const AssetImage(
                                 'assets/img/kepala_desa.jpg',
                               ) as ImageProvider,
@@ -210,7 +211,7 @@ class NomorPentingView extends GetView<NomorPentingController> {
             radius: 50,
             backgroundColor: AppColors.muted,
             backgroundImage: item.gambar != null && item.gambar!.isNotEmpty
-            ? NetworkImage(item.gambar!)
+            ? CachedNetworkImageProvider(item.gambar!)
             : const AssetImage('assets/img/kepala_desa.jpg') as ImageProvider,
           
             onBackgroundImageError: (exception, stackTrace) {},

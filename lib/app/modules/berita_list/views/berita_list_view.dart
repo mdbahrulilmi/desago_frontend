@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/helpers/empty_helper.dart';
 import 'package:desago/app/helpers/time_helper.dart';
@@ -153,10 +154,13 @@ Widget _buildBeritaCard(BeritaModel berita) {
               width: AppResponsive.w(35),
               height: AppResponsive.h(16),
               child: (gambar != null && gambar.isNotEmpty)
-                ? Image.network(
-                    "$gambar",
-                    fit: BoxFit.cover,
-                  )
+                ? CachedNetworkImage(
+                  imageUrl:  berita.gambar ?? '',
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  errorWidget: (context, url, error) =>
+                      const Icon(Icons.broken_image),
+                )
                 : Image.asset(
                     "assets/images/default.png",
                     fit: BoxFit.cover,

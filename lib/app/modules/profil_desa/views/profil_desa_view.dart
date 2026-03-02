@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
@@ -136,11 +137,13 @@ final misiList = (desa.misi ?? '')
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: (desa.kepalaDesa?.gambar != null && desa.kepalaDesa!.gambar!.isNotEmpty)
-                      ? Image.network(
-                          desa.kepalaDesa!.gambar!,
+                      ?  CachedNetworkImage(
+                          imageUrl:  desa.kepalaDesa?.gambar ?? '',
+                          fit: BoxFit.cover,
                           width: 147,
                           height: 203,
-                          fit: BoxFit.cover,
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.broken_image),
                         )
                         : null
                   ),
@@ -294,7 +297,7 @@ final misiList = (desa.misi ?? '')
                                 radius: 30,
                                 backgroundColor: AppColors.muted,
                                 backgroundImage: item.gambar != null && item.gambar!.isNotEmpty
-                                  ? NetworkImage(item.gambar!)
+                                  ? CachedNetworkImageProvider(item.gambar!)
                                   : const AssetImage('assets/img/kepala_desa.jpg') as ImageProvider,
                                 onBackgroundImageError: (exception, stackTrace) {},
                               ),
@@ -352,7 +355,7 @@ final misiList = (desa.misi ?? '')
                                 radius: 30,
                                 backgroundColor: AppColors.muted,
                                 backgroundImage: item.gambar != null && item.gambar!.isNotEmpty
-                                  ? NetworkImage(item.gambar!)
+                                  ? CachedNetworkImageProvider(item.gambar!)
                                   : const AssetImage('assets/img/kepala_desa.jpg') as ImageProvider,
                                 onBackgroundImageError: (exception, stackTrace) {},
                               ),

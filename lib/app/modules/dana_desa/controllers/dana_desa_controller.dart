@@ -54,7 +54,6 @@ class DanaDesaController extends GetxController {
       await fetchDanaDesa(forceRefresh: forceRefresh);
 
     } catch (e) {
-      debugPrint('Error fetchAllData: $e');
     } finally {
       isLoading.value = false;
     }
@@ -77,12 +76,8 @@ class DanaDesaController extends GetxController {
       for (final k in list) {
         kategoriMap[k.id] = k;
       }
-
-      debugPrint('Kategori loaded from cache');
       return;
     }
-
-    debugPrint('Fetching kategori from API...');
     final res = await DioService.instance.get(ApiConstant.anggaranKategori);
 
     final raw = res.data['data'];
@@ -123,19 +118,9 @@ class DanaDesaController extends GetxController {
 
     belanja.assignAll(
         list.where((e) => e.kategori?.tipe == 'belanja'));
-
-    debugPrint(
-        'Dana desa tahun ${selectedYear.value} loaded from cache');
-
-    // ❗ JANGAN RETURN
   }
 
-  // 🔥 2️⃣ TETAP FETCH API
   try {
-
-    debugPrint(
-        'Fetching dana desa tahun ${selectedYear.value} from API');
-
     final res = await DioService.instance.get(
       ApiConstant.anggaran,
       queryParameters: {
@@ -166,11 +151,7 @@ class DanaDesaController extends GetxController {
       'data': raw,
     }));
 
-    debugPrint(
-        'Dana desa tahun ${selectedYear.value} saved to cache');
-
   } catch (e) {
-    debugPrint('Fetch dana desa error: $e');
   }
 }
   // ===========================

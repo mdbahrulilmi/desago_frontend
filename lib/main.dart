@@ -40,7 +40,6 @@ Future<void> main() async {
     if (uri != null && uri.path == '/reset-password') {
       final token = uri.queryParameters['token'] ?? '';
       final email = uri.queryParameters['email'] ?? '';
-      print('>>> Running deep link detected: token=$token, email=$email');
       Get.toNamed('/password-baru', arguments: {'token': token, 'email': email});
     }
   });
@@ -72,7 +71,6 @@ class MyApp extends StatelessWidget {
         ),
       ),
       routingCallback: (info) {
-        print('>>> Navigasi ke route: ${info?.current}');
       },
     );
   }

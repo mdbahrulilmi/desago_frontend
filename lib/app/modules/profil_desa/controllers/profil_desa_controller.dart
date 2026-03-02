@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/models/ProfilDesaModel.dart';
 import 'package:desago/app/models/PemdesAparaturModel.dart';
@@ -106,7 +107,7 @@ class ProfilDesaController extends GetxController
                     radius: 30,
                     backgroundColor: AppColors.muted,
                     backgroundImage: perangkat.gambar.isNotEmpty
-                        ? NetworkImage(perangkat.gambar)
+                        ? CachedNetworkImageProvider(perangkat.gambar)
                         : const AssetImage('assets/img/kepala_desa.jpg')
                             as ImageProvider,
                   ),

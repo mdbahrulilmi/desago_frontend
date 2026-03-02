@@ -31,14 +31,21 @@ class AktivitasView extends GetView<AktivitasController> {
         isLoading: controller.isLoading.value &&
             controller.aktivitas.isEmpty,
         isEmpty: controller.aktivitas.isEmpty,
-        emptyWidget: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.8,
-          child: const Center(
-            child: EmptyStateWidget(
-              title: "Tidak ada Aktivitas",
-              message:
-                  "Saat ini tidak ada Aktivitas yang tersedia",
-            ),
+        emptyWidget: RefreshIndicator(
+          onRefresh: controller.fetchAktivitas,
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.8,
+                child: const Center(
+                  child: EmptyStateWidget(
+                    title: "Tidak ada Aktivitas",
+                    message: "Saat ini tidak ada Aktivitas yang tersedia",
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         loadingWidget: const _AktivitasShimmer(),

@@ -17,6 +17,7 @@ import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:remixicon/remixicon.dart';
 import '../controllers/home_controller.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -74,11 +75,11 @@ class HomeView extends GetView<HomeController> {
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
-                                  child: Image.network(
-                                    imageUrl,
+                                  child: CachedNetworkImage(
+                                    imageUrl:  imageUrl,
                                     fit: BoxFit.cover,
                                     width: double.infinity,
-                                    errorBuilder: (_, __, ___) =>
+                                    errorWidget: (context, url, error) =>
                                         const Icon(Icons.broken_image),
                                   ),
                                 ),
@@ -415,11 +416,13 @@ class HomeView extends GetView<HomeController> {
             ),
             child: AspectRatio(
               aspectRatio: 16 / 14,
-              child: Image.network(
-                product.gambar?.toString() ?? '',
-                fit: BoxFit.cover,
-                width: double.infinity,
-              ),
+              child: CachedNetworkImage(
+                  imageUrl:  product.gambar ?? '',
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  errorWidget: (context, url, error) =>
+                      const Icon(Icons.broken_image),
+                ),
             ),
           ),
     
@@ -612,11 +615,13 @@ Widget _buildNewsSection(BuildContext context) {
             ),
             child: AspectRatio(
               aspectRatio: 16 / 10,
-              child: Image.network(
-                berita.gambar,
-                fit: BoxFit.cover,
-                width: double.infinity,
-              ),
+              child: CachedNetworkImage(
+                  imageUrl:  berita.gambar ?? '',
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  errorWidget: (context, url, error) =>
+                      const Icon(Icons.broken_image),
+                ),
             ),
           ),
 

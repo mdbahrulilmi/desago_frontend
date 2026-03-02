@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:desago/app/helpers/empty_helper.dart';
 import 'package:desago/app/helpers/number_helper.dart';
 import 'package:desago/app/helpers/time_helper.dart';
@@ -132,13 +133,12 @@ class ProdukListSemuaView extends GetView<ProdukListSemuaController> {
               child: SizedBox(
                 width: AppResponsive.w(35),
                 height: AppResponsive.w(35),
-                child: Image.network(
-                  product.gambar?.toString() ?? '',
+                child: CachedNetworkImage(
+                  imageUrl:  product.gambar ?? '',
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Image.asset(
-                    'assets/images/no_image.png',
-                    fit: BoxFit.cover,
-                  ),
+                  width: double.infinity,
+                  errorWidget: (context, url, error) =>
+                      const Icon(Icons.broken_image),
                 ),
               ),
             ),

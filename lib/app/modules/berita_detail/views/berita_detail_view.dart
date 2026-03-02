@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/helpers/time_helper.dart';
 import 'package:flutter/material.dart';
@@ -32,9 +33,12 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.network(
-                    "${berita.gambar}",
+                  CachedNetworkImage(
+                    imageUrl:  berita.gambar ?? '',
                     fit: BoxFit.cover,
+                    width: double.infinity,
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.broken_image),
                   ),
                   DecoratedBox(
                     decoration: BoxDecoration(

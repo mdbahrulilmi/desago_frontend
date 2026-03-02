@@ -32,9 +32,7 @@ class BeritaListController extends GetxController {
   final RxBool hasMore = true.obs;
   static const int _limit = 10;
 
-  static const _cacheKey = 'cache_berita_desa';
-  static const _cacheTimeKey = 'cache_berita_desa_time';
-  static const Duration _cacheTTL = Duration(hours: 1);
+  static const _cacheKey = "berita_list";
 
   @override
   void onInit() {
@@ -161,14 +159,27 @@ class BeritaListController extends GetxController {
 
   void clearCache() {
     box.remove(_cacheKey);
-    box.remove(_cacheTimeKey);
   }
 
-  void _loadFromCache() {}
+  void _loadFromCache() {
+    final cachedJson = box.read(_cacheKey);
+    if (cachedJson == null) return;
+
+    final List decoded = jsonDecode(cachedJson);
+
+    final data = decoded
+        .map<BeritaModel>((e) => BeritaModel.fromJson(e))
+        .toList();
+
+    beritas.assignAll(data);
+    filteredBeritas.assignAll(data);
+  }
 
   Future<void> _saveToCache(List<BeritaModel> data) async {
-    final jsonData = jsonEncode(data.map((e) => e.toJson()).toList());
+    final jsonData = jsonEncode(
+      data.map((e) => e.toJson()).toList(),
+    );
     await box.write(_cacheKey, jsonData);
-    await box.write(_cacheTimeKey, DateTime.now().toIso8601String());
   }
+  
 }

@@ -33,7 +33,8 @@ import 'package:dio/dio.dart';
     @override
     void onInit() {
     user.value = StorageService.getUser();
-
+    
+    _loadCache();
     _loadCarouselCache();
     fetchCarousel();
     fetchBerita();
@@ -47,34 +48,46 @@ import 'package:dio/dio.dart';
         );
       }
     }
+
+    void _loadCache() {
+      final beritaCache = box.read('berita');
+      if (beritaCache != null) {
+        beritas.assignAll(
+          (beritaCache as List).map((e) => BeritaModel.fromJson(e)).toList(),
+        );
+      }
+
+      final produkCache = box.read('produk');
+      if (produkCache != null) {
+        products.assignAll(
+          (produkCache as List).map((e) => ProdukModel.fromJson(e)).toList(),
+        );
+      }
+    }
   
     Future<void> fetchCarousel() async {
-    try {
-      isLoadingCarousel.value = true;
+      try {
+        if (!box.hasData('carousel')) {
+          isLoadingCarousel.value = true;
+        }
 
-      final res = await DioService.instance.get(ApiConstant.carouselDesa);
+        final res = await DioService.instance.get(ApiConstant.carouselDesa);
 
-      if (res.data == null) {
-        carousel.clear();
-        return;
+        final List listData =
+            res.data is List ? res.data : res.data['data'] ?? [];
+
+        if (listData.isEmpty) return;
+
+        carousel.value =
+            listData.map((e) => Carousel.fromJson(e)).toList();
+
+        box.write('carousel', listData);
+
+      } catch (e) {
+      } finally {
+        isLoadingCarousel.value = false;
       }
-
-      final List listData = res.data is List ? res.data : res.data['data'] ?? [];
-
-      if (listData.isEmpty) {
-        carousel.clear();
-        return;
-      }
-
-      carousel.value = listData.map((e) => Carousel.fromJson(e)).toList();
-
-      box.write('carousel', listData);
-
-    } catch (e, stack) {
-    } finally {
-      isLoadingCarousel.value = false;
     }
-  }
 
 
     Future<void> fetchBerita() async {
@@ -90,6 +103,10 @@ import 'package:dio/dio.dart';
         beritas.value = listData
             .map((e) => BeritaModel.fromJson(e))
             .toList();
+        
+        box.write('berita', listData);
+
+
       } catch (e, stack) {
       } finally {
         isLoadingBerita.value = false;
@@ -183,9 +200,10 @@ Aku lihat $product, mau nanya detailnya dong.
 
         products.value =
             listData.map((e) => ProdukModel.fromJson(e)).toList();
+          
+        box.write('produk', listData);
 
       } catch (e) {
-        products.clear();
         return;
       } finally {
         isLoadingProduk.value = false;

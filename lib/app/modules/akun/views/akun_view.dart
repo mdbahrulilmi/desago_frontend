@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:desago/app/routes/app_pages.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_text.dart';
@@ -330,7 +331,7 @@ class AkunView extends GetView<AkunController> {
                   radius: AppResponsive.w(9),
                   backgroundColor: Colors.grey[200],
                   backgroundImage: avatarUrl != null
-                      ? NetworkImage(
+                      ? CachedNetworkImageProvider(
                           'https://backend.desagodigital.id/$avatarUrl')
                       : null,
                   child: avatarUrl == null
