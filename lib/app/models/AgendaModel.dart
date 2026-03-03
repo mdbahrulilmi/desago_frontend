@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:desago/app/models/AgendaKategoriModel.dart';
 
 class AgendaModel {
@@ -9,6 +11,7 @@ class AgendaModel {
   final String waktuMulai;
   final String waktuSelesai;
   final String lokasi;
+  final Bool isShare;
   final AgendaKategori kategori;
 
   AgendaModel({
@@ -20,6 +23,7 @@ class AgendaModel {
     required this.waktuMulai,
     required this.waktuSelesai,
     required this.lokasi,
+    required this.isShare,
     required this.kategori,
   });
 
@@ -33,6 +37,7 @@ class AgendaModel {
       waktuMulai: json['waktu_mulai'],
       waktuSelesai: json['waktu_selesai'],
       lokasi: json['lokasi'],
+      isShare: json['is_share'],
       kategori: AgendaKategori.fromJson(json['kategori']),
     );
   }
@@ -47,6 +52,7 @@ class AgendaModel {
       'waktu_mulai': waktuMulai,
       'waktu_selesai': waktuSelesai,
       'lokasi': lokasi,
+      'is_share': isShare,
       'kategori': kategori.toJson(),
     };
   }

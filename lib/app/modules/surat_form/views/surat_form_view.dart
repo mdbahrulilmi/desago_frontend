@@ -195,7 +195,6 @@ class SuratFormView extends GetView<SuratFormController> {
 
   if (persyaratanRaw != null) {
     if (persyaratanRaw is String) {
-      // Ganti literal '\n' jadi newline nyata
       persyaratanLines.addAll(persyaratanRaw.replaceAll(r'\n', '\n').split('\n'));
     } else if (persyaratanRaw is List) {
       persyaratanLines.addAll(persyaratanRaw.map((e) => e.toString()));
@@ -228,11 +227,6 @@ class SuratFormView extends GetView<SuratFormController> {
                 ],
               )),
         ],
-        const SizedBox(height: 8),
-        Text(
-          'Estimasi: ${controller.suratData['estimasi'] ?? 'N/A'} Hari Kerja',
-          style: AppText.pSmallBold(color: AppColors.primary),
-        ),
       ],
     ),
   );

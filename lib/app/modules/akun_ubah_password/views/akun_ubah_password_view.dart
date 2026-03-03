@@ -65,7 +65,7 @@ class AkunUbahPasswordView extends GetView<AkunUbahPasswordController> {
                   Padding(
                     padding: AppResponsive.padding(horizontal: 4),
                     child: Text(
-                      'Password harus minimal 8 karakter dengan kombinasi huruf dan angka',
+                      'Password harus minimal 8 karakter dengan kombinasi huruf kecil, besar dan angka',
                       style: AppText.small(color: AppColors.textSecondary),
                     ),
                   ),

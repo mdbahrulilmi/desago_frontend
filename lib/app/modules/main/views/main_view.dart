@@ -15,6 +15,7 @@ class MainView extends GetView<BottomNavigationController> {
   Widget build(BuildContext context) {
     return Obx(() {
       return Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
             IndexedStack(
@@ -26,6 +27,7 @@ class MainView extends GetView<BottomNavigationController> {
                 AkunView(),
               ],
             ),
+            
             Positioned(
               left: 0,
               right: 0,

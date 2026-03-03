@@ -90,7 +90,6 @@ class NomorPentingView extends GetView<NomorPentingController> {
                         icon: Icon(Remix.close_line, color: AppColors.primary),
                         onPressed: () {
                           controller.searchController.clear();
-                          // controller.filterNomorPenting('');
                         },
                       );
                     },

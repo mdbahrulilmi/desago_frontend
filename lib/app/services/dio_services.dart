@@ -32,7 +32,6 @@ class DioService {
       ),
     );
 
-    // FIX SSL NGROK
     (dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
         (HttpClient client) {
       client.badCertificateCallback =

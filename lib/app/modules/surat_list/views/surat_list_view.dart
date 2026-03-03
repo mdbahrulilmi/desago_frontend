@@ -16,65 +16,70 @@ class SuratListView extends StatelessWidget {
     AppResponsive().init(context);
     final controller = Get.put(SuratListController());
 
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-        leading: Navigator.canPop(context)
-            ? IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: AppColors.secondary),
-                onPressed: () => Get.back(),
-              )
-            : null,
-        title: Text(
-          'Layanan Surat',
-          style: AppText.h5(color: AppColors.secondary),
-        ),
-        actions: [
-          Padding(
-            padding: AppResponsive.padding(right: 4),
-            child: ElevatedButton(
-              onPressed: () {
-                Get.toNamed(Routes.SURAT_RIWAYAT_PENGAJUAN);
-              },
-              style: ElevatedButton.styleFrom(
-                padding: AppResponsive.padding(horizontal: 2, vertical: 0.5),
-                backgroundColor: Colors.white,
-                foregroundColor: AppColors.primary,
-                elevation: 0,
-                side: BorderSide(color: AppColors.primary),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) {
+          if (didPop) {
+            controller.resetState();
+          }
+        },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: AppColors.white,
+        appBar: AppBar(
+          backgroundColor: AppColors.primary,
+          elevation: 0,
+          leading: Navigator.canPop(context)
+              ? IconButton(
+                  icon: Icon(Icons.arrow_back_ios, color: AppColors.secondary),
+                  onPressed: () => Get.back(),
+                )
+              : null,
+          title: Text(
+            'Layanan Surat',
+            style: AppText.h5(color: AppColors.secondary),
+          ),
+          actions: [
+            Padding(
+              padding: AppResponsive.padding(right: 4),
+              child: ElevatedButton(
+                onPressed: () {
+                  Get.toNamed(Routes.SURAT_RIWAYAT_PENGAJUAN);
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: AppResponsive.padding(horizontal: 2, vertical: 0.5),
+                  backgroundColor: Colors.white,
+                  foregroundColor: AppColors.primary,
+                  elevation: 0,
+                  side: BorderSide(color: AppColors.primary),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.history),
+                    SizedBox(width: AppResponsive.w(1)),
+                    Text(
+                      "Riwayat",
+                      style: AppText.bodyMedium(color: AppColors.primary),
+                    ),
+                  ],
                 ),
               ),
-              child: Row(
-                children: [
-                  const Icon(Icons.history),
-                  SizedBox(width: AppResponsive.w(1)),
-                  Text(
-                    "Riwayat",
-                    style: AppText.bodyMedium(color: AppColors.primary),
-                  ),
-                ],
-              ),
             ),
-          ),
-        ],
-        centerTitle: true,
-      ),
+          ],
+          centerTitle: true,
+        ),
+      
+        body: Column(
+          children: [
+            _buildHeader(controller),
 
-      body: Column(
-        children: [
-          _buildHeader(controller),
-
-          Expanded(
-            child: _buildJenisSuratList(context, controller),
-          ),
-
-          if (!Navigator.canPop(context))
-            SizedBox(height: AppResponsive.h(15)),
-        ],
+            Expanded(
+              child: _buildJenisSuratList(context, controller),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -83,39 +88,42 @@ class SuratListView extends StatelessWidget {
     return Column(
       children: [
         SizedBox(height: AppResponsive.h(2)),
-        Container(
-          margin: AppResponsive.margin(horizontal: 4),
-          width: double.infinity,
-          padding: AppResponsive.padding(vertical: 1),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: AppColors.warningCard,
-            border: Border.all(color: AppColors.strokeWarningCard),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Informasi Penting',
-                  style: AppText.bodyMediumBold(color: AppColors.text),
-                ),
-                SizedBox(height: AppResponsive.h(0.5)),
-                Text(
-                  'Pastikan data diri Anda di menu Biodata sudah lengkap sebelum mengajukan surat. Proses verifikasi memakan waktu 1–3 hari kerja.',
-                  style: AppText.small(color: AppColors.text),
-                ),
-              ],
-            ),
-          ),
-        ),
+        // Container(
+        //   margin: AppResponsive.margin(horizontal: 4),
+        //   width: double.infinity,
+        //   padding: AppResponsive.padding(vertical: 1),
+        //   decoration: BoxDecoration(
+        //     borderRadius: BorderRadius.circular(10),
+        //     color: AppColors.warningCard,
+        //     border: Border.all(color: AppColors.strokeWarningCard),
+        //   ),
+        //   child: Padding(
+        //     padding: const EdgeInsets.all(15),
+        //     child: Column(
+        //       crossAxisAlignment: CrossAxisAlignment.start,
+        //       children: [
+        //         Text(
+        //           'Informasi Penting',
+        //           style: AppText.bodyMediumBold(color: AppColors.text),
+        //         ),
+        //         SizedBox(height: AppResponsive.h(0.5)),
+        //         Text(
+        //           'Pastikan data diri Anda di menu Biodata sudah lengkap sebelum mengajukan surat. Proses verifikasi memakan waktu 1–3 hari kerja.',
+        //           style: AppText.small(color: AppColors.text),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
         Padding(
           padding: EdgeInsets.symmetric(
             horizontal: AppResponsive.w(4),
             vertical: AppResponsive.h(1),
           ),
           child: TextField(
+            controller: controller.searchController,
+            onChanged: controller.updateSearch,
+            
             decoration: InputDecoration(
               hintText: 'Cari surat...',
               hintStyle: AppText.bodyMedium(color: AppColors.textSecondary),
@@ -126,6 +134,17 @@ class SuratListView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
               ),
+              suffixIcon: ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: controller.searchController,
+                    builder: (context, value, child) {
+                      if (value.text.isEmpty) return const SizedBox();
+                      return IconButton(
+                        icon: Icon(Remix.close_line, color: AppColors.primary),
+                        onPressed: () {
+                          controller.resetState();
+                        },
+                      );
+                    }),
             ),
           ),
         ),
@@ -148,6 +167,7 @@ class SuratListView extends StatelessWidget {
     if (controller.jenisSuratList.isEmpty) {
       return RefreshIndicator(
         onRefresh: controller.fetchJenisSurat,
+        color: AppColors.primary,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
@@ -165,13 +185,25 @@ class SuratListView extends StatelessWidget {
       );
     }
 
+    final list = controller.filteredSuratList;
+
+    if (list.isEmpty) {
+      return const Center(
+        child: EmptyStateWidget(
+          title: "Tidak ditemukan",
+          message: "Surat yang Anda cari tidak tersedia",
+        ),
+      );
+    }
       return RefreshIndicator(
         onRefresh: ()=> controller.fetchJenisSurat(),
         child: ListView.builder(
-          padding: AppResponsive.padding(horizontal: 4, top: 1),
-          itemCount: controller.jenisSuratList.length,
+          padding: AppResponsive.padding(horizontal: 4, top: 1, bottom: !Navigator.canPop(context)
+              ? AppResponsive.h(1.5)
+              : 0,),
+            itemCount: list.length,
           itemBuilder: (context, index) {
-            final item = controller.jenisSuratList[index];
+              final item = list[index];
         
             return Container(
               margin: const EdgeInsets.only(bottom: 12),

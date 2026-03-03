@@ -1,3 +1,4 @@
+import 'package:desago/app/modules/surat_list/controllers/surat_list_controller.dart';
 import 'package:desago/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 
@@ -33,9 +34,13 @@ class BottomNavigationController extends GetxController {
   }
 
   void changePage(int index) {
-    if (index == selectedIndex.value) return;
-
     selectedIndex.value = index;
+
+    if (index != 2) {
+      if (Get.isRegistered<SuratListController>()) {
+        Get.find<SuratListController>().resetState();
+      }
+    }
   }
 
   void navigateToLapor() {

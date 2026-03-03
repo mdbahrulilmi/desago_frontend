@@ -261,12 +261,13 @@ class AgendaView extends GetView<AgendaController> {
               ],
             ),
           ),
-          IconButton(
-            icon: Icon(Icons.share, size: 25, color: color,),
-            onPressed: () {
-              controller.shareAgenda(agenda);
-            },
-          )
+          if (agenda.isShare)
+            IconButton(
+              icon: Icon(Icons.share, size: 25, color: color),
+              onPressed: () {
+                controller.shareAgenda(agenda);
+              },
+            ),
         ],
       ),
     );

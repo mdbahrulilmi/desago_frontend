@@ -135,6 +135,15 @@ class RegisterView extends GetView<RegisterController> {
                       ),
                       cursorColor: AppColors.dark,
                     )),
+                SizedBox(height: AppResponsive.h(1)),
+                  
+                  Padding(
+                    padding: AppResponsive.padding(horizontal: 4),
+                    child: Text(
+                      'Password harus minimal 8 karakter dengan kombinasi huruf kecil, besar dan angka',
+                      style: AppText.small(color: AppColors.textSecondary),
+                    ),
+                  ),
                 SizedBox(height: AppResponsive.h(3)),
                 Obx(() => SizedBox(
                       width: double.infinity,
