@@ -11,7 +11,7 @@ class AgendaModel {
   final String waktuMulai;
   final String waktuSelesai;
   final String lokasi;
-  final Bool isShare;
+  final bool isShare;
   final AgendaKategori kategori;
 
   AgendaModel({
@@ -37,7 +37,7 @@ class AgendaModel {
       waktuMulai: json['waktu_mulai'],
       waktuSelesai: json['waktu_selesai'],
       lokasi: json['lokasi'],
-      isShare: json['is_share'],
+      isShare: json['is_share'] == 1,
       kategori: AgendaKategori.fromJson(json['kategori']),
     );
   }

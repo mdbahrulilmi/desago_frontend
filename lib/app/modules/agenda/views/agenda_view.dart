@@ -75,14 +75,24 @@ class AgendaView extends GetView<AgendaController> {
           locale: 'id_ID',
           firstDay: DateTime.utc(2010, 1, 1),
           lastDay: DateTime.utc(2030, 12, 31),
-          focusedDay: controller.selectedDay.value,
+          focusedDay: controller.focusedDay.value,
+
+          onPageChanged: (focusedDay) {
+            controller.focusedDay.value = focusedDay;
+
+            controller.fetchAgendaByMonth(
+              focusedDay.month,
+              focusedDay.year,
+            );
+          },
+          onDaySelected: (selectedDay, focusedDay) {
+            controller.selectedDay.value = selectedDay;
+            controller.focusedDay.value = focusedDay;
+          },
           selectedDayPredicate: (day) =>
               isSameDay(controller.selectedDay.value, day),
           eventLoader: (day) {
             return controller.getAgendaByDay(day);
-          },
-          onDaySelected: (selectedDay, focusedDay) {
-            controller.selectedDay.value = selectedDay;
           },
           headerStyle: const HeaderStyle(
             formatButtonVisible: false,

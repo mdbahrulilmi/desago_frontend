@@ -10,18 +10,25 @@ class AgendaController extends GetxController {
   final Rx<DateTime> selectedDay = DateTime.now().obs;
   final RxList<AgendaModel> agendas = <AgendaModel>[].obs;
   final RxBool isLoading = true.obs;
+  final Rx<DateTime> focusedMonth = DateTime.now().obs;
+  final Rx<DateTime> focusedDay = DateTime.now().obs;
 
   @override
   void onInit() {
     super.onInit();
-    fetchAgenda();
+    fetchAgendaByMonth(
+      focusedMonth.value.month,
+      focusedMonth.value.year,
+    );
   }
 
-  Future<void> fetchAgenda() async {
+  Future<void> fetchAgendaByMonth(int month, int year) async {
     try {
       isLoading.value = true;
 
-      final res = await DioService.instance.get(ApiConstant.agendaDesa);
+      final res = await DioService.instance.get(
+        "${ApiConstant.agendaDesa}?bulan=$month&tahun=$year",
+      );
 
       final List listData =
           res.data is List ? res.data : res.data['data'] ?? [];
@@ -29,8 +36,7 @@ class AgendaController extends GetxController {
       agendas.assignAll(
         listData.map((e) => AgendaModel.fromJson(e)).toList(),
       );
-
-    } catch (e, stack) {
+    } catch (e) {
       agendas.clear();
     } finally {
       isLoading.value = false;
