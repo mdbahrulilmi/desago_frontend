@@ -1,4 +1,5 @@
 import 'package:desago/app/controllers/auth_controller.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -14,6 +15,18 @@ Future<void> main() async {
 
   await GetStorage.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  RemoteMessage? initialMessage =
+      await FirebaseMessaging.instance.getInitialMessage();
+
+  if (initialMessage != null) {
+    _handleNotificationClick(initialMessage);
+  }
+
+  await messaging.requestPermission();
+  String? token = await messaging.getToken();
+  print("FCM Token: $token");
+
   await initializeDateFormatting('id_ID', null);
   
   Get.put(AuthController(), permanent: true);
@@ -31,6 +44,11 @@ Future<void> main() async {
       'email': initialUri.queryParameters['email'] ?? '',
     };
   }
+
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    _handleNotificationClick(message);
+  });
+
   runApp(MyApp(
     initialRoute: initialRoute,
     initialArgs: initialArgs,
@@ -46,6 +64,69 @@ Future<void> main() async {
   
 }
 
+void _handleNotificationClick(RemoteMessage message) {
+  final data = message.data;
+
+  print("DATA FCM: $data");
+
+  // 🔥 PRIORITAS: ambil dari link
+  if (data.containsKey('link')) {
+    final link = data['link'];
+
+    if (link.startsWith("surat/")) {
+      final id = link.split("/")[1];
+      print("OPEN SURAT ID: $id");
+      Get.toNamed(
+        '/surat-riwayat-pengajuan-detail',
+        arguments: {'id': id},
+      );
+      return;
+    }
+
+    if (link.startsWith("lapor/")) {
+      final id = link.split("/")[1];
+      print("OPEN LAPOR ID: $id");
+      Get.toNamed(
+        '/lapor-detail',
+        arguments: {'id': id},
+      );
+      return;
+    }
+
+    if (link.startsWith("agenda/")) {
+      final id = link.split("/")[1];
+      print("OPEN AGENDA ID: $id");
+      Get.toNamed(
+        '/agenda',
+        arguments: {'id': id},
+      );
+      return;
+    }
+  }
+
+  // fallback kalau tidak ada link
+  if (data['type'] == 'surat' && data['id'] != null) {
+    print("FALLBACK SURAT ID: ${data['id']}");
+    Get.toNamed(
+      '/surat-detail',
+      arguments: {'id': data['id']},
+    );
+    return;
+  }
+
+  if (data['type'] == 'lapor' && data['id'] != null) {
+    print("FALLBACK LAPOR ID: ${data['id']}");
+    Get.toNamed(
+      '/lapor-detail',
+      arguments: {'id': data['id']},
+    );
+    return;
+  }
+
+  // fallback terakhir: kalau tidak ada yang cocok buka halaman depan
+  print("NO LINK / TYPE MATCH - OPEN HOMEPAGE");
+  Get.toNamed('/home');
+}
 class MyApp extends StatelessWidget {
   final String initialRoute;
   final Map<String, String>? initialArgs;

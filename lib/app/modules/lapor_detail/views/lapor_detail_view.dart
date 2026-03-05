@@ -3,9 +3,7 @@ import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
-
 import '../controllers/lapor_detail_controller.dart';
 
 class LaporDetailView extends GetView<LaporDetailController> {
@@ -17,7 +15,7 @@ class LaporDetailView extends GetView<LaporDetailController> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         title: Text(
-          'Detail pengaduan',
+          'Detail Pengaduan',
           style: AppText.h5(color: AppColors.white),
         ),
         centerTitle: true,
@@ -27,10 +25,20 @@ class LaporDetailView extends GetView<LaporDetailController> {
         ),
       ),
       body: Obx(() {
+        /// 🔥 LOADING STATE
+        if (controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
         final laporan = controller.laporan.value;
 
+        /// 🔥 DATA NULL STATE
         if (laporan == null) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: Text("Data tidak ditemukan"),
+          );
         }
 
         return SingleChildScrollView(
@@ -47,7 +55,8 @@ class LaporDetailView extends GetView<LaporDetailController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (laporan.gambar != null && laporan.gambar!.isNotEmpty)
+                      /// 🔥 GAMBAR (SAFE)
+                      if ((laporan.gambar ?? "").isNotEmpty)
                         ClipRRect(
                           borderRadius: const BorderRadius.vertical(
                             top: Radius.circular(12),
@@ -57,24 +66,29 @@ class LaporDetailView extends GetView<LaporDetailController> {
                             width: double.infinity,
                             height: AppResponsive.h(24),
                             fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) =>
+                                const SizedBox(),
                           ),
                         ),
 
                       Padding(
-                        padding: AppResponsive.padding(vertical: 2, horizontal: 5),
+                        padding: AppResponsive.padding(
+                            vertical: 2, horizontal: 5),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            /// JUDUL
                             Text(
-                              laporan.judul,
+                              laporan.judul ?? "-",
                               style: AppText.h6(color: AppColors.text),
                             ),
 
                             _space(),
 
+                            /// STATUS
                             _label("Status"),
                             Text(
-                              laporan.status,
+                              laporan.status ?? "-",
                               style: AppText.bodyMedium(
                                 color: AppColors.textSecondary,
                               ),
@@ -82,9 +96,10 @@ class LaporDetailView extends GetView<LaporDetailController> {
 
                             _space(),
 
+                            /// DITUJUKAN
                             _label("Ditujukan ke"),
                             Text(
-                              laporan.ditujukan,
+                              laporan.ditujukan ?? "-",
                               style: AppText.bodyMedium(
                                 color: AppColors.textSecondary,
                               ),
@@ -92,9 +107,11 @@ class LaporDetailView extends GetView<LaporDetailController> {
 
                             _space(),
 
+                            /// KATEGORI (SAFE NULL)
                             _label("Kategori"),
                             Text(
-                              laporan.kategori!.nama,
+                              laporan.kategori?.nama ??
+                                  "Tidak ada kategori",
                               style: AppText.bodyMedium(
                                 color: AppColors.textSecondary,
                               ),
@@ -102,31 +119,34 @@ class LaporDetailView extends GetView<LaporDetailController> {
 
                             _space(),
 
+                            /// WAKTU
                             _label("Waktu"),
-                            Text(
-                              TimeHelper.formatJamDateTime(laporan.created_at),
-                              style: AppText.bodyMedium(
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
+Text(
+  laporan.created_at != null
+      ? TimeHelper.formatJamDateTime(laporan.created_at)
+      : "-",
+  style: AppText.bodyMedium(
+    color: AppColors.textSecondary,
+  ),
+),
 
+_space(),
+
+_label("Tanggal"),
+Text(
+  laporan.created_at != null
+      ? TimeHelper.formatTanggalDate(laporan.created_at)
+      : "-",
+  style: AppText.bodyMedium(
+    color: AppColors.textSecondary,
+  ),
+),
                             _space(),
 
-                            _label("Tanggal"),
-                            Text(
-                              TimeHelper.formatTanggalDate(
-                                laporan.created_at,
-                              ),
-                              style: AppText.bodyMedium(
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-
-                            _space(),
-
+                            /// DESKRIPSI
                             _label("Deskripsi"),
                             Text(
-                              laporan.deskripsi,
+                              laporan.deskripsi ?? "-",
                               style: AppText.bodyMedium(
                                 color: AppColors.textSecondary,
                               ),
@@ -135,10 +155,11 @@ class LaporDetailView extends GetView<LaporDetailController> {
 
                             _space(),
 
+                            /// TANGGAPAN (SAFE NULL)
                             _label("Tanggapan"),
                             Text(
-                              laporan.tanggapan.isNotEmpty
-                                  ? laporan.tanggapan
+                              (laporan.tanggapan ?? "").isNotEmpty
+                                  ? laporan.tanggapan!
                                   : "Belum ada tanggapan",
                               style: AppText.bodyMedium(
                                 color: AppColors.textSecondary,
@@ -153,6 +174,7 @@ class LaporDetailView extends GetView<LaporDetailController> {
 
                 SizedBox(height: AppResponsive.h(2)),
 
+                /// BUTTON
                 SizedBox(
                   width: double.infinity,
                   height: AppResponsive.h(6),

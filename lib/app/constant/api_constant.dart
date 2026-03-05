@@ -17,11 +17,13 @@ class ApiConstant {
   static const String produkDesaCarousel = '/desa/${desaId}/umkm/carousel';
   static const String nomorDarurat = '/desa/${desaId}/no-darurat';
   static const String lapor = '/desa/${desaId}/lapor';
+  static const String laporDetail = '/desa/${desaId}/lapor/detail';
   static const String laporKategori = '/lapor/kategori';
   static const String laporCreate = '/desa/${desaId}/lapor/create';
   static const String jenisSurat = '/surat';
   static const String tambahSurat = '/desa/${desaId}/surat/create';
   static const String suratRiwayat = '/desa/${desaId}/surat';
+  static const String suratDetail = '/desa/${desaId}/surat/detail';
   static const String aktivitas = '/desa/${desaId}/aktivitas';
 
   // Auth Endpoints
@@ -46,4 +48,8 @@ class ApiConstant {
   // Akun Endpoints
   static const String updateAvatar = '/profile/avatar';
   static const String editProfile = '/profile/edit';
+
+  // FCM
+  static const String FcmTokenSave = '/fcm-save';
+
 }

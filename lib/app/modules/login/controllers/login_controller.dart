@@ -4,6 +4,7 @@ import 'package:desago/app/models/UserModel.dart';
 import 'package:desago/app/modules/home/controllers/home_controller.dart';
 import 'package:desago/app/routes/app_pages.dart';
 import 'package:desago/app/services/dio_services.dart';
+import 'package:desago/app/services/fcm_services.dart';
 import 'package:desago/app/services/storage_services.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:dio/dio.dart' as dio;
@@ -61,6 +62,8 @@ class LoginController extends GetxController {
 
       final auth = Get.find<AuthController>();
       await auth.loadUser();
+
+      await saveFcmTokenToBackend(token);
 
       Get.snackbar(
         'Berhasil',
@@ -188,6 +191,8 @@ Future<void> handleGoogleSignIn() async {
 
       final auth = Get.find<AuthController>();
       await auth.loadUser();
+
+      await saveFcmTokenToBackend(token);
 
       Get.snackbar(
         'Berhasil',
