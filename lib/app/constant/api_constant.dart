@@ -9,6 +9,7 @@ class ApiConstant {
   static const String carouselDesa = '/desa/${desaId}/carousel';
   static const String profilDesa = '/desa/${desaId}/profil';
   static const String beritaDesa = '/desa/${desaId}/berita';
+  static const String beritaDetail = '/desa/${desaId}/berita/detail';
   static const String beritaDesaCarousel = '/desa/${desaId}/berita/carousel';
   static const String anggaran = '/desa/${desaId}/anggaran';
   static const String anggaranKategori = '/desa/${desaId}/anggaran/kategori';

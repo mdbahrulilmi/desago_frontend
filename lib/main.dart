@@ -102,6 +102,17 @@ void _handleNotificationClick(RemoteMessage message) {
       );
       return;
     }
+
+    // ✅ BERITA
+    if (link.startsWith("berita/")) {
+      final id = link.split("/")[1];
+      print("OPEN BERITA ID: $id");
+      Get.toNamed(
+        '/berita-detail',
+        arguments: {'id': id},
+      );
+      return;
+    }
   }
 
   // fallback kalau tidak ada link
@@ -123,10 +134,20 @@ void _handleNotificationClick(RemoteMessage message) {
     return;
   }
 
-  // fallback terakhir: kalau tidak ada yang cocok buka halaman depan
+  // ✅ fallback berita
+  if (data['type'] == 'berita' && data['id'] != null) {
+    print("FALLBACK BERITA ID: ${data['id']}");
+    Get.toNamed(
+      '/berita-detail',
+      arguments: {'id': data['id']},
+    );
+    return;
+  }
+
   print("NO LINK / TYPE MATCH - OPEN HOMEPAGE");
   Get.toNamed('/home');
 }
+
 class MyApp extends StatelessWidget {
   final String initialRoute;
   final Map<String, String>? initialArgs;
