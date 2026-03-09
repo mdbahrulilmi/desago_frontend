@@ -25,7 +25,6 @@ Future<void> main() async {
 
   await messaging.requestPermission();
   String? token = await messaging.getToken();
-  print("FCM Token: $token");
 
   await initializeDateFormatting('id_ID', null);
   
@@ -67,15 +66,11 @@ Future<void> main() async {
 void _handleNotificationClick(RemoteMessage message) {
   final data = message.data;
 
-  print("DATA FCM: $data");
-
-  // 🔥 PRIORITAS: ambil dari link
   if (data.containsKey('link')) {
     final link = data['link'];
 
     if (link.startsWith("surat/")) {
       final id = link.split("/")[1];
-      print("OPEN SURAT ID: $id");
       Get.toNamed(
         '/surat-riwayat-pengajuan-detail',
         arguments: {'id': id},
@@ -85,7 +80,6 @@ void _handleNotificationClick(RemoteMessage message) {
 
     if (link.startsWith("lapor/")) {
       final id = link.split("/")[1];
-      print("OPEN LAPOR ID: $id");
       Get.toNamed(
         '/lapor-detail',
         arguments: {'id': id},
@@ -95,7 +89,6 @@ void _handleNotificationClick(RemoteMessage message) {
 
     if (link.startsWith("agenda/")) {
       final id = link.split("/")[1];
-      print("OPEN AGENDA ID: $id");
       Get.toNamed(
         '/agenda',
         arguments: {'id': id},
@@ -106,7 +99,6 @@ void _handleNotificationClick(RemoteMessage message) {
     // ✅ BERITA
     if (link.startsWith("berita/")) {
       final id = link.split("/")[1];
-      print("OPEN BERITA ID: $id");
       Get.toNamed(
         '/berita-detail',
         arguments: {'id': id},
@@ -117,7 +109,6 @@ void _handleNotificationClick(RemoteMessage message) {
 
   // fallback kalau tidak ada link
   if (data['type'] == 'surat' && data['id'] != null) {
-    print("FALLBACK SURAT ID: ${data['id']}");
     Get.toNamed(
       '/surat-detail',
       arguments: {'id': data['id']},
@@ -126,7 +117,6 @@ void _handleNotificationClick(RemoteMessage message) {
   }
 
   if (data['type'] == 'lapor' && data['id'] != null) {
-    print("FALLBACK LAPOR ID: ${data['id']}");
     Get.toNamed(
       '/lapor-detail',
       arguments: {'id': data['id']},
@@ -134,9 +124,7 @@ void _handleNotificationClick(RemoteMessage message) {
     return;
   }
 
-  // ✅ fallback berita
   if (data['type'] == 'berita' && data['id'] != null) {
-    print("FALLBACK BERITA ID: ${data['id']}");
     Get.toNamed(
       '/berita-detail',
       arguments: {'id': data['id']},
@@ -144,7 +132,6 @@ void _handleNotificationClick(RemoteMessage message) {
     return;
   }
 
-  print("NO LINK / TYPE MATCH - OPEN HOMEPAGE");
   Get.toNamed('/home');
 }
 

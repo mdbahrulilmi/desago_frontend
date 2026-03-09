@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:desago/app/models/OAuthAccountsModel.dart';
 
 class UserModel {
@@ -8,6 +10,7 @@ class UserModel {
   final String? phone;
   final String? avatar;
   final String? verified;
+  final bool? isNotification;
    final List<OAuthAccountsModel>? oAuthAccounts;
 
   UserModel({
@@ -18,6 +21,7 @@ class UserModel {
     this.phone,
     this.avatar,
     this.verified,
+    this.isNotification,
     this.oAuthAccounts,
   });
 
@@ -36,6 +40,7 @@ class UserModel {
       phone: json['no_telepon'],
       avatar: json['avatar'],
       verified: json['verified'],
+      isNotification: json['is_notification'] == 1,
       oAuthAccounts: oAuthAccounts,
     );
   }
@@ -59,25 +64,32 @@ class UserModel {
       'no_telepon': phone,
       'avatar': avatar,
       'verified': verified,
+      'is_notification': isNotification,
       'oauth_accounts': oAuthAccounts?.map((x) => x.toJson()).toList(), 
     };
   }
 
   UserModel copyWith({
-    String? email,
-    String? phone,
-    String? username,
-    String? nama_lengkap,
-    String? avatar,
-    String? verified
-  }) {
-    return UserModel(
-      email: email ?? this.email,
-      phone: phone ?? this.phone,
-      username: username ?? this.username,
-      nama_lengkap: nama_lengkap ?? this.nama_lengkap,
-      avatar: avatar ?? this.avatar,
-      verified: verified ?? this.verified,
-    );
-  }
+  String? id,
+  String? email,
+  String? phone,
+  String? username,
+  String? nama_lengkap,
+  String? avatar,
+  String? verified,
+  bool? isNotification,
+  List<OAuthAccountsModel>? oAuthAccounts,
+}) {
+  return UserModel(
+    id: id ?? this.id,
+    email: email ?? this.email,
+    phone: phone ?? this.phone,
+    username: username ?? this.username,
+    nama_lengkap: nama_lengkap ?? this.nama_lengkap,
+    avatar: avatar ?? this.avatar,
+    verified: verified ?? this.verified,
+    isNotification: isNotification ?? this.isNotification,
+    oAuthAccounts: oAuthAccounts ?? this.oAuthAccounts,
+  );
+}
 }

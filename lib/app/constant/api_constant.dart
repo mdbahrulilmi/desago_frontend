@@ -51,6 +51,7 @@ class ApiConstant {
   static const String editProfile = '/profile/edit';
 
   // FCM
+  static const String actionNotification = '/action/notification';
   static const String FcmTokenSave = '/fcm-save';
 
 }

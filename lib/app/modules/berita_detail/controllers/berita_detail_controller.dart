@@ -8,7 +8,6 @@ import 'package:share_plus/share_plus.dart';
 
 class BeritaDetailController extends GetxController {
 
-  /// STATE aman
   Rxn<BeritaModel> berita = Rxn<BeritaModel>();
   RxBool isLoading = false.obs;
 
@@ -18,34 +17,22 @@ class BeritaDetailController extends GetxController {
 
     final args = Get.arguments;
 
-    print("===== ON INIT BERITA =====");
-    print("ARGS: $args");
-
-    // dari list berita
     if (args is BeritaModel) {
-      print("MASUK DARI LIST BERITA");
       berita.value = args;
       isLoading.value = false;
       return;
     }
 
-    // dari notifikasi
     if (args is Map && args['id'] != null) {
-      print("MASUK DARI NOTIFIKASI");
       fetchDetail(args['id'].toString());
       return;
     }
-
-    print("❌ ARGUMENT TIDAK VALID");
   }
 
   Future<void> fetchDetail(String id) async {
     try {
 
       isLoading.value = true;
-
-      print("===== FETCH DETAIL BERITA START =====");
-      print("ID: $id");
 
       final token = await StorageService.getToken();
 
@@ -59,27 +46,18 @@ class BeritaDetailController extends GetxController {
         ),
       );
 
-      print("STATUS CODE: ${res.statusCode}");
-      print("RAW RESPONSE: ${res.data}");
-
       if (res.statusCode == 200) {
         final data = res.data['data'];
         if (data != null) {
           berita.value = BeritaModel.fromJson(data);
-          print("✅ BERITA DIMUAT: ${berita.value?.judul}");
         } else {
-          print("❌ DATA NULL");
         }
       }
 
     } on DioException catch (dioError) {
-      print("❌ DIO ERROR: ${dioError.message}");
     } catch (e, stackTrace) {
-      print("❌ UNKNOWN ERROR: $e");
-      print(stackTrace);
     } finally {
       isLoading.value = false;
-      print("===== FETCH DETAIL BERITA END =====");
     }
   }
 

@@ -1,53 +1,97 @@
 import 'dart:io';
 
 import 'package:desago/app/components/alert.dart';
-import 'package:desago/app/components/bottom_sheet.dart';
 import 'package:desago/app/constant/api_constant.dart';
 import 'package:desago/app/controllers/auth_controller.dart';
-import 'package:desago/app/helpers/permission_helper.dart';
 import 'package:desago/app/models/UserModel.dart';
-import 'package:desago/app/modules/login/controllers/login_controller.dart';
 import 'package:desago/app/routes/app_pages.dart';
 import 'package:desago/app/services/dio_services.dart';
 import 'package:desago/app/services/storage_services.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:dio/dio.dart' as dio;
 import 'package:dio/dio.dart';
 
 class AkunController extends GetxController {
   final user = Rxn<UserModel>();
   final avatar = Rx<File?>(null);
 
-  final isNotificationActive = true.obs;
+  final isNotificationActive = false.obs;
   final avatarFileName = ''.obs;
 
   final ImagePicker _picker = ImagePicker();
   final auth = Get.find<AuthController>();
 
-  void toggleNotification(bool value) {
-    isNotificationActive.value = value;
-  }
-
   @override
   void onInit() {
     super.onInit();
-    var token = StorageService.getToken();
     fetchUserData();
   }
 
+  /// LOAD USER DATA FROM STORAGE
   Future<void> fetchUserData() async {
     try {
       final userData = await StorageService.getUser();
 
       if (userData != null) {
         user.value = userData;
+        isNotificationActive.value = userData.isNotification ?? false;
       }
     } catch (e) {
+      print("FETCH USER ERROR: $e");
     }
   }
 
+  /// SWITCH NOTIFICATION
+  Future<void> toggleNotification(bool value) async {
+    final oldValue = isNotificationActive.value;
+
+    /// update UI sementara
+    isNotificationActive.value = value;
+
+    try {
+      await actionNotification();
+    } catch (e) {
+      /// rollback jika gagal
+      isNotificationActive.value = oldValue;
+      print("TOGGLE ERROR: $e");
+    }
+  }
+
+  /// CALL API TOGGLE NOTIFICATION
+  Future<void> actionNotification() async {
+    final token = StorageService.getToken();
+
+    try {
+      final response = await DioService.instance.post(
+        ApiConstant.actionNotification,
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final value = response.data['is_notification'];
+
+        final newStatus =
+            value == 1 || value == true || value.toString() == '1';
+
+        isNotificationActive.value = newStatus;
+
+        print("RAW VALUE: $value");
+        print("NEW SWITCH STATE: $newStatus");
+
+        user.value = user.value?.copyWith(
+          isNotification: newStatus,
+        );
+        auth.refreshVerification();
+      }
+    } catch (e) {
+      print("NOTIFICATION ERROR: $e");
+      rethrow;
+    }
+  }
+
+  /// LOGOUT USER
   Future<void> logout() async {
     final bool? confirmed = await AppDialog.ask(
       title: 'Konfirmasi Logout',
@@ -55,9 +99,10 @@ class AkunController extends GetxController {
       confirmText: 'Ya, Keluar',
       cancelText: 'Batal',
     );
+
     if (confirmed != true) return;
 
-    var token = StorageService.getToken();
+    final token = StorageService.getToken();
 
     try {
       final response = await DioService.instance.post(
@@ -68,16 +113,16 @@ class AkunController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-      await StorageService.clearStorage();
+        await StorageService.clearStorage();
 
-      await AppDialog.success(
-        title: 'Logout Berhasil',
-        message: 'Anda berhasil keluar dari akun.',
-      );
+        await AppDialog.success(
+          title: 'Logout Berhasil',
+          message: 'Anda berhasil keluar dari akun.',
+        );
 
-      await Future.delayed(const Duration(milliseconds: 100));
+        await Future.delayed(const Duration(milliseconds: 100));
 
-      Get.offAllNamed(Routes.LOGIN);
+        Get.offAllNamed(Routes.LOGIN);
       } else {
         AppDialog.error(
           title: 'Gagal Logout',
@@ -85,7 +130,7 @@ class AkunController extends GetxController {
           buttonText: 'Tutup',
         );
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       AppDialog.error(
         title: 'Terjadi Kesalahan',
         message: 'Terjadi kesalahan saat logout',
