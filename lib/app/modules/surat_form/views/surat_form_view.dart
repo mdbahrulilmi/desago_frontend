@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
@@ -16,16 +17,20 @@ class SuratFormView extends GetView<SuratFormController> {
     AppResponsive().init(context);
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundScaffold,
+      backgroundColor: AppColors.secondary,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: AppColors.primary,
         elevation: 0,
-        title: Obx(() => Text(
-              'Form ${controller.suratTitle.value ?? ''}',
-              style: AppText.h5(color: AppColors.dark),
-            )),
+        centerTitle: true,
+        title: Obx(() => AutoSizeText(
+            controller.suratTitle.value ?? '',
+            style: AppText.h5(color: AppColors.secondary),
+            maxLines: 1,
+            minFontSize: 10,
+            overflow: TextOverflow.ellipsis,
+          )),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.dark),
+          icon: Icon(Icons.arrow_back, color: AppColors.secondary),
           onPressed: () => Get.back(),
         ),
       ),
@@ -86,14 +91,8 @@ class SuratFormView extends GetView<SuratFormController> {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ======================
-        // INFO SURAT
-        // ======================
         _buildInfoCard(),
 
-        // ======================
-        // SECTION FORM DINAMIS
-        // ======================
         ...controller.formSections.map((section) {
           final sectionTitle = section['section'] ?? '';
           final fields = section['fields'] as List<dynamic>? ?? [];
@@ -103,7 +102,6 @@ class SuratFormView extends GetView<SuratFormController> {
             children: [
               const SizedBox(height: 24),
 
-              // Judul Section
               Text(
                 sectionTitle,
                 style: AppText.h5(color: AppColors.dark),
@@ -111,13 +109,14 @@ class SuratFormView extends GetView<SuratFormController> {
 
               const SizedBox(height: 16),
 
-              // Field di dalam section
               ...fields.map((field) {
                 final name = field['name'];
                 final label = field['label'] ?? '';
                 final hint = field['hint'] ?? '';
                 final required = field['required'] ?? false;
                 final type = field['type'];
+                final max = field['max'];
+                final isMaxNow = field['isMaxNow'] ?? false;
 
                 switch (type) {
                   case 'text':
@@ -128,6 +127,8 @@ class SuratFormView extends GetView<SuratFormController> {
                       hint,
                       required,
                       type == 'textarea',
+                      false,
+                      max
                     );
 
                   case 'number':
@@ -136,6 +137,7 @@ class SuratFormView extends GetView<SuratFormController> {
                       label,
                       hint,
                       required,
+                      max
                     );
 
                   case 'date':
@@ -144,6 +146,7 @@ class SuratFormView extends GetView<SuratFormController> {
                       label,
                       hint,
                       required,
+                      isMaxNow
                     );
 
                   case 'select':
@@ -204,15 +207,15 @@ class SuratFormView extends GetView<SuratFormController> {
   return Container(
     padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
-      color: AppColors.white,
+      color: AppColors.warningCard,
       borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: AppColors.dark.withOpacity(0.2), width: 1),
+      border: Border.all(color: AppColors.strokeWarningCard, width: 2),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (persyaratanLines.isNotEmpty) ...[
-          Text('Persyaratan:', style: AppText.h6(color: AppColors.dark)),
+          Text('Persyaratan:', style: AppText.h6(color: Color(0xFF003750))),
           const SizedBox(height: 8),
           ...persyaratanLines.map((line) => Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,51 +236,54 @@ class SuratFormView extends GetView<SuratFormController> {
 }
 
   Widget _buildTextField(String key, String label, String hint, bool required,
-      bool multiline) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(text: label, style: AppText.bodyMedium(color: AppColors.dark)),
-              if (required)
-                TextSpan(text: ' *', style: AppText.bodyMedium(color: AppColors.danger)),
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: controller.getTextController(key),
-          maxLines: multiline ? 3 : 1,
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: AppText.bodyMedium(color: AppColors.textSecondary.withOpacity(0.5)),
-            filled: true,
-            fillColor: AppColors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.dark.withOpacity(0.2)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.dark.withOpacity(0.2)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primary),
+      bool multiline, bool number, int? maxLength) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(text: label, style: AppText.bodyMedium(color: AppColors.dark)),
+                if (required)
+                  TextSpan(text: ' *', style: AppText.bodyMedium(color: AppColors.danger)),
+              ],
             ),
           ),
-        ),
-      ]),
-    );
-  }
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: controller.getTextController(key),
+            keyboardType: number? TextInputType.number : TextInputType.text,
+            maxLines: multiline ? 3 : 1,
+            maxLength: maxLength ?? null,
+            decoration: InputDecoration(
+              counterText: '',
+              hintText: hint,
+              hintStyle: AppText.bodyMedium(color: AppColors.textSecondary.withOpacity(0.5)),
+              filled: true,
+              fillColor: AppColors.white,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: AppColors.dark.withOpacity(0.2)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: AppColors.dark.withOpacity(0.2)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: AppColors.primary),
+              ),
+            ),
+          ),
+        ]),
+      );
+    }
 
-  Widget _buildNumberField(String key, String label, String hint, bool required) =>
-      _buildTextField(key, label, hint, required, false);
+  Widget _buildNumberField(String key, String label, String hint, bool required, int? max)=>
+      _buildTextField(key, label, hint, required, false, true, max);
 
-  Widget _buildDateField(String key, String label, String hint, bool required) {
+  Widget _buildDateField(String key, String label, String hint, bool required, bool isMaxNow) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -292,7 +298,7 @@ class SuratFormView extends GetView<SuratFormController> {
         ),
         const SizedBox(height: 8),
         InkWell(
-          onTap: () => controller.selectDate(Get.context!, key),
+          onTap: () => controller.selectDate(Get.context!, key, isMaxNow),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
@@ -361,7 +367,7 @@ class SuratFormView extends GetView<SuratFormController> {
                             is24HourMode: true,
                             normalTextStyle: TextStyle(
                               fontSize: 30,
-                              color: Colors.grey[400], 
+                              color: AppColors.textSecondary.withOpacity(0.5), 
                               fontWeight: FontWeight.w500,
                             ),
                             highlightedTextStyle: TextStyle(
@@ -411,9 +417,14 @@ class SuratFormView extends GetView<SuratFormController> {
                 },
           decoration: InputDecoration(
             hintText: hint,
+            hintStyle: AppText.bodyMedium(color: AppColors.textSecondary.withOpacity(0.5)),
             filled: true,
             fillColor: AppColors.white,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColors.dark.withOpacity(0.2)),
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(color: AppColors.dark.withOpacity(0.2)),

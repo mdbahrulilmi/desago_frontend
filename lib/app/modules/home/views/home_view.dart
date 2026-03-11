@@ -203,7 +203,7 @@ class HomeView extends GetView<HomeController> {
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               children: [
-                                _buildMenuItem(Remix.bank_line, 'Profile Desa',
+                                _buildMenuItem(Remix.bank_line, 'Profil Desa',
                                     AppColors.primary, 
                                     AppColors.secondary, () {
                                   Get.toNamed(Routes.PROFIL_DESA);

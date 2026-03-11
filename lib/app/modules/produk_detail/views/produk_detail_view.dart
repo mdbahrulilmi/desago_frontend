@@ -169,7 +169,7 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Description',
+              'Deskripsi',
               style: AppText.h6(color: AppColors.dark),
             ),
             const SizedBox(height: 8),

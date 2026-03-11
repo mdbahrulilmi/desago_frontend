@@ -179,25 +179,31 @@ class ProfilDesaController extends GetxController
   }
 
   Widget _buildDetailItem(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text(label,
-                style:
-                    AppText.bodyMedium(color: AppColors.textSecondary)),
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 6),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 100,
+          child: Text(
+            label,
+            style: AppText.bodyMedium(color: AppColors.textSecondary),
           ),
-          const Text(': '),
-          Expanded(
-            child: Text(value,
-                style: AppText.bodyMedium(color: AppColors.text)),
+        ),
+        const Text(': '),
+        Expanded(
+          child: Text(
+            value,
+            maxLines: 5,
+            overflow: TextOverflow.ellipsis,
+            style: AppText.bodyMedium(color: AppColors.text),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
   /// =========================
   /// ACTIONS

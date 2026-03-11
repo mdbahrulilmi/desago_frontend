@@ -28,7 +28,9 @@ class LaporDetailView extends GetView<LaporDetailController> {
         /// 🔥 LOADING STATE
         if (controller.isLoading.value) {
           return const Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator(
+              color: AppColors.primary,
+            ),
           );
         }
 

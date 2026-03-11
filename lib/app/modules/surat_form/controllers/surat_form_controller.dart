@@ -113,12 +113,13 @@ class SuratFormController extends GetxController {
 
   String? getDateValue(String key) => dateValues[key]?.value;
 
-  void selectDate(BuildContext context, String key) async {
+  void selectDate(BuildContext context, String key, bool isMaxNow) async {
     final picked = await showDatePicker(
       context: context,
+      locale: Locale("id", "ID"),
       initialDate: DateTime.now(),
       firstDate: DateTime(1900),
-      lastDate: DateTime(2100),
+      lastDate: isMaxNow ? DateTime.now() : DateTime(2100),
     );
 
     if (picked != null) {

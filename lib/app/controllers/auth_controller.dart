@@ -73,7 +73,16 @@ class AuthController extends GetxController {
 
       box.write('biodata', res.data);
 
-      user.value = UserModel(
+      user.value = user.value?.copyWith(
+      id: bio.id.toString(),
+      username: bio.username,
+      email: bio.email,
+      nama_lengkap: bio.namaLengkap,
+      phone: bio.noTelepon,
+      avatar: bio.avatar,
+      verified: bio.verification,
+      ) ??
+      UserModel(
         id: bio.id.toString(),
         username: bio.username,
         email: bio.email,
@@ -81,6 +90,7 @@ class AuthController extends GetxController {
         phone: bio.noTelepon,
         avatar: bio.avatar,
         verified: bio.verification,
+        isNotification: bio.isNotification,
       );
 
       box.write('user', user.value?.toJson());

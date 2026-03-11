@@ -30,7 +30,7 @@ class AkunController extends GetxController {
   /// LOAD USER DATA FROM STORAGE
   Future<void> fetchUserData() async {
     try {
-      final userData = await StorageService.getUser();
+      final userData = StorageService.getUser();
 
       if (userData != null) {
         user.value = userData;
@@ -71,18 +71,19 @@ class AkunController extends GetxController {
 
       if (response.statusCode == 200) {
         final value = response.data['is_notification'];
-
-        final newStatus =
-            value == 1 || value == true || value.toString() == '1';
+        final newStatus = value == 1 || value == true || value.toString() == '1';
 
         isNotificationActive.value = newStatus;
-
-        print("RAW VALUE: $value");
-        print("NEW SWITCH STATE: $newStatus");
 
         user.value = user.value?.copyWith(
           isNotification: newStatus,
         );
+
+        // ✅ update storage biar persist
+        if (user.value != null) {
+          await StorageService.saveUser(user.value!);
+        }
+
         auth.refreshVerification();
       }
     } catch (e) {

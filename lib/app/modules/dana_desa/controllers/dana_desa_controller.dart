@@ -25,7 +25,7 @@ class DanaDesaController extends GetxController {
   final RxBool showPendapatan = false.obs;
   final RxBool showBelanja = true.obs;
 
-  final selectedYear = 2025.obs;
+  final selectedYear = DateTime.now().year.obs;
 
   String get _kategoriKey => 'kategori_cache';
   String get _tahunKey => 'dana_desa_${selectedYear.value}';

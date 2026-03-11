@@ -21,6 +21,7 @@ class BiodataModel {
   final String avatar;
   final String ktpFile;
   final String kkFile;
+  final bool isNotification;
   final String createdAt;
   final String updatedAt;
 
@@ -47,6 +48,7 @@ class BiodataModel {
     required this.avatar,
     required this.ktpFile,
     required this.kkFile,
+    required this.isNotification,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -75,6 +77,9 @@ class BiodataModel {
       avatar: json['avatar']?.toString() ?? '',
       ktpFile: json['ktp_file']?.toString() ?? '',
       kkFile: json['kk_file']?.toString() ?? '',
+      isNotification: json['is_notification'] == 1 ||
+                json['is_notification'] == true ||
+                json['is_notification'].toString() == '1',
       createdAt: json['created_at']?.toString() ?? '',
       updatedAt: json['updated_at']?.toString() ?? '',
     );
@@ -104,6 +109,7 @@ class BiodataModel {
       "avatar": avatar,
       "ktp_file": ktpFile,
       "kk_file": kkFile,
+      "is_notification": isNotification,
       "created_at": createdAt,
       "updated_at": updatedAt,
     };

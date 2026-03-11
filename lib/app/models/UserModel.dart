@@ -40,7 +40,9 @@ class UserModel {
       phone: json['no_telepon'],
       avatar: json['avatar'],
       verified: json['verified'],
-      isNotification: json['is_notification'] == 1,
+      isNotification: json['is_notification'] == 1 ||
+                json['is_notification'] == true ||
+                json['is_notification'].toString() == '1',
       oAuthAccounts: oAuthAccounts,
     );
   }

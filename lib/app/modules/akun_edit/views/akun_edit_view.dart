@@ -98,6 +98,7 @@ class AkunEditView extends GetView<AkunEditController> {
               style: AppText.bodyMedium(color: AppColors.dark),
               controller: controller.phoneController,
               maxLength: 15,
+              keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: "No Telepon",
                 border: OutlineInputBorder(

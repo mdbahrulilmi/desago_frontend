@@ -76,12 +76,13 @@ class AktivitasView extends GetView<AktivitasController> {
 
               return RepaintBoundary(
                 child: _ReportCard(
+                  id: item['id'].toString(), // tambahkan ini
                   icon: isLapor
                       ? Remix.alarm_warning_fill
                       : Remix.mail_send_fill,
                   route: isLapor
-                      ? 'lapor-riwayat'
-                      : 'surat-riwayat-pengajuan',
+                      ? 'lapor-detail'
+                      : 'surat-riwayat-pengajuan-detail',
                   title: isLapor ? 'Lapor' : 'Surat',
                   subtitle: item['aktivitas'] ?? '-',
                   date: TimeHelper.formatTanggal(
@@ -100,6 +101,7 @@ class AktivitasView extends GetView<AktivitasController> {
 }
 
 class _ReportCard extends StatelessWidget {
+  final String id;
   final IconData icon;
   final String title;
   final String subtitle;
@@ -108,6 +110,7 @@ class _ReportCard extends StatelessWidget {
   final String route;
 
   const _ReportCard({
+    required this.id,
     required this.icon,
     required this.title,
     required this.subtitle,
@@ -119,7 +122,12 @@ class _ReportCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Get.toNamed('/$route'),
+     onTap: () => Get.toNamed(
+        '/$route',
+        arguments: {
+          'id': id,
+        },
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(

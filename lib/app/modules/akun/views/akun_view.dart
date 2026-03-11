@@ -227,11 +227,12 @@ class AkunView extends GetView<AkunController> {
                             .isNotificationActive.value,
                         onChanged:
                             controller.toggleNotification,
-                        activeColor: AppColors.primary,
+                        activeColor: AppColors.secondary,
+                        activeTrackColor: AppColors.primary,
                         inactiveThumbColor:
-                            AppColors.secondary,
+                            AppColors.primary,
                         inactiveTrackColor:
-                            AppColors.textSecondary
+                            AppColors.backgroundScaffold
                                 .withOpacity(0.5),
                       ),
                     ),

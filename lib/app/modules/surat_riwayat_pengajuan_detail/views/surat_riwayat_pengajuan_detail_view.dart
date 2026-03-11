@@ -33,9 +33,8 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
       ),
       body: Obx(() => controller.data.isEmpty
           ? Center(
-              child: Text(
-                'Data tidak ditemukan',
-                style: AppText.bodyLarge(color: AppColors.textSecondary),
+              child: CircularProgressIndicator(
+                color: AppColors.primary,
               ),
             )
           : SingleChildScrollView(
@@ -51,19 +50,23 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '${controller.data['jenis_surat']['nama'] ?? "-"}',
-                                  style: AppText.h6(color: AppColors.text),
-                                ),
-                                SizedBox(height: AppResponsive.h(0.5)),
-                                Text(
-                                  'No. Reg: ${controller.data['reg'] ?? "-"}',
-                                  style: AppText.bodyMedium(color: AppColors.text),
-                                ),
-                              ],
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                          controller.data['jenis_surat']?['nama']?.toString() ?? "-",
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: AppText.h6(color: AppColors.text),
+                                        ),
+                                  SizedBox(height: AppResponsive.h(0.5)),
+                                  Text(
+                                    'No. Reg: ${controller.data['reg'] ?? "-"}',
+                                    style: AppText.bodyMedium(color: AppColors.text),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),

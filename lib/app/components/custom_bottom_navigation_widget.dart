@@ -129,7 +129,7 @@ class CustomBottomNavigationBar
           isActive
               ? 'assets/icons/navigation/letter_active.svg'
               : 'assets/icons/navigation/letter.svg',
-          width: 28,
+          width: 32,
         );
       case 2:
         return SvgPicture.asset(

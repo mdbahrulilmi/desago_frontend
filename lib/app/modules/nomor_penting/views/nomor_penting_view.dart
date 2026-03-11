@@ -81,19 +81,6 @@ class NomorPentingView extends GetView<NomorPentingController> {
                         hintText: 'Cari nomor penting...',
                         hintStyle: AppText.bodyMedium(color: AppColors.textSecondary),
                         prefixIcon: Icon(Remix.search_line, color: AppColors.iconGrey),
-                    
-                        suffixIcon: ValueListenableBuilder<TextEditingValue>(
-                    valueListenable: controller.searchController,
-                    builder: (context, value, child) {
-                      if (value.text.isEmpty) return const SizedBox();
-                      return IconButton(
-                        icon: Icon(Remix.close_line, color: AppColors.primary),
-                        onPressed: () {
-                          controller.searchController.clear();
-                        },
-                      );
-                    },
-                  ),
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
