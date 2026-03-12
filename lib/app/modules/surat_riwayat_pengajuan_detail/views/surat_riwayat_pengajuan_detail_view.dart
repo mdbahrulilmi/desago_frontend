@@ -13,7 +13,7 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
     AppResponsive().init(context);
     
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.secondary,
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         title: Text(

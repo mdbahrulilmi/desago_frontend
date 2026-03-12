@@ -17,18 +17,13 @@ Future<void> main() async {
   await GetStorage.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-  RemoteMessage? initialMessage =
-      await FirebaseMessaging.instance.getInitialMessage();
-
-  if (initialMessage != null) {
-    _handleNotificationClick(initialMessage);
-  }
 
   await messaging.requestPermission();
   String? token = await messaging.getToken();
 
   await initializeDateFormatting('id_ID', null);
-  
+
+  // Controller
   Get.put(AuthController(), permanent: true);
   Get.put(BottomNavigationController());
 
@@ -36,6 +31,7 @@ Future<void> main() async {
   String initialRoute = AppPages.getInitialRoute(); 
   Map<String, String>? initialArgs;
 
+  // Tangani deep link awal
   final initialUri = await appLinks.getInitialLink();
   if (initialUri != null && initialUri.path == '/reset-password') {
     initialRoute = '/password-baru';
@@ -45,15 +41,28 @@ Future<void> main() async {
     };
   }
 
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    _handleNotificationClick(message);
-  });
+  // Tangani notifikasi awal
+  RemoteMessage? initialMessage = await messaging.getInitialMessage();
+  Map<String, dynamic>? initialNotificationData;
+  if (initialMessage != null) {
+    initialNotificationData = initialMessage.data;
+  }
 
+  // Jalankan app
   runApp(MyApp(
     initialRoute: initialRoute,
     initialArgs: initialArgs,
+    initialNotificationData: initialNotificationData,
   ));
 
+  // Notifikasi saat app sedang running
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _handleNotificationClick(message.data);
+    });
+  });
+
+  // Deep link saat app sedang running
   appLinks.uriLinkStream.listen((uri) {
     if (uri != null && uri.path == '/reset-password') {
       final token = uri.queryParameters['token'] ?? '';
@@ -61,86 +70,68 @@ Future<void> main() async {
       Get.toNamed('/password-baru', arguments: {'token': token, 'email': email});
     }
   });
-  
 }
 
-void _handleNotificationClick(RemoteMessage message) {
-  final data = message.data;
-
+// Fungsi global untuk navigasi dari notifikasi
+void _handleNotificationClick(Map<String, dynamic> data) {
   if (data.containsKey('link')) {
     final link = data['link'];
 
     if (link.startsWith("surat/")) {
       final id = link.split("/")[1];
-      Get.toNamed(
-        '/surat-riwayat-pengajuan-detail',
-        arguments: {'id': id},
-      );
+      Get.offAllNamed('/surat-riwayat-pengajuan-detail', arguments: {'id': id});
       return;
     }
 
     if (link.startsWith("lapor/")) {
       final id = link.split("/")[1];
-      Get.toNamed(
-        '/lapor-detail',
-        arguments: {'id': id},
-      );
+      Get.offAllNamed('/lapor-detail', arguments: {'id': id});
       return;
     }
 
     if (link.startsWith("agenda/")) {
       final id = link.split("/")[1];
-      Get.toNamed(
-        '/agenda',
-        arguments: {'id': id},
-      );
+      Get.offAllNamed('/agenda', arguments: {'id': id});
       return;
     }
 
-    // ✅ BERITA
     if (link.startsWith("berita/")) {
       final id = link.split("/")[1];
-      Get.toNamed(
-        '/berita-detail',
-        arguments: {'id': id},
-      );
+      Get.offAllNamed('/berita-detail', arguments: {'id': id});
       return;
     }
   }
 
-  // fallback kalau tidak ada link
   if (data['type'] == 'surat' && data['id'] != null) {
-    Get.toNamed(
-      '/surat-detail',
-      arguments: {'id': data['id']},
-    );
+    Get.offAllNamed('/surat-detail', arguments: {'id': data['id']});
     return;
   }
 
   if (data['type'] == 'lapor' && data['id'] != null) {
-    Get.toNamed(
-      '/lapor-detail',
-      arguments: {'id': data['id']},
-    );
+    Get.offAllNamed('/lapor-detail', arguments: {'id': data['id']});
     return;
   }
 
   if (data['type'] == 'berita' && data['id'] != null) {
-    Get.toNamed(
-      '/berita-detail',
-      arguments: {'id': data['id']},
-    );
+    Get.offAllNamed('/berita-detail', arguments: {'id': data['id']});
     return;
   }
 
-  Get.toNamed('/home');
+  Get.offAllNamed('/main');
 }
 
+// MyApp
 class MyApp extends StatelessWidget {
   final String initialRoute;
   final Map<String, String>? initialArgs;
+  final Map<String, dynamic>? initialNotificationData;
 
-  const MyApp({super.key, required this.initialRoute, this.initialArgs});
+  const MyApp({
+    super.key,
+    required this.initialRoute,
+    this.initialArgs,
+    this.initialNotificationData,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -163,15 +154,20 @@ class MyApp extends StatelessWidget {
         if (initialArgs != null) {
           Get.parameters.addAll(initialArgs!);
         }
+
+        // Navigasi dari notifikasi awal setelah frame pertama
+        if (initialNotificationData != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _handleNotificationClick(initialNotificationData!);
+          });
+        }
       }),
       unknownRoute: GetPage(
         name: '/notfound',
-        page: () => Scaffold  (
+        page: () => Scaffold(
           body: Center(child: Text('Halaman tidak ditemukan')),
         ),
       ),
-      routingCallback: (info) {
-      },
     );
   }
 }

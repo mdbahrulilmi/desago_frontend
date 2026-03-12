@@ -100,6 +100,7 @@ class AkunEditView extends GetView<AkunEditController> {
               maxLength: 15,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
+                counterText: '',
                 labelText: "No Telepon",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),

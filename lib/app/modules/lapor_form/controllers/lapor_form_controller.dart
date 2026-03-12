@@ -110,11 +110,30 @@ Future<void> createLapor({
         },
       ),
     );
+    if (response.statusCode == 201 || response.statusCode == 200) {
 
-    Get.offNamed(
-      Routes.LAPOR_RIWAYAT,
-      arguments: {'refresh': true},
-    );
+      Get.snackbar(
+        'Sukses',
+        'Laporan berhasil dikirim',
+        backgroundColor: AppColors.bottonGreen,
+        colorText: Colors.white,
+      );
+
+      Get.offNamed(
+        Routes.LAPOR_RIWAYAT,
+        arguments: {'refresh': true},
+      );
+
+    } else {
+
+      Get.snackbar(
+        'Gagal',
+        'Gagal mengirim laporan (Status ${response.statusCode})',
+        backgroundColor: AppColors.danger,
+        colorText: Colors.white,
+      );
+
+    }
   } on dio.DioException catch (e) {
     AppDialog.error(
       title: 'Gagal',

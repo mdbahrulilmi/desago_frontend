@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:desago/app/helpers/image_compress_helper.dart';
+import 'package:desago/app/helpers/scan_ktp.dart';
 import 'package:desago/app/modules/tautkan_akun_form/controllers/tautkan_akun_form_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -18,10 +19,7 @@ class TautkanAkunController extends GetxController {
     try {
       isLoading.value = true;
 
-      final XFile? image = await _picker.pickImage(
-        source: ImageSource.camera,
-        imageQuality: 90,
-      );
+      final File? image = await Get.to(() => const ScanKtpView());
       if (image == null) {
         isLoading.value = false;
         return;

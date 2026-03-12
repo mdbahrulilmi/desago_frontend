@@ -12,6 +12,7 @@ class LaporDetailView extends GetView<LaporDetailController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.secondary,
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         title: Text(
@@ -25,7 +26,6 @@ class LaporDetailView extends GetView<LaporDetailController> {
         ),
       ),
       body: Obx(() {
-        /// 🔥 LOADING STATE
         if (controller.isLoading.value) {
           return const Center(
             child: CircularProgressIndicator(
@@ -36,7 +36,6 @@ class LaporDetailView extends GetView<LaporDetailController> {
 
         final laporan = controller.laporan.value;
 
-        /// 🔥 DATA NULL STATE
         if (laporan == null) {
           return const Center(
             child: Text("Data tidak ditemukan"),

@@ -4,7 +4,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 
-/// Background handler (harus top-level function)
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse response) {
   print('Background notification clicked: ${response.payload}');
@@ -16,26 +15,21 @@ class NotificationService {
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  /// Inisialisasi notification service
   static Future<void> initialize() async {
-    // Android settings
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // iOS settings
     final DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
 
-    // Combine settings
     final InitializationSettings initSettings = InitializationSettings(
       android: androidSettings,
       iOS: iosSettings,
     );
 
-    // Initialize plugin
     await flutterLocalNotificationsPlugin.initialize(
       settings: initSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
@@ -48,7 +42,6 @@ class NotificationService {
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
 
-    // Request permission
     if (Platform.isAndroid) {
       await FirebaseMessaging.instance.requestPermission(
         alert: true,
@@ -63,7 +56,6 @@ class NotificationService {
       );
     }
 
-    // Listener foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('Foreground message diterima: ${message.notification?.title}');
       RemoteNotification? notification = message.notification;
@@ -74,14 +66,12 @@ class NotificationService {
       }
     });
 
-    // Listener klik notifikasi dari background
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('User membuka notifikasi: ${message.notification?.title}');
       // Navigasi halaman contoh:
       // Get.toNamed('/chat', arguments: message.data);
     });
 
-    // Handle app dibuka dari terminated notification
     RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
@@ -92,7 +82,6 @@ class NotificationService {
     }
   }
 
-  /// Tampilkan notifikasi di foreground
   static Future<void> showLocalNotification(
       RemoteNotification notification, Map<String, dynamic> data) async {
     const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(

@@ -391,12 +391,15 @@ class AkunView extends GetView<AkunController> {
                             AppColors.textSecondary),
                   ),
                   Text(
-                    controller.user.value?.phone ??
-                        'Nomor telepon tidak tersedia',
+                    (controller.user.value?.phone != null &&
+                            controller.user.value!.phone!.trim().isNotEmpty &&
+                            RegExp(r'\d').hasMatch(controller.user.value!.phone!))
+                        ? controller.user.value!.phone!
+                        : 'Nomor telepon tidak tersedia',
                     style: AppText.bodySmall(
-                        color:
-                            AppColors.textSecondary),
-                  ),
+                      color: AppColors.textSecondary,
+                    ),
+                  )
                 ],
               )),
         ],

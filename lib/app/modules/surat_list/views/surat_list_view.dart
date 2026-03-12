@@ -28,12 +28,12 @@ class SuratListView extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: AppColors.primary,
           elevation: 0,
-          leading: Navigator.canPop(context)
-              ? IconButton(
+          leading: !Navigator.canPop(context)
+              ? null
+              : IconButton(
                   icon: Icon(Icons.arrow_back_ios, color: AppColors.secondary),
                   onPressed: () => Get.back(),
-                )
-              : null,
+                ),
           title: Text(
             'Layanan Surat',
             style: AppText.h5(color: AppColors.secondary),
