@@ -25,7 +25,7 @@ class AkunView extends GetView<AkunController> {
       body: RefreshIndicator(
         color: AppColors.primary,
         onRefresh: () async {
-         await controller.auth.refreshVerification();
+         await controller.auth.loadUser();
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),

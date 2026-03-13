@@ -21,7 +21,12 @@ class SuratRiwayatPengajuanDetailView extends GetView<SuratRiwayatPengajuanDetai
           style: AppText.h5(color: AppColors.white),
         ),
         centerTitle: true,
-        leading: IconButton(
+        leading: !Navigator.canPop(context)
+              ? IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: AppColors.white),
+          onPressed: () => Get.offAllNamed("/main")
+              ) 
+              : IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
             color: AppColors.white,

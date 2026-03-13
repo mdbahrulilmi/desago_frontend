@@ -35,7 +35,12 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
           slivers: [
             SliverAppBar(
               automaticallyImplyLeading: false,
-              leading: IconButton(
+              leading: !Navigator.canPop(context)
+              ? IconButton(
+                  icon: Icon(Icons.arrow_back_ios, color: AppColors.white),
+                  onPressed: () => Get.offAllNamed("/main")
+              ) 
+              : IconButton(
                 icon: Icon(Icons.arrow_back_ios, color: AppColors.white),
                 onPressed: () => Get.back(),
               ),

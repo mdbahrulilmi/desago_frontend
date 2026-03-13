@@ -20,7 +20,12 @@ class LaporDetailView extends GetView<LaporDetailController> {
           style: AppText.h5(color: AppColors.white),
         ),
         centerTitle: true,
-        leading: IconButton(
+        leading: !Navigator.canPop(context)
+              ? IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: AppColors.white),
+          onPressed: () => Get.offAllNamed("/main")
+              ) 
+              : IconButton(
           icon: Icon(Icons.arrow_back_ios, color: AppColors.white),
           onPressed: Get.back,
         ),
@@ -180,7 +185,13 @@ Text(
                   width: double.infinity,
                   height: AppResponsive.h(6),
                   child: ElevatedButton(
-                    onPressed: Get.back,
+                    onPressed: () {
+                      if (!Navigator.canPop(context)) {
+                        Get.offAllNamed("/main");
+                      } else {
+                        Get.back();
+                      }
+                    },            
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       shape: RoundedRectangleBorder(

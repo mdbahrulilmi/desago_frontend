@@ -53,7 +53,7 @@ class AkunEditView extends GetView<AkunEditController> {
         }),
 
 
-          SizedBox(height: AppResponsive.h(1)),
+          SizedBox(height: AppResponsive.h(2)),
 
           TextButton(
             onPressed: controller.showAvatarOptions,

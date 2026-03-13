@@ -69,6 +69,9 @@ class AuthController extends GetxController {
 
       final bio = BiodataModel.fromJson(res.data);
 
+      print("API RESPONSE: ${res.data}");
+      print("BIO NOTIFICATION: ${bio.isNotification}");
+
       biodata.value = bio;
 
       box.write('biodata', res.data);
@@ -81,6 +84,7 @@ class AuthController extends GetxController {
       phone: bio.noTelepon,
       avatar: bio.avatar,
       verified: bio.verification,
+      isNotification: bio.isNotification,
       ) ??
       UserModel(
         id: bio.id.toString(),

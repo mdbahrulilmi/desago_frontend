@@ -9,35 +9,27 @@ class VerificationMiddleware extends GetMiddleware {
   int? get priority => 1;
 
   @override
-  GetPage? onPageCalled(GetPage? page) {
+  RouteSettings? redirect(String? route) {
     final auth = Get.find<AuthController>();
 
     if (auth.user.value == null) {
-      Future.microtask(() {
-        Get.toNamed(Routes.LOGIN);
-      });
-      return null;
+      return const RouteSettings(name: Routes.LOGIN);
     }
 
     if (auth.isPending) {
-      Future.microtask(() {
-        Get.snackbar(
-          'Error',
-          'Akun Anda belum diverifikasi',
-          backgroundColor: AppColors.primary,
-          colorText: AppColors.secondary,
-        );
-      });
-      return null;
+      Get.snackbar(
+        'Error',
+        'Akun Anda belum diverifikasi',
+        backgroundColor: AppColors.primary,
+        colorText: AppColors.secondary,
+      );
+      return const RouteSettings(name: Routes.MAIN);
     }
 
     if (!auth.isVerified) {
-      Future.microtask(() {
-        Get.toNamed(Routes.TAUTKAN_AKUN);
-      });
-      return null;
+      return const RouteSettings(name: Routes.TAUTKAN_AKUN);
     }
 
-    return page;
+    return null;
   }
 }

@@ -15,7 +15,7 @@ class AkunController extends GetxController {
   final user = Rxn<UserModel>();
   final avatar = Rx<File?>(null);
 
-  final isNotificationActive = false.obs;
+  final isNotificationActive = true.obs;
   final avatarFileName = ''.obs;
 
   final ImagePicker _picker = ImagePicker();
@@ -27,7 +27,6 @@ class AkunController extends GetxController {
     fetchUserData();
   }
 
-  /// LOAD USER DATA FROM STORAGE
   Future<void> fetchUserData() async {
     try {
       final userData = StorageService.getUser();
@@ -37,27 +36,22 @@ class AkunController extends GetxController {
         isNotificationActive.value = userData.isNotification ?? false;
       }
     } catch (e) {
-      print("FETCH USER ERROR: $e");
     }
   }
 
-  /// SWITCH NOTIFICATION
   Future<void> toggleNotification(bool value) async {
     final oldValue = isNotificationActive.value;
 
-    /// update UI sementara
     isNotificationActive.value = value;
 
     try {
       await actionNotification();
     } catch (e) {
-      /// rollback jika gagal
       isNotificationActive.value = oldValue;
       print("TOGGLE ERROR: $e");
     }
   }
 
-  /// CALL API TOGGLE NOTIFICATION
   Future<void> actionNotification() async {
     final token = StorageService.getToken();
 
@@ -79,7 +73,6 @@ class AkunController extends GetxController {
           isNotification: newStatus,
         );
 
-        // ✅ update storage biar persist
         if (user.value != null) {
           await StorageService.saveUser(user.value!);
         }
@@ -87,7 +80,6 @@ class AkunController extends GetxController {
         auth.refreshVerification();
       }
     } catch (e) {
-      print("NOTIFICATION ERROR: $e");
       rethrow;
     }
   }
