@@ -12,7 +12,7 @@ class LaporView extends GetView<LaporController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundScaffold,
+      backgroundColor: AppColors.secondary,
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         automaticallyImplyLeading: false,

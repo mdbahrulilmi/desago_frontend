@@ -6,7 +6,7 @@
     final String desaId;
     final int tahun;
     final int anggaran;
-    final AnggaranKategoriModel? kategori;
+    AnggaranKategoriModel? kategori;
 
     AnggaranModel({
       required this.id,

@@ -92,6 +92,7 @@ class ProfilDesaController extends GetxController
   void showPerangkatDetail(PemdesAparaturModel perangkat) {
     Get.dialog(
       Dialog(
+        backgroundColor: AppColors.secondary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),

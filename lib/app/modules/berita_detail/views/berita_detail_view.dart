@@ -106,54 +106,59 @@ class BeritaDetailView extends GetView<BeritaDetailController> {
                 ),
               ),
             ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      berita.judul ?? "-",
-                      style: AppText.h5(color: AppColors.text),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
+            Container(
+              child: SliverToBoxAdapter(
+                child: Container(
+                  color: AppColors.secondary,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CircleAvatar(
-                          radius: 18,
-                          backgroundColor: AppColors.primary.withOpacity(0.2),
-                          child: Icon(Remix.user_3_line, color: AppColors.primary),
-                        ),
-                        const SizedBox(width: 8),
                         Text(
-                          berita.author ?? "Admin",
-                          style: AppText.bodyMedium(color: AppColors.text),
+                          berita.judul ?? "-",
+                          style: AppText.h5(color: AppColors.text),
                         ),
-                        const SizedBox(width: 16),
-                        const Icon(Remix.calendar_2_fill, size: 16),
-                        const SizedBox(width: 4),
-                        Text(
-                          berita.timestamp != null
-                              ? TimeHelper.formatTanggalDate(berita.timestamp)
-                              : "-",
-                          style: AppText.bodyMedium(color: AppColors.text),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 18,
+                              backgroundColor: AppColors.primary.withOpacity(0.2),
+                              child: Icon(Remix.user_3_line, color: AppColors.primary),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              berita.author ?? "Admin",
+                              style: AppText.bodyMedium(color: AppColors.text),
+                            ),
+                            const SizedBox(width: 16),
+                            const Icon(Remix.calendar_2_fill, size: 16),
+                            const SizedBox(width: 4),
+                            Text(
+                              berita.timestamp != null
+                                  ? TimeHelper.formatTanggalDate(berita.timestamp)
+                                  : "-",
+                              style: AppText.bodyMedium(color: AppColors.text),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Html(
+                          data: berita.content ?? "",
+                          style: {
+                            "body": Style(
+                              margin: Margins.zero,
+                              padding: HtmlPaddings.zero,
+                              fontSize: FontSize(14),
+                              textAlign: TextAlign.justify,
+                              color: AppColors.text,
+                            ),
+                          },
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    Html(
-                      data: berita.content ?? "",
-                      style: {
-                        "body": Style(
-                          margin: Margins.zero,
-                          padding: HtmlPaddings.zero,
-                          fontSize: FontSize(14),
-                          textAlign: TextAlign.justify,
-                          color: AppColors.text,
-                        ),
-                      },
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),

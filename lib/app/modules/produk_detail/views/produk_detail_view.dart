@@ -4,6 +4,7 @@ import 'package:desago/app/utils/app_colors.dart';
 import 'package:desago/app/utils/app_responsive.dart';
 import 'package:desago/app/utils/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:get/get.dart';
@@ -151,10 +152,10 @@ class ProdukDetailView extends GetView<ProdukDetailController> {
               style: AppText.h5(color: AppColors.dark),
             ),
             const SizedBox(height: 8),
-            Text(
-              "Mulai Rp${produk.hargaMin}",
-              style: AppText.bodyMedium(color: AppColors.textSecondary),
-            ),
+           Text(
+            "Mulai Rp ${NumberFormat('#,###', 'id_ID').format(produk.hargaMin)} - Rp ${NumberFormat('#,###', 'id_ID').format(produk.hargaMax)}",
+              style: AppText.bodyMediumBold(color: AppColors.textSecondary),
+                     ),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),

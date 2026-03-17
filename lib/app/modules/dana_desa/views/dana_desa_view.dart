@@ -25,9 +25,18 @@ class DanaDesaView extends GetView<DanaDesaController> {
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  _totalPendapatan(),
+                  _summaryAnggaran(),
+                  _rincianPendapatan(),
+                  SizedBox(height: AppResponsive.h(4)),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "RINCIAN BELANJA PER BIDANG",
+                      style:AppText.bodyMediumBold(color: AppColors.text)
+                    ),
+                  ),
                   SizedBox(height: AppResponsive.h(2)),
-                  _totalBelanja(),
+                  _rincianBelanja(),
                 ],
               ),
             ),
@@ -144,91 +153,184 @@ class DanaDesaView extends GetView<DanaDesaController> {
     );
   }
 
-  Widget _totalPendapatan() {
-    return Obx(() {
-      if (controller.isLoading.value) {
-      }
+  Widget _summaryAnggaran() {
+  return Obx(() {
+    return Row(
+      children: [
 
-      return Column(
-        children: [
-          GestureDetector(
+        /// TOTAL PENDAPATAN
+        Expanded(
+          child: GestureDetector(
             onTap: controller.togglePendapatan,
-            child: _danaDesaCard(
-              title: "Jumlah Pendapatan",
-              nominal:
-                  controller.formatRupiah(controller.totalPendapatan),
-              icon: controller.showPendapatan.value
-                  ? Icons.keyboard_arrow_up
-                  : Icons.keyboard_arrow_down,
+            child: _summaryCard(
+              title: "Total Pendapatan",
+              nominal: controller.formatRupiah(
+                controller.totalPendapatan,
+              ),
               profit: true,
             ),
           ),
-          AnimatedCrossFade(
-            duration: const Duration(milliseconds: 250),
-            crossFadeState: controller.showPendapatan.value
-                ? CrossFadeState.showFirst
-                : CrossFadeState.showSecond,
-            firstChild: _rincianPendapatan(),
-            secondChild: const SizedBox(),
-          ),
-        ],
-      );
-    });
-  }
+        ),
 
-  Widget _totalBelanja() {
-    return Obx(() {
-      if (controller.isLoading.value) {
-      }
+        const SizedBox(width: 12),
 
-      return Column(
-        children: [
-          GestureDetector(
+        /// TOTAL BELANJA
+        Expanded(
+          child: GestureDetector(
             onTap: controller.toggleBelanja,
-            child: _danaDesaCard(
-              title: "Jumlah Belanja",
-              nominal: controller.formatRupiah(controller.totalBelanja),
-              icon: controller.showBelanja.value
-                  ? Icons.keyboard_arrow_up
-                  : Icons.keyboard_arrow_down,
+            child: _summaryCard(
+              title: "Total Belanja",
+              nominal: controller.formatRupiah(
+                controller.totalBelanja,
+              ),
               profit: false,
             ),
           ),
-          AnimatedCrossFade(
-            duration: const Duration(milliseconds: 250),
-            crossFadeState: controller.showBelanja.value
-                ? CrossFadeState.showFirst
-                : CrossFadeState.showSecond,
-            firstChild: _rincianBelanja(),
-            secondChild: const SizedBox(),
-          ),
-        ],
-      );
-    });
-  }
+        ),
+      ],
+    );
+  });
+}
 
+Widget _summaryCard({
+  required String title,
+  required String nominal,
+  required bool profit,
+}) {
+  return Container(
+    padding: const EdgeInsets.all(14),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(14),
+      border: Border.all(
+        color: AppColors.borderDana.withOpacity(0.3),
+      ),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppText.bodyMedium().copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 6),
+
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            nominal,
+            style: AppText.h5().copyWith(
+              fontWeight: FontWeight.bold,
+              color: profit
+                  ? AppColors.bottonGreen
+                  : AppColors.primary,
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 6),
+
+        Container(
+          height: 4,
+          decoration: BoxDecoration(
+            color: profit
+                ? AppColors.darkGreen
+                : AppColors.primary,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+      ],
+    ),
+  );
+}
   // ================= RINCIAN =================
 
   Widget _rincianPendapatan() {
   return Obx(() {
-    return Column(
-      children: controller.pendapatan.map<Widget>((item) {
-        final level = _kategoriLevel(item);
+    final total = controller.totalPendapatan;
 
-        debugPrint(
-          'PENDAPATAN | kategori: ${item.kategori?.nama} | level: $level | parent: ${item.kategori?.parentId}',
-        );
+    return Container(
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
 
-        return Padding(
-          padding: EdgeInsets.only(top: AppResponsive.h(1)),
-          child: _danaDesaCard(
-            title: item.kategori?.nama ?? '-',
-            nominal: controller.formatRupiah(item.anggaran),
-            profit: true,
-            level: level,
+          Row(
+            children: const [
+              Icon(Icons.source, size: 18),
+              SizedBox(width: 8),
+              Text(
+                "SUMBER PENDAPATAN",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
           ),
-        );
-      }).toList(),
+
+          const SizedBox(height: 16),
+
+          ...controller.pendapatan.map((item) {
+
+            final value =
+                controller.totalByKategori(item.kategori!.id);
+
+            final percent =
+                total == 0 ? 0.0 : value / total;
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(item.kategori?.nama ?? "-"),
+                      Text(controller.formatRupiah(value)),
+                    ],
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: LinearProgressIndicator(
+                      value: percent,
+                      minHeight: 8,
+                      backgroundColor:
+                          Colors.grey.shade300,
+                      valueColor:
+                          const AlwaysStoppedAnimation(
+                        AppColors.bottonGreen,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
     );
   });
 }
@@ -236,27 +338,76 @@ class DanaDesaView extends GetView<DanaDesaController> {
 
   Widget _rincianBelanja() {
   return Obx(() {
+
+    if (controller.belanja.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(20),
+        child: Text("Tidak ada data belanja"),
+      );
+    }
+
+    final Map<int, String> bidangMap = {};
+
+    for (var item in controller.belanja) {
+      final parent = controller.kategoriMap[item.kategori?.parentId];
+      if (parent != null) {
+        bidangMap[parent.id] = parent.nama;
+      }
+    }
+
     return Column(
-      children: controller.belanja.map<Widget>((item) {
-        final level = _kategoriLevel(item);
+      children: bidangMap.entries.map((entry) {
 
-        debugPrint(
-          'BELANJA | kategori: ${item.kategori?.nama} | level: $level | parent: ${item.kategori?.parentId}',
-        );
+        final bidangId = entry.key;
+        final bidangNama = entry.value;
 
-        return Padding(
-          padding: EdgeInsets.only(top: AppResponsive.h(1)),
-          child: _danaDesaCard(
-            title: item.kategori?.nama ?? '-',
-            nominal: controller.formatRupiah(item.anggaran),
-            profit: false,
-            level: level,
+        final total = controller.totalByKategori(bidangId);
+
+        final sub = controller.belanja
+            .where((e) => e.kategori?.parentId == bidangId)
+            .toList();
+
+        return Container(
+          margin: const EdgeInsets.only(top: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: ExpansionTile(
+            shape: const Border(),
+            collapsedShape: const Border(),
+            title: Text(
+              bidangNama,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+
+            subtitle: Text(
+              controller.formatRupiah(total),
+              style: const TextStyle(
+                color: AppColors.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            children: sub.map((item) {
+
+              final value =
+                  controller.totalByKategori(item.kategori!.id);
+
+              return ListTile(
+                dense: true,
+                title: Text(item.kategori?.nama ?? "-"),
+                trailing: Text(controller.formatRupiah(value)),
+              );
+
+            }).toList(),
           ),
         );
       }).toList(),
     );
   });
 }
+
 
 
   // ================= COMPONENT =================

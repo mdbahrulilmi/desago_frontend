@@ -3,6 +3,7 @@ import 'package:desago/app/models/AnggaranKategoriModel.dart';
 import 'package:desago/app/models/AnggaranModel.dart';
 import 'package:desago/app/services/dio_services.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -154,7 +155,6 @@ class DanaDesaController extends GetxController {
   } catch (e) {
   }
 }
-  // ===========================
   // HELPER
   // ===========================
 
@@ -170,6 +170,26 @@ class DanaDesaController extends GetxController {
       if (level >= 5) break;
     }
     return level;
+  }
+
+  int totalByKategori(int kategoriId) {
+    int total = 0;
+
+    final allData = [...pendapatan, ...belanja];
+
+    for (final item in allData) {
+      if (item.kategori?.id == kategoriId) {
+        total += (item.anggaran ?? 0).toInt();
+      }
+    }
+
+    for (final item in allData) {
+      if (item.kategori?.parentId == kategoriId) {
+        total += totalByKategori(item.kategori!.id);
+      }
+    }
+
+    return total;
   }
 
   void togglePendapatan() => showPendapatan.toggle();
@@ -188,242 +208,319 @@ class DanaDesaController extends GetxController {
       decimalDigits: 0,
     ).format(value);
   }
-
-  Future<void> generatePdf() async {
-    final pdf = pw.Document();
-
-    pdf.addPage(
-      pw.MultiPage(
-        pageFormat: PdfPageFormat.a4,
-        margin: const pw.EdgeInsets.all(20),
-        build: (context) => [
-          pw.Container(
-            width: double.infinity,
-            padding: const pw.EdgeInsets.all(16),
-            child: pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.center,
-              children: [
-
-                pw.Text(
-                  'RENCANA PENGGUNAAN DANA',
-                  style: pw.TextStyle(
-                    fontSize: 16,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                  textAlign: pw.TextAlign.center,
-                ),
-
-                pw.SizedBox(height: 4),
-
-                pw.Text(
-                  '(RPD-ADD)',
-                  style: pw.TextStyle(
-                    fontSize: 12,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                ),
-
-                pw.SizedBox(height: 10),
-
-                pw.Divider(thickness: 1),
-
-                pw.SizedBox(height: 10),
-
-                // ===== INFO DESA =====
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Column(
-                      crossAxisAlignment: pw.CrossAxisAlignment.start,
-                      children: [
-                        pw.Text('Desa : $desaNama'),
-                        pw.Text('Tahun Anggaran : $selectedYear'),
-                      ],
-                    ),
-
-                    pw.Text(
-                      'PEMERINTAH DESA',
-                      style: pw.TextStyle(
-                        fontWeight: pw.FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-
-                pw.SizedBox(height: 20),
-              ],
-            ),
-          ),
-
-          pw.SizedBox(height: 20),
-
-          // ===== PENDAPATAN =====
-          pw.Text('Pendapatan', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
-          pw.SizedBox(height: 8),
-          _pdfTable(pendapatan, profit: true),
-
-          pw.SizedBox(height: 20),
-
-          // ===== BELANJA =====
-          pw.Text('Belanja', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
-          pw.SizedBox(height: 8),
-          _pdfTable(belanja, profit: false),
-        ],
-      ),
-    );
-
-    await Printing.layoutPdf(onLayout: (format) async => pdf.save());
-  }
-
-  pw.Widget _pdfTable(List<AnggaranModel> list, {required bool profit}) {
-    final total = list.fold<num>(
-      0,
-      (sum, item) => sum + (item.anggaran ?? 0),
-    );
-
-    return pw.Table(
-      border: pw.TableBorder.all(color: PdfColors.grey),
-      columnWidths: {
-        0: const pw.FlexColumnWidth(1), // No
-        1: const pw.FlexColumnWidth(4), // Uraian
-        2: const pw.FlexColumnWidth(2), // Anggaran
-      },
+  
+pw.Widget _infoCard(String title, String value, PdfColor color) {
+  return pw.Container(
+    margin: const pw.EdgeInsets.symmetric(vertical: 6),
+    padding: const pw.EdgeInsets.all(12),
+    decoration: pw.BoxDecoration(
+      color: color,
+      borderRadius: pw.BorderRadius.circular(8),
+    ),
+    child: pw.Row(
+      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       children: [
-
-        // ===== HEADER =====
-        pw.TableRow(
-          decoration: const pw.BoxDecoration(color: PdfColors.grey300),
-          children: [
-            _headerCell('No'),
-            _headerCell('Uraian'),
-            _headerCell('Anggaran', alignRight: true),
-          ],
+        pw.Text(
+          title,
+          style: pw.TextStyle(
+            color: PdfColors.white,
+            fontWeight: pw.FontWeight.bold,
+          ),
         ),
-
-        // ===== DATA =====
-        ...List.generate(list.length, (index) {
-          final item = list[index];
-          final level = kategoriLevel(item.kategori!);
-
-          return pw.TableRow(
-            children: [
-              _cell('${index + 1}'),
-
-              // uraian dengan indent
-              pw.Padding(
-                padding: pw.EdgeInsets.only(
-                  left: 6.0 * level,
-                  top: 6,
-                  bottom: 6,
-                  right: 6,
-                ),
-                child: pw.Text(
-                  item.kategori?.nama ?? '-',
-                  style: const pw.TextStyle(fontSize: 11),
-                ),
-              ),
-
-              _cell(
-                formatRupiah(item.anggaran),
-                alignRight: true,
-                color: profit ? PdfColors.green : PdfColors.red,
-              ),
-            ],
-          );
-        }),
-
-        // ===== TOTAL =====
-        pw.TableRow(
-          decoration: const pw.BoxDecoration(color: PdfColors.grey200),
-          children: [
-            _cell(''),
-            _cell(
-              'TOTAL',
-              bold: true,
-            ),
-            _cell(
-              formatRupiah(total),
-              alignRight: true,
-              bold: true,
-              color: profit ? PdfColors.green : PdfColors.red,
-            ),
-          ],
+        pw.Text(
+          value,
+          style: pw.TextStyle(
+            color: PdfColors.white,
+            fontWeight: pw.FontWeight.bold,
+            fontSize: 14,
+          ),
         ),
       ],
-    );
-  }
+    ),
+  );
+}
 
-  pw.Widget _headerCell(String text, {bool alignRight = false}) {
-    return pw.Padding(
-      padding: const pw.EdgeInsets.all(6),
-      child: pw.Align(
-        alignment: alignRight ? pw.Alignment.centerRight : pw.Alignment.centerLeft,
-        child: pw.Text(
-          text,
-          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+  Future<void> generatePdf() async {
+  final pdf = pw.Document();
+
+  final bg = await imageFromAssetBundle('assets/background/dana_desa_pdf.jpg');
+
+  pdf.addPage(
+    pw.Page(
+      pageFormat: PdfPageFormat.a4,
+      margin: pw.EdgeInsets.zero,
+      build: (context) {
+        return pw.Stack(
+          children: [
+            pw.Positioned.fill(
+              child: pw.Image(bg, fit: pw.BoxFit.cover),
+            ),
+            pw.Padding(
+              padding: const pw.EdgeInsets.all(24),
+              child: pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.SizedBox(height: 40),
+
+                  pw.Center(
+                    child: pw.Column(
+                      children: [
+                        pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.center,
+                          children: [
+                            pw.Text(
+                              'APB',
+                              style: pw.TextStyle(
+                                fontSize: 34,
+                                fontWeight: pw.FontWeight.bold,
+                                color: PdfColors.black,
+                              ),
+                            ),
+                            pw.Text(
+                              ' DESA',
+                              style: pw.TextStyle(
+                                fontSize: 34,
+                                fontWeight: pw.FontWeight.bold,
+                                color: PdfColors.red,
+                              ),
+                            ),
+                          ]
+                        ),
+                        pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.center,
+                          children: [
+                        pw.Text(
+                          desaNama.value,
+                          style: pw.TextStyle(
+                            fontSize: 24,
+                            fontWeight: pw.FontWeight.bold,
+                          ),
+                        ),
+                        pw.Text(
+                          ' ${selectedYear.value}',
+                          style: pw.TextStyle(
+                            fontSize: 24,
+                            fontWeight: pw.FontWeight.bold,
+                            ),
+                        )]),
+                      ],
+                    ),
+                  ),
+                  
+
+                  pw.SizedBox(height: 30),
+                  _bigNumber(
+                    'Total Pendapatan',
+                    totalPendapatan,
+                    PdfColors.teal,
+                  ),
+                  pw.SizedBox(height: 10),
+
+                  ...pendapatan.take(6).map((e) => _rowItem(
+                        e.kategori?.nama ?? '-',
+                        e.anggaran ?? 0,
+                      )),
+
+                  pw.SizedBox(height: 20),
+
+                  _bigNumber(
+                    'Total Belanja',
+                    totalBelanja,
+                    PdfColors.red,
+                  ),
+
+                  pw.SizedBox(height: 20),
+
+                  pw.Row(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Expanded(
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                              _sectionBox(
+                                'Penyelenggaraan Pemerintahan',
+                                totalByKategori(10),
+                                PdfColors.blue,
+                              ),
+                              _sectionDetail(byKategori(10)),
+
+                              _sectionBox(
+                                'Pelaksanaan Pembangunan',
+                                totalByKategori(11),
+                                PdfColors.green,
+                              ),
+                              _sectionDetail(byKategori(11)),
+
+                              _sectionBox(
+                                'Pemberdayaan Masyarakat',
+                                totalByKategori(13),
+                                PdfColors.red,
+                              ),
+                              _sectionDetail(byKategori(13)),
+                        ],
+                      ),
+                    ),
+
+                    pw.SizedBox(width: 12),
+
+                    pw.Expanded(
+                      child: pw.Column(
+                          children: [
+                            _sectionBox(
+                              'Pembinaan Masyarakat',
+                              totalByKategori(12),
+                              PdfColors.orange,
+                            ),
+                            _sectionDetail(byKategori(12)),
+
+                            _sectionBox(
+                              'Penanggulangan Bencana',
+                              totalByKategori(14),
+                              PdfColors.teal,
+                            ),
+                            _sectionDetail(byKategori(14)),
+                          ],
+                        ),
+                    ),
+                  ],
+                )
+                 
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    ),
+  );
+
+  await Printing.layoutPdf(
+    onLayout: (format) async => pdf.save(),
+  );
+}
+
+pw.Widget _bigNumber(String title, num value, PdfColor color) {
+  return pw.Row(
+    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+    children: [
+      pw.Text(
+        title,
+        style: pw.TextStyle(
+          fontSize: 24,
+          fontWeight: pw.FontWeight.bold,
+          color: color,
         ),
       ),
-    );
-  }
-
-  pw.Widget _cell(
-    String text, {
-    bool alignRight = false,
-    bool bold = false,
-    PdfColor? color,
-  }) {
-    return pw.Padding(
-      padding: const pw.EdgeInsets.all(6),
-      child: pw.Align(
-        alignment: alignRight ? pw.Alignment.centerRight : pw.Alignment.centerLeft,
-        child: pw.Text(
-          text,
+      pw.Text(
+        formatRupiah(value),
+        style: pw.TextStyle(
+          fontSize: 24,
+          fontWeight: pw.FontWeight.bold,
+          color: color,
+        ),
+      ),
+    ],
+  );
+}
+pw.Widget _rowItem(String title, num value) {
+  return pw.Padding(
+    padding: const pw.EdgeInsets.symmetric(vertical: 2),
+    child: pw.Row(
+      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+      children: [
+        pw.Text(title, style: const pw.TextStyle(fontSize: 18)),
+        pw.Text(formatRupiah(value),
+            style: const pw.TextStyle(fontSize: 18)),
+      ],
+    ),
+  );
+}
+pw.Widget _sectionBox(String title, num value, PdfColor color) {
+  return pw.Container(
+    width: double.infinity,
+    margin: const pw.EdgeInsets.symmetric(vertical: 6),
+    padding: const pw.EdgeInsets.all(10),
+    decoration: pw.BoxDecoration(
+      color: color,
+      borderRadius: pw.BorderRadius.circular(10),
+    ),
+    child: pw.Column(
+      mainAxisAlignment: pw.MainAxisAlignment.center,
+      children: [
+        pw.Text(
+          title,
           style: pw.TextStyle(
-            fontSize: 11,
-            fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
-            color: color,
+            color: PdfColors.white,
+            fontSize: 12,
+            fontWeight: pw.FontWeight.bold,
           ),
         ),
-      ),
-    );
+        pw.Text(
+          formatRupiah(value),
+          style: pw.TextStyle(
+            fontSize: 20,
+            color: PdfColors.white,
+            fontWeight: pw.FontWeight.bold,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+List<AnggaranModel> byKategori(int kategoriId) {
+  final kategoriIds = <int>{};
+
+  void collectKategori(int id) {
+    kategoriIds.add(id);
+
+    for (final k in kategoriMap.values) {
+      if (k.parentId == id) {
+        collectKategori(k.id);
+      }
+    }
   }
 
-  pw.Widget _pdfList(List<AnggaranModel> list, {required bool profit}) {
-    return pw.Column(
-      children: list.map((item) {
-        final level = kategoriLevel(item.kategori!);
+  collectKategori(kategoriId);
+
+  return belanja
+      .where((e) => kategoriIds.contains(e.kategori?.id))
+      .toList();
+}
+
+pw.Widget _sectionDetail(List<AnggaranModel> items) {
+  return pw.Container(
+    width: double.infinity,
+    margin: const pw.EdgeInsets.only(bottom: 10),
+    padding: const pw.EdgeInsets.all(8),
+    decoration: pw.BoxDecoration(
+      color: PdfColors.white,
+      borderRadius: pw.BorderRadius.circular(8),
+      border: pw.Border.all(color: PdfColors.grey300),
+    ),
+    child: pw.Column(
+      children: items.map((e) {
         return pw.Padding(
-          padding: pw.EdgeInsets.only(left: 20.0 * level, top: 4, bottom: 4),
+          padding: const pw.EdgeInsets.symmetric(vertical: 2),
           child: pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              pw.Row(
-                children: [
-                  if (level > 0)
-                    pw.Container(
-                      width: 12,
-                      height: 12,
-                      decoration: pw.BoxDecoration(
-                        shape: pw.BoxShape.circle,
-                        border: pw.Border.all(color: PdfColors.grey, width: 1),
-                      ),
-                    ),
-                    pw.SizedBox(width: 4),
-                  pw.Text(item.kategori?.nama ?? '-', style: pw.TextStyle(fontSize: 12)),
-                ],
+              pw.Expanded(
+                child: pw.Text(
+                  e.kategori?.nama ?? '-',
+                  style: const pw.TextStyle(fontSize: 10),
+                ),
               ),
-              
-              pw.Text(formatRupiah(item.anggaran), 
-                  style: pw.TextStyle(
-                    fontSize: 12,
-                    color: profit ? PdfColors.green : PdfColors.red,
-                    fontWeight: pw.FontWeight.bold,
-                  )),
+              pw.Text(
+                formatRupiah(e.anggaran ?? 0),
+                style: const pw.TextStyle(fontSize: 10),
+              ),
             ],
           ),
         );
       }).toList(),
-    );
-  }
-
-  }
+    ),
+  );
+}
+}
